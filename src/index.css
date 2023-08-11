@@ -1,0 +1,86 @@
+:root {
+  --primary: #CF9F29;
+  --secondary: #304878;
+  --borderRadius: 6px;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+	background: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* input number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+} 
+
+input[type=number] {
+  -moz-appearance:textfield !important;
+}
+
+.ant-input {
+  border-radius: var(--borderRadius);
+}
+
+.ant-menu {
+  background-color: white !important;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.ant-layout-sider-children {
+  background-color: white !important;
+}
+
+.ant-layout-sider-trigger {
+  background-color: var(--secondary) !important;
+}
+
+.ant-menu-item {
+  color: black !important;
+}
+
+.ant-menu-item-selected {
+  color: white !important;
+  background-color: var(--secondary) !important;
+}
+
+.ant-menu-submenu-title {
+  color: black !important;
+}
+
+.ant-btn-primary {
+  background-color: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+  font-weight: bold;
+}
+
+.ant-btn-default {
+  background-color: #ffffff;
+  border-color: #000;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+}
+
+.ant-card {
+  border-radius: var(--borderRadius);
+  border-color: black;
+}
+
+.ant-table-tbody {
+  background-color: white;
+}
