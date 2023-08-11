@@ -4,7 +4,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import MenuComponent from '../../components/menu';
 import Breadcrumb from '../../components/breadcrumb';
-import HeaderComponent from '../../components/header';
 import FullLoader from "../../components/fullLoader";
 
 const RoterChecker = () => {
@@ -23,7 +22,7 @@ const RoterChecker = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {user ? <MenuComponent /> : <HeaderComponent />}
+      {user ? <MenuComponent /> : null}
       <Layout.Content style={{ padding: user ? "2vh" : 0 }}>
         {user && <Breadcrumb />}
         <Suspense fallback={<FullLoader />}>
