@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "gpass-apps"
-  }
+  },
+  "targets": {
+    "gpass-apps": {
+      "hosting": {
+        "gpass-apps.web.app": [
+          "miqr.site"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
