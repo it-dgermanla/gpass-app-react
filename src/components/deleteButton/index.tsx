@@ -7,7 +7,7 @@ const DeleteButton: FC<ButtonProps> = (props) => {
     <Button
       shape="circle"
       icon={<DeleteOutlined />}
-      type="ghost"
+      type="default"
       style={{ color: '#fff', backgroundColor: '#d34745' }}
       size="middle"
       {...props}

@@ -4,8 +4,8 @@ import { getAuth, signInWithEmailAndPassword, signInWithPopup, getAdditionalUser
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import '../../../../assets/styles/login.css';
 import { auth } from '../../../../firebaseConfig';
-import { post } from '../../../../services';
-import { UserAdmin } from '../../../../interfaces/user';
+// import { post } from '../../../../services';
+// import { UserAdmin } from '../../../../interfaces/user';
 import { ruleEmail, rulePassword } from '../../../../constants';
 import { useAuth } from '../../../../context/authContext';
 import { DS } from "../../../../types";
@@ -36,7 +36,7 @@ const LoginForm: FC<Props> = ({ setCurrentForm }) => {
   const abortController = useAbortController();
   const [account, setAccount] = useState<Account>({ email: '', password: '' });
   const [loading, setLoading] = useState<boolean>(false);
-  const { creatingUser, setCreatingUser } = useAuth();
+  // const { creatingUser, setCreatingUser } = useAuth();
 
   const onFinish = async () => {
     if (loading) return;
@@ -52,37 +52,37 @@ const LoginForm: FC<Props> = ({ setCurrentForm }) => {
   }
 
   const signInWithProvider = async (keyProvider: KeysProviders) => {
-    if (creatingUser) return;
+  //   if (creatingUser) return;
 
-    setCreatingUser(true);
+  //   setCreatingUser(true);
 
-    try {
-      const provider = providers[keyProvider];
-      const scope = scopes[keyProvider];
-      provider.addScope(scope);
-      const result = await signInWithPopup(getAuth(), provider);
-      const user = result.user;
-      const additional = getAdditionalUserInfo(result);
+  //   try {
+  //     const provider = providers[keyProvider];
+  //     const scope = scopes[keyProvider];
+  //     provider.addScope(scope);
+  //     const result = await signInWithPopup(getAuth(), provider);
+  //     const user = result.user;
+  //     const additional = getAdditionalUserInfo(result);
 
-      if (!additional?.isNewUser) return;
+  //     if (!additional?.isNewUser) return;
 
-      const userInfo: UserAdmin = {
-        uid: user.uid,
-        name: user?.displayName || '',
-        email: user?.email || '',
-        active: true,
-        phone: user?.phoneNumber || '',
-        description: '',
-        role: "Administrador"
-      };
+  //     const userInfo: UserAdmin = {
+  //       uid: user.uid,
+  //       name: user?.displayName || '',
+  //       email: user?.email || '',
+  //       active: true,
+  //       phone: user?.phoneNumber || '',
+  //       description: '',
+  //       role: "Administrador"
+  //     };
 
-      await post('userAdminPublic/create', userInfo, abortController.current!);
-    } catch (e) {
-      console.log(e);
-      message.error(`Error, al iniciar con ${keyProvider.toUpperCase()}`);
-    } finally {
-      setCreatingUser(false);
-    }
+  //     await post('userAdminPublic/create', userInfo, abortController.current!);
+  //   } catch (e) {
+  //     console.log(e);
+  //     message.error(`Error, al iniciar con ${keyProvider.toUpperCase()}`);
+  //   } finally {
+  //     setCreatingUser(false);
+  //   }
   }
 
   return (

@@ -1,45 +1,45 @@
-import { message } from 'antd';
-import { getAdditionalUserInfo, getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { UserAdmin } from '../../../interfaces/user';
-import { post } from '../../../services';
-import DynamicForm from '../../dynamicForm';
-import useAbortController from "../../../hooks/useAbortController";
-import { rulePassword } from "../../../constants";
-import { useAuth } from "../../../context/authContext";
+// import { message } from 'antd';
+// import { getAdditionalUserInfo, getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+// import { UserAdmin } from '../../../interfaces/user';
+// import { post } from '../../../services';
+// import DynamicForm from '../../dynamicForm';
+// import useAbortController from "../../../hooks/useAbortController";
+// import { rulePassword } from "../../../constants";
+// import { useAuth } from "../../../context/authContext";
 
 const SingUp = () => {
-  const abortController = useAbortController();
-  const { creatingUser, setCreatingUser } = useAuth();
+  // const abortController = useAbortController();
+  // const { creatingUser, setCreatingUser } = useAuth();
 
-  const onFinish = async (userAdmin: UserAdmin) => {
-    if (creatingUser) return;
+  // const onFinish = async (userAdmin: UserAdmin) => {
+  //   if (creatingUser) return;
 
-    if (userAdmin.password !== userAdmin.confirmPassword) {
-      message.error('Las contraseñas no coinciden.', 4);
-      return;
-    }
+  //   if (userAdmin.password !== userAdmin.confirmPassword) {
+  //     message.error('Las contraseñas no coinciden.', 4);
+  //     return;
+  //   }
 
-    setCreatingUser(true);
+  //   setCreatingUser(true);
 
-    try {
-      const result = await createUserWithEmailAndPassword(getAuth(), userAdmin.email!, userAdmin.password as string);
-      const additional = getAdditionalUserInfo(result);
+  //   try {
+  //     const result = await createUserWithEmailAndPassword(getAuth(), userAdmin.email!, userAdmin.password as string);
+  //     const additional = getAdditionalUserInfo(result);
 
-      if (!additional?.isNewUser) {
-        message.error('Error esta cuenta ya esta registrada.', 4);
-        return;
-      };
+  //     if (!additional?.isNewUser) {
+  //       message.error('Error esta cuenta ya esta registrada.', 4);
+  //       return;
+  //     };
 
-      delete userAdmin.confirmPassword;
+  //     delete userAdmin.confirmPassword;
 
-      await updateProfile(result.user, { displayName: "Administrador" });
-      await post('userAdmin/create', userAdmin, abortController.current!);
-    } catch (error) {
-      getAuth().signOut();
-    } finally {
-      setCreatingUser(false);
-    }
-  }
+  //     await updateProfile(result.user, { displayName: "Administrador" });
+  //     await post('userAdmin/create', userAdmin, abortController.current!);
+  //   } catch (error) {
+  //     getAuth().signOut();
+  //   } finally {
+  //     setCreatingUser(false);
+  //   }
+  // }
 
   return (
     <div style={{ padding: 20 }}>
@@ -47,7 +47,7 @@ const SingUp = () => {
         <span>Registara tu empresa</span>
       </div>
       <br />
-      <DynamicForm
+      {/* <DynamicForm
         layout="vertical"
         onFinish={onFinish}
         loading={creatingUser}
@@ -107,7 +107,7 @@ const SingUp = () => {
             name: "description",
           }
         ]}
-      />
+      /> */}
     </div>
   )
 }

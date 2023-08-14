@@ -46,7 +46,7 @@ const TableActionsButtons: FC<Props> = ({ record, onDeleted, fun, pathEdit }) =>
         onClick={() => navigate(pathEdit, { state: record })}
         size="middle"
         style={{ color: '#fff', backgroundColor: '#ec9822 ' }}
-        type='ghost'
+        type='default'
       />
       <DeleteButton onClick={del} />
     </Space>
