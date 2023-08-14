@@ -2,6 +2,11 @@ import { TypeControl, TypeInput } from "../types";
 import { FormRule } from 'antd';
 import { UploadListType } from 'antd/lib/upload/interface';
 
+export interface LatLng {
+  lat: number;
+  lng: number;
+}
+
 export interface CustomInput {
   typeControl: TypeControl;
   typeInput?: TypeInput;

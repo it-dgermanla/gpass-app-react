@@ -12,7 +12,7 @@ interface Props {
   children: ReactNode;
 }
 
-// type AC = AbortController;
+type AC = AbortController;
 
 const AuthContext = createContext<Auth>({
   user: null,

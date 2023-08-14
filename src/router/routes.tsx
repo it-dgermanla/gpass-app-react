@@ -2,11 +2,16 @@ import { lazy } from "react";
 import { PathRouteProps } from 'react-router-dom';
 
 const LandingPage = lazy(() => import('../views/landingPage'));
+const CompanyPage = lazy(() => import('../views/company'));
 
 const routes: PathRouteProps[] = [
   {
     path: '/',
-    element: <LandingPage />
+    element: <CompanyPage />
+  },
+  {
+    path: '/sucursales',
+    element: <CompanyPage />
   },
   {
     path: '*',
