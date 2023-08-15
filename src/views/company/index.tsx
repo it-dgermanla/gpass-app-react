@@ -8,11 +8,13 @@ const Companys = () => {
   const columns: ColumnsType<BranchOffice> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: 'Correo', dataIndex: 'email', key: 'email' },
-    { title: 'Meta ventas / mes', dataIndex: 'salesGoalByMonth', key: 'salesGoalByMonth' }
+    { title: 'Celular', dataIndex: 'phone', key: 'phone' },
+    { title: 'Imagen', dataIndex: 'image', key: 'image' },
+    { title: 'Dirección', dataIndex: 'address', key: 'address' },
   ], [])
 
   return (
-    <div>
+    <div style={{marginLeft: "1.5%", marginRight: "1.5%", marginTop: "3%"}}>
       <HeaderView  
         title="Empresas"
         path="/sucursales/registrar"
