@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Avatar, Row } from 'antd';
 import { UserOutlined } from '@ant-design/icons'
-// import { useAuth } from '../../context/authContext';
+import { useAuth } from '../../context/authContext';
 import { Grid } from 'antd';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const { useBreakpoint } = Grid;
 
 const RowHeader: FC<Props> = ({ collapsed }) => {
-  // const { userAuth } = useAuth();
+  const { user } = useAuth();
   const screens = useBreakpoint();
 
   return (
@@ -27,10 +27,10 @@ const RowHeader: FC<Props> = ({ collapsed }) => {
       {
         !collapsed && <div style={screens.xs ? { color: "black" } : { color: "white" }}>
           <div style={{ margin: 10 }}>
-            {/* <b>{userAuth?.email}</b> */}
+            <b>{user?.email}</b>
           </div>
           <div>
-            {/* {userAuth?.role} */}
+            {user?.displayName}
           </div>
         </div>
       }

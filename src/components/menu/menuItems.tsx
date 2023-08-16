@@ -1,31 +1,25 @@
-import { DollarCircleOutlined, SettingOutlined, ShopOutlined, LogoutOutlined, AuditOutlined } from '@ant-design/icons';
+import { CSSProperties } from "react";
+import { CalendarOutlined, SettingOutlined, ShopOutlined, LogoutOutlined, } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { MdOutlineDeliveryDining } from 'react-icons/md';
 import { message } from "antd";
 import { getAuth } from "firebase/auth";
 
-const styleIcon = {
+const styleIcon: CSSProperties = {
   fontSize: 20
 };
 
 const menuItems = [
   {
-    key: '/sucursales',
+    key: '/empresas',
     title: '',
-    label: <Link to="/sucursales">Sucursales</Link>,
+    label: <Link to="/empresas">Empresas</Link>,
     icon: <ShopOutlined style={styleIcon} />
   },
   {
-    key: '/vendedores',
+    key: '/eventos',
     title: '',
-    label: <Link to="/vendedores">Vendedores</Link>,
-    icon: <DollarCircleOutlined style={styleIcon} />
-  },
-  {
-    key: '/repartidores',
-    title: '',
-    label: <Link to="/repartidores">Repartidores</Link>,
-    icon: <MdOutlineDeliveryDining style={styleIcon} />
+    label: <Link to="/eventos">Eventos</Link>,
+    icon: <CalendarOutlined style={styleIcon} />
   },
   {
     key: '/configuracion',
@@ -33,12 +27,12 @@ const menuItems = [
     icon: <SettingOutlined style={styleIcon} />,
     label: 'Configuración',
     children: [
-      {
-        key: '/configuracion/perfil',
-        title: '',
-        icon: <AuditOutlined style={styleIcon} />,
-        label: <Link to="/configuracion/perfil">Perfil</Link>,
-      },
+      /*  {
+         key: '/configuracion/perfil',
+         title: '',
+         icon: <AuditOutlined style={styleIcon} />,
+         label: <Link to="/configuracion/perfil">Perfil</Link>,
+       }, */
       {
         key: '/signOut',
         title: '',

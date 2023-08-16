@@ -2,10 +2,9 @@ import { ColumnsType } from 'antd/es/table';
 import { useMemo } from 'react';
 import HeaderView from '../../components/headerView';
 import Table from '../../components/table';
-import { BranchOffice } from "../../interfaces/user";
 
-const Companys = () => {
-  const columns: ColumnsType<BranchOffice> = useMemo(() => [
+const Companies = () => {
+  const columns: ColumnsType<any> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: 'Correo', dataIndex: 'email', key: 'email' },
     { title: 'Celular', dataIndex: 'phone', key: 'phone' },
@@ -14,12 +13,11 @@ const Companys = () => {
   ], [])
 
   return (
-    <div style={{marginLeft: "1.5%", marginRight: "1.5%", marginTop: "3%"}}>
-      <HeaderView  
+    <div style={{ margin: 20 }}>
+      <HeaderView
         title="Empresas"
-        path="/sucursales/registrar"
-      />      
-      <Table 
+      />
+      <Table
         url="branchOffice/paginatedListByUserAdmin"
         columns={columns}
         placeholderSearch="Buscar por nombre ó correo..."
@@ -30,4 +28,4 @@ const Companys = () => {
   )
 }
 
-export default Companys;
+export default Companies;

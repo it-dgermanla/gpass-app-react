@@ -12,8 +12,6 @@ interface Props {
   children: ReactNode;
 }
 
-type AC = AbortController;
-
 const AuthContext = createContext<Auth>({
   user: null,
   loading: true,

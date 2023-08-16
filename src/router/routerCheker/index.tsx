@@ -5,6 +5,14 @@ import { useAuth } from '../../context/authContext';
 import MenuComponent from '../../components/menu';
 import Breadcrumb from '../../components/breadcrumb';
 import FullLoader from "../../components/fullLoader";
+import { Rols } from "../../types";
+
+const firstRouteByUser: Record<Rols, string> = {
+  "SuperAdministrador": "/empresas",
+  "Administrador": "/empresas",
+  "Embajador": "/eventos",
+  "Lector": "/eventos"
+};
 
 const RoterChecker = () => {
   const { user, loading } = useAuth();
@@ -17,6 +25,10 @@ const RoterChecker = () => {
     if (!user && pathname !== "/") {
       navigate('/');
       return;
+    }
+
+    if (user) {
+      navigate(firstRouteByUser[user.displayName as Rols]);
     }
   }, [user, pathname, navigate, loading])
 

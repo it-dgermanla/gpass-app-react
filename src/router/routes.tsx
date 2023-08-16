@@ -1,9 +1,9 @@
 import { lazy } from "react";
 import { PathRouteProps } from 'react-router-dom';
 
-// const CreateBranch = lazy(() => import('../views/company/create'));
 const LandingPage = lazy(() => import('../views/landingPage'));
-const CompanyPage = lazy(() => import('../views/company'));
+const Companies = lazy(() => import('../views/companies'));
+const Events = lazy(() => import('../views/events'));
 
 const routes: PathRouteProps[] = [
   {
@@ -11,12 +11,12 @@ const routes: PathRouteProps[] = [
     element: <LandingPage />
   },
   {
-    path: '/sucursales',
-    element: <CompanyPage />
+    path: '/empresas',
+    element: <Companies />
   },
   {
-    path: '/sucursales/registrar',
-    element: <CompanyPage />
+    path: "/eventos",
+    element: <Events />
   },
   {
     path: '*',
