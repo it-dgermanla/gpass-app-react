@@ -14,6 +14,13 @@ const firstRouteByUser: Record<Rols, string> = {
   "Lector": "/eventos"
 };
 
+const privateRoutesByUser: Record<Rols, string[]> = {
+  "SuperAdministrador": ["/empresas", "/eventos", "/usuarios"],
+  "Administrador": ["/empresas", "/eventos", "/usarios"],
+  "Embajador": ["/eventos"],
+  "Lector": ["/eventos"]
+};
+
 const RoterChecker = () => {
   const { user, loading } = useAuth();
   const { pathname } = useLocation();
@@ -27,7 +34,7 @@ const RoterChecker = () => {
       return;
     }
 
-    if (user) {
+    if (user && !privateRoutesByUser[user.displayName as Rols].includes(pathname)) {
       navigate(firstRouteByUser[user.displayName as Rols]);
     }
   }, [user, pathname, navigate, loading])

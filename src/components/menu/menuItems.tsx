@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { CalendarOutlined, SettingOutlined, ShopOutlined, LogoutOutlined, } from '@ant-design/icons';
+import { CalendarOutlined, SettingOutlined, ShopOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { message } from "antd";
 import { getAuth } from "firebase/auth";
@@ -20,6 +20,12 @@ const menuItems = [
     title: '',
     label: <Link to="/eventos">Eventos</Link>,
     icon: <CalendarOutlined style={styleIcon} />
+  },
+  {
+    key: '/usuarios',
+    title: '',
+    label: <Link to="/usuarios">Usuarios</Link>,
+    icon: <UserOutlined style={styleIcon} />
   },
   {
     key: '/configuracion',
