@@ -11,7 +11,8 @@ interface Props {
 }
 
 const textButtonsCreate: Record<string, string> = {
-  "Usuarios": "usuarios",
+  "Usuarios": "usuario",
+  "Empresas": "empresa",
 } as const;
 
 const HeaderView: FC<Props> = ({ title, path, goBack }) => {
@@ -31,7 +32,7 @@ const HeaderView: FC<Props> = ({ title, path, goBack }) => {
               goBack
                 ? <BackButton onClick={() => navigate(path)} />
                 : <CreateButton onClick={() => navigate(path)}>
-                  {"Registar " + textButtonsCreate[title]}
+                  {"Registrar " + textButtonsCreate[title]}
                 </CreateButton>
             }
           </Col>

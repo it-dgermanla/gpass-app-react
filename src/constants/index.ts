@@ -1,11 +1,23 @@
 import { FormRule } from "antd";
 import { TypeRute } from "../types";
-
+import { Company } from "../interfaces";
 
 /* export const urlImageDefaultProfile = "https://firebasestorage.googleapis.com/v0/b/delivery-hmo.appspot.com/o/imagenesPerfil%2F1467646262_522853_1467646344_noticia_normal.jpg?alt=media&token=f6e761ad-95c5-462f-bc39-0e889ac30a5c";
 export const baseUrlStorage = "https://firebasestorage.googleapis.com/v0/b/delivery-hmo.appspot.com/o/";
 export const baseUrlStorageGCP = "https://storage.googleapis.com/delivery-hmo.appspot.com/images/";
  */
+
+export const urlImageDefaultCompany = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/company%2Fcompany.png?alt=media&token=4a25e724-96c5-4303-bbfd-0e2d03a2ccc1";
+
+export const initCompany: Company = {
+  name: "",
+  email: "",
+  phone: "",
+  image: "",
+  address: "", 
+  disable: false
+};
+
 export const rulePhoneInput: FormRule = {
   required: true,
   message: 'El número telefónico tiene que ser de 10 dígitos.',

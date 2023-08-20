@@ -1,15 +1,13 @@
 import { useMemo, useState } from 'react';
-import { Empty, Table as TableAnt } from 'antd';
+import { Empty, Table as TableAnt, Image } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import useGet from '../../hooks/useGet';
 import SearchTable from '../searchTable';
 import TableActionsButtons from "./tableActionsButtons";
 import { patch } from "../../services";
 import useAbortController from "../../hooks/useAbortController";
 import { PropsUseCollection } from "../../hooks/useCollection";
-import { query as q, where } from 'firebase/firestore';
+import { where } from 'firebase/firestore';
 import useCollection from "../../hooks/useCollection"
-import { Company } from "../../interfaces/index"
 
 interface Props<T> extends PropsUseCollection<T> {
 	columns: ColumnsType<T>;
@@ -22,7 +20,7 @@ interface Props<T> extends PropsUseCollection<T> {
 
 export interface Get<T> {
 	total: number;
-	list: Array<T>;
+	data: Array<T>;
 }
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
@@ -30,20 +28,14 @@ const { PRESENTED_IMAGE_SIMPLE } = Empty;
 const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query }: Props<T>) => {
 
 	const queryCompany = useMemo(() => ({
-		collection: collection,
+		collection,
 		query: [where("disable", "==", false), ...query || null]
-	}), [query]);
-
-	const { loading: loadinFirebase, data: companys, error } = useCollection<Company>(queryCompany)
-	console.log(companys)
-
+	}), [query, collection]);
+	const { loading, data } = useCollection<Get<T>>(queryCompany)
 	const abortController = useAbortController();
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [search, setSearch] = useState("");
-
-	const url = useMemo(() => `${urlProp}?page=${page}&limit=${limit}&search=${search}`, [urlProp, page, limit, search]);
-	const { loading, response } = useGet<Get<T>>(url, urlProp === "" || wait);
 
 	const columns = useMemo<ColumnsType<T>>(() => {
 		return [
@@ -82,22 +74,22 @@ const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeho
 				sticky
 				scroll={{ x: 400 }}
 				columns={columns}
-				dataSource={response?.list}
+				dataSource={data as any}
 				loading={loading}
 				locale={{ emptyText: <Empty image={PRESENTED_IMAGE_SIMPLE} description='Sin registros.' /> }}
 				rowKey="id"
-				pagination={{
-					total: response?.total,
-					pageSize: limit,
-					current: page,
-					onChange: (_page: number, pageSize: number) => {
-						setPage(_page);
-						setLimit(pageSize);
-					},
-					showTotal: (total: number, range: number[]) => `${range[0]}-${range[1]} de ${total} registros.`,
-					locale: { items_per_page: '/ página' },
-					showSizeChanger: true
-				}}
+			// pagination={{
+			// 	total: response?.total,
+			// 	pageSize: limit,
+			// 	current: page,
+			// 	onChange: (_page: number, pageSize: number) => {
+			// 		setPage(_page);
+			// 		setLimit(pageSize);
+			// 	},
+			// 	showTotal: (total: number, range: number[]) => `${range[0]}-${range[1]} de ${total} registros.`,
+			// 	locale: { items_per_page: '/ página' },
+			// 	showSizeChanger: true
+			// }}
 			/>
 		</div>
 	)

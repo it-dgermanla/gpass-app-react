@@ -1,4 +1,5 @@
 import { TypeControl, TypeInput } from "../types";
+import { UploadFile } from "antd/es/upload";
 import { FormRule } from 'antd';
 import { UploadListType } from 'antd/lib/upload/interface';
 
@@ -8,10 +9,11 @@ export interface LatLng {
 }
 
 export interface Company {
-  name?: string;
-  phone?: string;
-  email?: string;
-  img?: string;
+  name: string;
+  phone: string;
+  email: string;
+  image?: UploadFile<any>[] | string;
+  address?: string;
   disable?: boolean;
 }
 
