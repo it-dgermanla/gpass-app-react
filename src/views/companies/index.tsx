@@ -23,7 +23,9 @@ const Companies = () => {
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/sucursales/editar"
         urlDisabled="branchOffice/disable"
-      />
+        collection="Company" 
+        query={[]}    
+        />
     </div>
   )
 }

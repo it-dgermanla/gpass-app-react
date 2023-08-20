@@ -7,6 +7,14 @@ export interface LatLng {
   lng: number;
 }
 
+export interface Company {
+  name?: string;
+  phone?: string;
+  email?: string;
+  img?: string;
+  disable?: boolean;
+}
+
 export interface CustomInput {
   typeControl: TypeControl;
   typeInput?: TypeInput;
