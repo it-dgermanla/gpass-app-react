@@ -6,7 +6,6 @@ import TableActionsButtons from "./tableActionsButtons";
 import { patch } from "../../services";
 import useAbortController from "../../hooks/useAbortController";
 import { PropsUseCollection } from "../../hooks/useCollection";
-import { where } from 'firebase/firestore';
 import useCollection from "../../hooks/useCollection"
 
 interface Props<T> extends PropsUseCollection<T> {
@@ -18,20 +17,10 @@ interface Props<T> extends PropsUseCollection<T> {
 	urlDisabled: string;
 }
 
-export interface Get<T> {
-	total: number;
-	data: Array<T>;
-}
-
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query }: Props<T>) => {
-
-	const queryCompany = useMemo(() => ({
-		collection,
-		query: [where("disable", "==", false), ...query || null]
-	}), [query, collection]);
-	const { loading, data } = useCollection<Get<T>>(queryCompany)
+const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query  }: Props<T>) => {
+	const { loading, data } = useCollection<T>({wait, query, collection})
 	const abortController = useAbortController();
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);
@@ -74,7 +63,7 @@ const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeho
 				sticky
 				scroll={{ x: 400 }}
 				columns={columns}
-				dataSource={data as any}
+				dataSource={data}
 				loading={loading}
 				locale={{ emptyText: <Empty image={PRESENTED_IMAGE_SIMPLE} description='Sin registros.' /> }}
 				rowKey="id"

@@ -4,9 +4,10 @@ import HeaderView from '../../components/headerView';
 import Table from '../../components/table';
 import CachedImage from "../../components/cachedImage";
 import { Company } from '../../interfaces';
+import { where } from 'firebase/firestore';
 
 const Companies = () => {
-  const columns: ColumnsType<any> = useMemo(() => [
+  const columns: ColumnsType<Company> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: 'Correo', dataIndex: 'email', key: 'email' },
     { title: 'Celular', dataIndex: 'phone', key: 'phone' },
@@ -15,7 +16,7 @@ const Companies = () => {
       dataIndex: "image",
       key: "image",
       render: (_, company: Company) => (
-        <CachedImage 
+        <CachedImage
           style={{ width: 70, height: 70, objectFit: "cover" }}
           imageUrl={company.image as string}
         />
@@ -36,9 +37,9 @@ const Companies = () => {
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/empresa/editar"
         urlDisabled="empresa/disable"
-        collection="Company" 
-        query={[]}    
-        />
+        collection="Company"
+        query={[where("disable", "==", false)]}
+      />
     </div>
   )
 }
