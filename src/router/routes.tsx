@@ -18,7 +18,7 @@ const routes: PathRouteProps[] = [
     element: <Companies />
   },
   {
-    path: '/empresa/registrar',
+    path: '/empresas/registrar',
     element: <CompaniesRegister />
   },
   {

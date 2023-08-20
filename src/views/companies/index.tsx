@@ -28,7 +28,7 @@ const Companies = () => {
     <div style={{ margin: 20 }}>
       <HeaderView
         title="Empresas"
-        path="/empresa/registrar"
+        path="/empresas/registrar"
       />
       <Table
         url="branchOffice/paginatedListByUserAdmin"
