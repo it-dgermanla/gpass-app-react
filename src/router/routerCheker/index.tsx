@@ -34,9 +34,9 @@ const RoterChecker = () => {
       return;
     }
 
-    if (user && !privateRoutesByUser[user?.displayName as Rols].includes(pathname)) {
-      navigate(firstRouteByUser[user?.displayName as Rols]);
-    }
+    // if (user && !privateRoutesByUser[user?.displayName as Rols].includes(pathname)) {
+    //   navigate(firstRouteByUser[user?.displayName as Rols]);
+    // }
   }, [user, pathname, navigate, loading])
 
   return (

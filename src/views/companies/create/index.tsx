@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
 import { Card, Form, Grid, message, UploadFile } from 'antd'
-// import { post, put } from '../../../services';
+import { addDataTable } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { initCompany, titleForm } from '../../../constants';
+import { initCompany, titleForm, urlImageDefaultCompany } from '../../../constants';
 import { Company } from '../../../interfaces';
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
@@ -24,30 +24,25 @@ const CreateCompany = () => {
   const [company, setCompany] = useState<Company>(initCompany)
 
 
-  // useEffect(() => {
-  //   let _company = { ...state } as Company | null;
-
-  //   setType(_company?.id ? "update" : "create");
-
-  //   if (!_company?.id) return;
-
-  //   _company = setImagesToState(_company);
-  //   form.setFieldsValue(_company);
-  //   setCompany(_company);
-  // }, [state, form])
+  useEffect(() => {
+    let _company = { ...state } as Company | null;
+    setType(_company?.id ? "update" : "create");
+    if (!_company?.id) return;
+    form.setFieldsValue(_company);
+    setCompany(_company);
+  }, [state, form])
 
   const onFinish = async () => {
     if (saving) return;
-    const _company = { ...company };
+    const _company = { ...company, ...{ image: urlImageDefaultCompany } };
     setSaving(true);
     try {
       if (type === "update") {
-        // await put(`company/${type}`, _company, abortController);
+        console.log("update")
       } else {
-        // await post(`company/${type}`, _company, abortController);
+        const result = await addDataTable("Companies", _company)
+        message.success('Empresa guardada con éxito.', 4);
       }
-
-      message.success('empresa guardada con éxito.', 4);
       navigate('/empresas')
     } finally {
       setSaving(false)
@@ -96,24 +91,24 @@ const CreateCompany = () => {
               onChange: (value: string) => setCompany({ ...company, phone: value }),
               md: 8
             },
-            {
-              typeControl: "file",
-              label: screens.xs ? "" : "Logo Empresa",
-              name: "image",
-              value: company.image,
-              maxCount: 1,
-              accept: "image/png, image/jpeg",
-              onChange: (value: UploadFile<any>[]) => setCompany({ ...company, image: value }),
-              md: 8,
-              styleFI: { display: "flex", justifyContent: "center" },
-              multiple: false,
-            },
+            // {
+            //   typeControl: "file",
+            //   label: screens.xs ? "" : "Logo Empresa",
+            //   name: "image",
+            //   value: company.image,
+            //   maxCount: 1,
+            //   accept: "image/png, image/jpeg",
+            //   onChange: (value: UploadFile<any>[]) => setCompany({ ...company, image: value }),
+            //   md: 8,
+            //   styleFI: { display: "flex", justifyContent: "center" },
+            //   multiple: false,
+            // },
             {
               typeControl: 'textarea',
               typeInput: 'text',
               label: 'Descripción',
-              name: 'description',
-              rules: [{ required: true, message: 'Favor de escribir la descripción del vendedor.' }],
+              name: 'address',
+              rules: [{ required: true, message: 'Favor de escribir la direccion de la empresa.' }],
               value: company.address,
               onChange: (value: string) => setCompany({ ...company, address: value }),
               md: 24

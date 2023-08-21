@@ -23,6 +23,10 @@ const routes: PathRouteProps[] = [
     element: <CompaniesRegister />
   },
   {
+    path: '/empresas/editar',
+    element: <CompaniesRegister />
+  },
+  {
     path: "/eventos",
     element: <Events />
   },

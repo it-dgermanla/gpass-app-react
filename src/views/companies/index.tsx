@@ -32,12 +32,12 @@ const Companies = () => {
         path="/empresas/registrar"
       />
       <Table
-        url="branchOffice/paginatedListByUserAdmin"
+        url="Companies"
         columns={columns}
         placeholderSearch="Buscar por nombre ó correo..."
-        pathEdit="/empresa/editar"
-        urlDisabled="empresa/disable"
-        collection="Company"
+        pathEdit="/empresas/editar"
+        urlDisabled="empresas/disable"
+        collection="Companies"
         query={[where("disable", "==", false)]}
       />
     </div>

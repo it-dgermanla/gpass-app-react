@@ -10,6 +10,7 @@ export const baseUrlStorageGCP = "https://storage.googleapis.com/delivery-hmo.ap
 export const urlImageDefaultCompany = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/company%2Fcompany.png?alt=media&token=4a25e724-96c5-4303-bbfd-0e2d03a2ccc1";
 
 export const initCompany: Company = {
+  id: "",
   name: "",
   email: "",
   phone: "",
