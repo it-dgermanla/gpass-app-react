@@ -24,7 +24,7 @@ export const initUser: User = {
   phone: "",
   company: "",
   passowrd: "",
-  confirmPassword: ""
+  confirmPassword: "",
 };
 
 export const rulePhoneInput: FormRule = {

@@ -3,7 +3,7 @@ import DynamicForm from '../../../components/dynamicForm'
 import { Card, Form } from 'antd'
 import { initUser, rulePassword, titleForm } from '../../../constants';
 import { User } from '../../../interfaces';
-import { TypeRute } from '../../../types';
+import { Rols, TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 
 const UsersRegister = () => {
@@ -64,10 +64,18 @@ const UsersRegister = () => {
               name: 'company',
               value: user.company,
               onChange: (value: string) => setUser({ ...user, company: value }),
-              md: 8
+              md: 6
             },
             {
-              md: 8,
+              typeControl: 'select',
+              label: 'Rol',
+              name: 'role',
+              value: user.role,
+              onChange: (value: Rols) => setUser({ ...user, role: value }),
+              md: 6
+            },
+            {
+              md: 6,
               typeControl: "input",
               typeInput: "password",
               label: "Contraseña",
@@ -75,7 +83,7 @@ const UsersRegister = () => {
               rules: [rulePassword],
             },
             {
-              md: 8,
+              md: 6,
               typeControl: "input",
               typeInput: "password",
               label: "Confirmar contraseña",

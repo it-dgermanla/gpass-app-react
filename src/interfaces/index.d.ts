@@ -1,4 +1,4 @@
-import { TypeControl, TypeInput } from "../types";
+import { Rols, TypeControl, TypeInput } from "../types";
 import { UploadFile } from "antd/es/upload";
 import { FormRule } from 'antd';
 import { UploadListType } from 'antd/lib/upload/interface';
@@ -25,6 +25,7 @@ export interface User {
   company: Company | string;
   passowrd: string;
   confirmPassword: string;
+  role?: Rols;
 }
 
 export interface CustomInput {
