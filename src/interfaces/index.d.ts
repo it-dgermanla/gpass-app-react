@@ -17,6 +17,16 @@ export interface Company {
   disable?: boolean;
 }
 
+export interface User {
+  id?: string;
+  name: string;
+  phone: string;
+  email: string;
+  company: Company | string;
+  passowrd: string;
+  confirmPassword: string;
+}
+
 export interface CustomInput {
   typeControl: TypeControl;
   typeInput?: TypeInput;
