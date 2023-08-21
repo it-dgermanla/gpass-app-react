@@ -15,7 +15,7 @@ const firstRouteByUser: Record<Rols, string> = {
 };
 
 const privateRoutesByUser: Record<Rols, string[]> = {
-  "SuperAdministrador": ["/empresas", "/eventos", "/usuarios"],
+  "SuperAdministrador": ["/empresas", "/empresas/registar", "/eventos", "/usuarios", "/usuarios/registrar"],
   "Administrador": ["/empresas", "/eventos", "/usarios"],
   "Embajador": ["/eventos"],
   "Lector": ["/eventos"]
@@ -34,9 +34,9 @@ const RoterChecker = () => {
       return;
     }
 
-    // if (user && !privateRoutesByUser[user?.displayName as Rols].includes(pathname)) {
-    //   navigate(firstRouteByUser[user?.displayName as Rols]);
-    // }
+    if (user && !privateRoutesByUser[user?.displayName as Rols].includes(pathname)) {
+      navigate(firstRouteByUser[user?.displayName as Rols]);
+    }
   }, [user, pathname, navigate, loading])
 
   return (

@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { PathRouteProps } from 'react-router-dom';
+import UsersRegister from "../views/users/create";
 
 const LandingPage = lazy(() => import('../views/landingPage'));
 const Companies = lazy(() => import('../views/companies'));
@@ -28,6 +29,10 @@ const routes: PathRouteProps[] = [
   {
     path: "/usuarios",
     element: <Users />
+  },
+  {
+    path: "/usuarios/registrar",
+    element: <UsersRegister />
   },
   {
     path: '*',
