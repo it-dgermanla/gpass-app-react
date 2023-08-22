@@ -18,7 +18,7 @@ const CreateEvent = () => {
   const [type, setType] = useState<TypeRute>("create");
   const [saving, setSaving] = useState(false);
   const [event, setEvent] = useState<Event>(initEvent)
-  console.log(event)
+
   useEffect(() => {
     let _event = { ...state } as Event | null;
     setType(_event?.id ? "update" : "create");
@@ -76,7 +76,11 @@ const CreateEvent = () => {
               name: 'initialDate',
               rules: [{ required: true, message: 'Favor de seleccionar la fecha inicial.' }],
               value: event.initialDate,
-              onChange: (value: string) => setEvent({ ...event, initialDate: new Date(value) }),
+              onChange: (value: string) => {
+                const _initialDate = new Date(value);
+                _initialDate.setHours(0, 0, 0, 0);
+                setEvent({ ...event, initialDate: _initialDate })
+              },
               md: 8
             },
             {
@@ -86,7 +90,11 @@ const CreateEvent = () => {
               name: 'finalDate',
               rules: [{ required: true, message: 'Favor de seleccionar la fecha final.' }],
               value: event.finalDate,
-              onChange: (value: string) => setEvent({ ...event, finalDate: new Date(value) }),
+              onChange: (value: string) => {
+                const _finalDate = new Date(value);
+                _finalDate.setHours(23, 59, 59, 0);
+                setEvent({ ...event, finalDate: _finalDate })
+              },
               md: 8
             },
             // {
