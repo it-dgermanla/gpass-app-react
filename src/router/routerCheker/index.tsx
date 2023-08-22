@@ -15,7 +15,7 @@ const firstRouteByUser: Record<Rols, string> = {
 };
 
 const privateRoutesByUser: Record<Rols, string[]> = {
-  "SuperAdministrador": ["/empresas", "/empresas/registar", "/eventos", "/usuarios", "/usuarios/registrar"],
+  "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/usuarios", "/usuarios/registrar"],
   "Administrador": ["/empresas", "/eventos", "/usarios"],
   "Embajador": ["/eventos"],
   "Lector": ["/eventos"]

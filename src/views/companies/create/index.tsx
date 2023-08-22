@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
 import { Card, Form, Grid, message, UploadFile } from 'antd'
-import { addDataTable } from '../../../services/firebase';
+import { add } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { initCompany, titleForm, urlImageDefaultCompany } from '../../../constants';
 import { Company } from '../../../interfaces';
@@ -40,9 +40,9 @@ const CreateCompany = () => {
       if (type === "update") {
         console.log("update")
       } else {
-        const result = await addDataTable("Companies", _company)
-        message.success('Empresa guardada con éxito.', 4);
+        await add<Company>("Companies", _company)
       }
+      message.success('Empresa guardada con éxito.', 4);
       navigate('/empresas')
     } finally {
       setSaving(false)

@@ -19,7 +19,7 @@ const Breadcrumb = () => {
     }
   }, [pathname])
 
-  const toPath = (path: string) => {
+  const toPath = (path: string, index: number) => {
     const paths = pathname.split("/");
     const indexPath = paths.indexOf(path.toLowerCase().replaceAll(" ", "-"));
     const toPaths = paths.slice(0, indexPath + 1);
@@ -31,7 +31,7 @@ const Breadcrumb = () => {
       to += ("/" + path)
     });
 
-    if (to.includes("configuracion")) return;
+  if (to.includes("configuracion") || index > 0) return;
 
     navigate(to);
   }
@@ -43,10 +43,10 @@ const Breadcrumb = () => {
       </div>
       <BreadcrumbAnt
         items={
-          paths.map(path => ({
+          paths.map((path, index) => ({
             title: path.charAt(0).toUpperCase() + path.slice(1),
             href: "",
-            onClick: () => toPath(path)
+            onClick: () => toPath(path, index)
           }))
         }
       />
