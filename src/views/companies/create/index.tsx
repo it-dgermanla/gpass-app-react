@@ -69,7 +69,7 @@ const CreateCompany = () => {
               typeInput: 'text',
               label: 'Nombre',
               name: 'name',
-              rules: [{ required: true, message: 'Favor de escribir el nombre del vendedor.' }],
+              rules: [{ required: true, message: 'Favor de escribir el nombre de la empresa.' }],
               value: company.name,
               onChange: (value: string) => setCompany({ ...company, name: value }),
               md: 8
@@ -87,6 +87,7 @@ const CreateCompany = () => {
               typeControl: 'phone',
               label: 'Teléfono',
               required: true,
+              rules: [{ required: true, message: 'Favor de escribir el telefono de la empresa.' }],
               name: 'phone',
               value: company.phone,
               onChange: (value: string) => setCompany({ ...company, phone: value }),

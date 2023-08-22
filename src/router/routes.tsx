@@ -6,6 +6,7 @@ const LandingPage = lazy(() => import('../views/landingPage'));
 const Companies = lazy(() => import('../views/companies'));
 const CompaniesRegister = lazy(() => import('../views/companies/create'));
 const Events = lazy(() => import('../views/events'));
+const EventsRegister = lazy(() => import('../views/events/create'));
 const Users = lazy(() => import('../views/users'));
 
 
@@ -32,7 +33,11 @@ const routes: PathRouteProps[] = [
   },
   {
     path: "/eventos/registrar",
-    element: <Events />
+    element: <EventsRegister />
+  },
+  {
+    path: '/eventos/editar',
+    element: <EventsRegister />
   },
   {
     path: "/usuarios",
