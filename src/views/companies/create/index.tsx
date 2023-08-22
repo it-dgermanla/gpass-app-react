@@ -86,6 +86,7 @@ const CreateCompany = () => {
             {
               typeControl: 'phone',
               label: 'Teléfono',
+              required: true,
               name: 'phone',
               value: company.phone,
               onChange: (value: string) => setCompany({ ...company, phone: value }),

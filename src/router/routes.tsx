@@ -31,6 +31,10 @@ const routes: PathRouteProps[] = [
     element: <Events />
   },
   {
+    path: "/eventos/registrar",
+    element: <Events />
+  },
+  {
     path: "/usuarios",
     element: <Users />
   },

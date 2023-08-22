@@ -8,6 +8,15 @@ export interface LatLng {
   lng: number;
 }
 
+export interface Event {
+  id?: string;
+  name: string;
+  initialDate: Date;
+  finalDate: Date;
+  image?: UploadFile<any>[] | string;
+  disable?: boolean;
+}
+
 export interface Company {
   id?: string;
   name: string;

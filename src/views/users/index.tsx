@@ -24,7 +24,7 @@ const Users = () => {
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/usuarios/editar"
         urlDisabled="usuarios/disable"
-        collection="Company"
+        collection="Companies"
         query={[]}
       />
     </div>
