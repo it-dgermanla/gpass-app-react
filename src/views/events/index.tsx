@@ -2,34 +2,15 @@ import { ColumnsType } from 'antd/es/table';
 import { useMemo } from 'react';
 import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
-import { where } from 'firebase/firestore';
+import { orderBy, where } from 'firebase/firestore';
 import { Event } from '../../interfaces';
 import CachedImage from "../../components/cachedImage";
-import dayjs from "dayjs";
 
 const Events = () => {
   const columns: ColumnsType<Event> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
-    {
-      title: "Fecha Inicio",
-      dataIndex: "initialDate",
-      key: "initialDate",
-      render: (_, company: Event) => (
-        <>
-          {dayjs(company.initialDate).format('DD/MM/YYYY  hh:mm a')}
-        </>
-      )
-    },
-    {
-      title: "Fecha Final",
-      dataIndex: "finalDate",
-      key: "finalDate",
-      render: (_, company: Event) => (
-        <>
-          {dayjs(company.finalDate).format('DD/MM/YYYY  hh:mm a')}
-        </>
-      )
-    },
+    { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },
+    { title: 'Fecha Final', dataIndex: 'finalDateFormated', key: 'finalDateFormated' },
     {
       title: "Imagen",
       dataIndex: "image",
@@ -57,7 +38,8 @@ const Events = () => {
         pathEdit="/eventos/editar"
         urlDisabled="eventos/disable"
         collection="Events"
-        query={[where("disable", "==", false)]}
+        query={[where("disable", "==", false), orderBy("createAt", "desc")]}
+        formatDate="DD/MM/YYYY hh:mm a"
       />
     </div>
   )

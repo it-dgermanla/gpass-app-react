@@ -2,6 +2,7 @@ import { Rols, TypeControl, TypeInput } from "../types";
 import { UploadFile } from "antd/es/upload";
 import { FormRule } from 'antd';
 import { UploadListType } from 'antd/lib/upload/interface';
+import { Dayjs } from "dayjs";
 
 export interface LatLng {
   lat: number;
@@ -13,8 +14,16 @@ export interface Event {
   name: string;
   initialDate: Date;
   finalDate: Date;
+  initialDateFormated?: string;
+  finalDateFormated?: string;
   image?: UploadFile<any>[] | string;
   disable?: boolean;
+  createAt: Date;
+}
+
+export type EventForm = Omit<Event, "initialDate" | "finalDate"> & {
+  initialDate: Dayjs
+  finalDate: Dayjs
 }
 
 export interface Company {

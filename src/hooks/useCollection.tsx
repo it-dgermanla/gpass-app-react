@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
 import { getDocs, Timestamp, query as q, collection as col, QueryConstraint, getFirestore } from 'firebase/firestore';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 export interface PropsUseCollection<T> {
   collection: string;
   query: QueryConstraint[];
   extraPropsByItemArray?: Record<string, any>;
-  whitPropsDateFormated?: boolean;
   formatDate?: string;
   wait?: boolean;
   initLoading?: boolean;
 }
 
-const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray, whitPropsDateFormated, formatDate, wait, initLoading = true }: PropsUseCollection<T>) => {
+const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true }: PropsUseCollection<T>) => {
   const [loading, setLoading] = useState<boolean>(initLoading);
   const [data, setData] = useState<Array<T>>([]);
   const [error, setError] = useState<unknown>()
@@ -39,8 +38,8 @@ const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray,
                 const date = dataDoc[key].toDate();
                 dataDoc[key] = date;
 
-                if (whitPropsDateFormated) {
-                  dataDoc[key + "Formated"] = moment(date).format(formatDate);
+                if (formatDate) {
+                  dataDoc[key + "Formated"] = dayjs(date).format(formatDate);
                 }
               }
             });
@@ -70,7 +69,7 @@ const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray,
     return () => {
       mounted = false;
     }
-  }, [query, extraPropsByItemArray, whitPropsDateFormated, formatDate, collection, wait]);
+  }, [query, extraPropsByItemArray, formatDate, collection, wait]);
 
   return { loading, data, setData, error };
 }

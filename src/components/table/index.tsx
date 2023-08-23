@@ -15,12 +15,13 @@ interface Props<T> extends PropsUseCollection<T> {
 	placeholderSearch?: string;
 	pathEdit: string;
 	urlDisabled: string;
+	formatDate?: string
 }
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query }: Props<T>) => {
-	const { loading, data } = useCollection<T>({ wait, query, collection })
+const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query, formatDate }: Props<T>) => {
+	const { loading, data } = useCollection<T>({ wait, query, collection, formatDate })
 	const abortController = useAbortController();
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);

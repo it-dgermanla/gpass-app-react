@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
-import { Card, Form, FormRule, Grid, message, UploadFile } from 'antd'
+import { Card, DatePicker, Form, FormRule, Grid, message, UploadFile } from 'antd'
 import { add } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { initEvent, titleForm, urlImageDefaultEvent } from '../../../constants';
-import { Event } from '../../../interfaces';
+import { initEventForm, titleForm, urlImageDefaultEvent } from '../../../constants';
+import { EventForm } from '../../../interfaces';
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
+import dayjs, { Dayjs } from 'dayjs';
+
 const { useBreakpoint } = Grid;
 
 const CreateEvent = () => {
@@ -17,25 +19,26 @@ const CreateEvent = () => {
   const { state } = location;
   const [type, setType] = useState<TypeRute>("create");
   const [saving, setSaving] = useState(false);
-  const [event, setEvent] = useState<Event>(initEvent)
+  const [event, setEvent] = useState<EventForm>(initEventForm)
 
   useEffect(() => {
-    let _event = { ...state } as Event | null;
+    const _event = { ...state } as EventForm | null;
     setType(_event?.id ? "update" : "create");
     if (!_event?.id) return;
-    form.setFieldsValue(_event);
-    setEvent(_event);
+    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
   }, [state, form])
 
   const onFinish = async () => {
     if (saving) return;
-    const _event = { ...event, ...{ image: urlImageDefaultEvent } };
+    const initialDate = event.initialDate.set('hour', 0).set('minute', 0).set('second', 0).toDate();
+    const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
+    const _event = { ...event, image: urlImageDefaultEvent, initialDate, finalDate };
     setSaving(true);
     try {
       if (type === "update") {
         console.log("update")
       } else {
-        await add<Event>("Events", _event)
+        await add<EventForm>("Events", _event)
       }
       message.success('Evento guardado con éxito.', 4);
       navigate('/eventos')
@@ -53,6 +56,7 @@ const CreateEvent = () => {
       />
       <Card>
         <DynamicForm
+          initialValues={event}
           form={form}
           layout='vertical'
           loading={saving}
@@ -64,37 +68,27 @@ const CreateEvent = () => {
               typeInput: 'text',
               label: 'Nombre',
               name: 'name',
-              rules: [{ required: true, message: 'Favor de escribir el nombre del vendedor.' }],
+              rules: [{ required: true, message: 'Favor de escribir el nombre del evento.' }],
               value: event.name,
               onChange: (value: string) => setEvent({ ...event, name: value }),
               md: 8
             },
             {
               typeControl: 'date',
-              typeInput: 'text',
               label: 'Fecha Inicial',
               name: 'initialDate',
               rules: [{ required: true, message: 'Favor de seleccionar la fecha inicial.' }],
               value: event.initialDate,
-              onChange: (value: string) => {
-                const _initialDate = new Date(value);
-                _initialDate.setHours(0, 0, 0, 0);
-                setEvent({ ...event, initialDate: _initialDate })
-              },
+              onChange: (value: Dayjs) => setEvent({ ...event, initialDate: value }),
               md: 8
             },
             {
               typeControl: 'date',
-              typeInput: 'text',
               label: 'Fecha Final',
               name: 'finalDate',
               rules: [{ required: true, message: 'Favor de seleccionar la fecha final.' }],
               value: event.finalDate,
-              onChange: (value: string) => {
-                const _finalDate = new Date(value);
-                _finalDate.setHours(23, 59, 59, 0);
-                setEvent({ ...event, finalDate: _finalDate })
-              },
+              onChange: (value: Dayjs) => setEvent({ ...event, finalDate: value }),
               md: 8
             },
             // {

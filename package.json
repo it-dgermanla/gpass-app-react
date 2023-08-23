@@ -11,7 +11,7 @@
     "@types/node": "^20.4.4",
     "@types/react": "^18.2.16",
     "@types/react-dom": "^18.2.7",
-    "antd": "^5.7.3",
+    "antd": "^5.8.4",
     "antd-img-crop": "^4.12.2",
     "buffer": "^6.0.3",
     "dayjs": "^1.11.9",

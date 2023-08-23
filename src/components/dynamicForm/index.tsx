@@ -9,6 +9,9 @@ import ButtonUpload from "./buttonUpload";
 import Crop from "./crop";
 import { onPreviewImage, validFiles } from "../../utils/functions";
 import { FirebaseError } from "firebase/app";
+import dayjs from 'dayjs';
+import moment from 'moment-timezone';
+import { Store } from 'antd/es/form/interface';
 
 interface Props {
   form?: FormInstance<any>;
@@ -19,11 +22,13 @@ interface Props {
   justify?: "start" | "end" | "center" | "space-around" | "space-between";
   textSubmit?: string;
   styleSubmit?: React.CSSProperties;
+  initialValues?: Store
 }
 
-const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, loading, justify, textSubmit, styleSubmit }) => {
+const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, loading, justify, textSubmit, styleSubmit, initialValues }) => {
   const [inputs, setInputs] = useState<CustomInput[]>(inputsProp);
-
+  const [loadingForm, setLoadingForm] = useState(true);
+  
   useEffect(() => {
     const _inputs = inputsProp.map(input => {
       const { rules, typeControl, typeInput, required, value } = input;
@@ -45,7 +50,8 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
     });
 
     setInputs(_inputs);
-  }, [inputsProp]);
+    if(loadingForm)setLoadingForm(false)
+  }, [inputsProp, loadingForm]);
 
   const controls: Record<string, (input: CustomInput) => ReactNode> = useMemo(() => ({
     input: ({ value, onChange, typeInput }: CustomInput) => <Input
@@ -122,8 +128,11 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
     }
   }), []);
 
+  if(loadingForm) return null;
+  
   return (
     <Form
+      initialValues={initialValues}
       form={form}
       layout={layout}
       onFinish={async (values) => {

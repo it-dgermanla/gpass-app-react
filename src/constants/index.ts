@@ -1,6 +1,7 @@
 import { FormRule } from "antd";
 import { TypeRute } from "../types";
-import { Company, User,Event } from "../interfaces";
+import { Company, User, EventForm, Event } from "../interfaces";
+import dayjs from "dayjs";
 
 /* export const urlImageDefaultProfile = "https://firebasestorage.googleapis.com/v0/b/delivery-hmo.appspot.com/o/imagenesPerfil%2F1467646262_522853_1467646344_noticia_normal.jpg?alt=media&token=f6e761ad-95c5-462f-bc39-0e889ac30a5c";
 export const baseUrlStorage = "https://firebasestorage.googleapis.com/v0/b/delivery-hmo.appspot.com/o/";
@@ -10,12 +11,22 @@ export const baseUrlStorageGCP = "https://storage.googleapis.com/delivery-hmo.ap
 export const urlImageDefaultCompany = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/company%2Fcompany.png?alt=media&token=4a25e724-96c5-4303-bbfd-0e2d03a2ccc1";
 export const urlImageDefaultEvent = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/Events%2Fevento.png?alt=media&token=43afcd4d-5e32-4569-8a45-502e78932e1d";
 
+export const initEventForm: EventForm = {
+  name: "",
+  initialDate: dayjs(),
+  finalDate: dayjs(),
+  image: "",
+  disable: false,
+  createAt: new Date()
+};
+
 export const initEvent: Event = {
   name: "",
   initialDate: new Date(),
   finalDate: new Date(),
   image: "",
-  disable: false
+  disable: false,
+  createAt: new Date()
 };
 
 export const initCompany: Company = {
