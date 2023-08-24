@@ -1,5 +1,5 @@
-import { ColumnsType } from 'antd/es/table';
 import { useMemo } from 'react';
+import { ColumnsType } from 'antd/es/table';
 import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
 import { orderBy, where } from 'firebase/firestore';
@@ -15,14 +15,14 @@ const Events = () => {
       title: "Imagen",
       dataIndex: "image",
       key: "image",
-      render: (_, company: Event) => (
+      render: (_, event) => (
         <CachedImage
           style={{ width: 70, height: 70, objectFit: "cover" }}
-          imageUrl={company.image as string}
+          imageUrl={event.image as string}
         />
       )
     }
-  ], [])
+  ], []);
 
   return (
     <div style={{ margin: 20 }}>
@@ -30,9 +30,7 @@ const Events = () => {
         title="Eventos"
         path="/eventos/registrar"
       />
-
       <Table
-        url="Events"
         columns={columns}
         placeholderSearch="Buscar por evento..."
         pathEdit="/eventos/editar"

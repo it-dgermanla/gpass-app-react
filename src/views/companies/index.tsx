@@ -32,7 +32,6 @@ const Companies = () => {
         path="/empresas/registrar"
       />
       <Table
-        url="Companies"
         columns={columns}
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/empresas/editar"

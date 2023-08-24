@@ -7,19 +7,19 @@ import Breadcrumb from '../../components/breadcrumb';
 import FullLoader from "../../components/fullLoader";
 import { Rols } from "../../types";
 
-const firstRouteByUser: Record<Rols, string> = {
+const firstRouteByUser: Record<Rols, string> = Object.freeze({
   "SuperAdministrador": "/empresas",
   "Administrador": "/empresas",
   "Embajador": "/eventos",
   "Lector": "/eventos"
-};
+});
 
-const privateRoutesByUser: Record<Rols, string[]> = {
-  "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/eventos/editar", "/eventos/registrar", "/usuarios", "/usuarios/registrar"],
+const privateRoutesByUser: Record<Rols, readonly string[]> = {
+  "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/eventos/registrar", "/eventos/editar", "/usuarios", "/usuarios/registrar"],
   "Administrador": ["/empresas", "/eventos", "/usarios"],
   "Embajador": ["/eventos"],
   "Lector": ["/eventos"]
-};
+} as const;
 
 const RoterChecker = () => {
   const { user, loading } = useAuth();

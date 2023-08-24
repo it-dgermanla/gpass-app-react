@@ -1,31 +1,70 @@
-import { useMemo, useState } from 'react';
-import { Empty, Table as TableAnt, Image } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
+import { Empty, Table as TableAnt } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import SearchTable from '../searchTable';
 import TableActionsButtons from "./tableActionsButtons";
-import { patch } from "../../services";
 import useAbortController from "../../hooks/useAbortController";
 import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
+import { getDocById, update } from "../../services/firebase";
+import { DocumentData, DocumentSnapshot, QueryConstraint, limit, startAfter } from "firebase/firestore";
 
 interface Props<T> extends PropsUseCollection<T> {
 	columns: ColumnsType<T>;
-	url: string;
 	wait?: boolean;
 	placeholderSearch?: string;
 	pathEdit: string;
 	urlDisabled: string;
-	formatDate?: string
+	formatDate?: string;
+}
+
+interface TablePagination {
+	search: string;
+	lastDoc?: DocumentSnapshot<DocumentData, DocumentData>;
 }
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query, formatDate }: Props<T>) => {
-	const { loading, data } = useCollection<T>({ wait, query, collection, formatDate })
+const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query: queryProp, formatDate, mergeResponse = true }: Props<T>) => {
+	const [tableActions, setTableActions] = useState<TablePagination>({ search: "" });
+
+	const query = useMemo<QueryConstraint[]>(() => {
+		const _query = [...queryProp];
+
+		if (tableActions.lastDoc) {
+			_query.push(startAfter(tableActions.lastDoc))
+		}
+
+		_query.push(limit(10))
+
+		return _query;
+	}, [tableActions]);
+
+	const { loading, data } = useCollection<T>({ wait, query, collection, formatDate, mergeResponse })
 	const abortController = useAbortController();
-	const [page, setPage] = useState(1);
-	const [limit, setLimit] = useState(10);
-	const [search, setSearch] = useState("");
+
+	//esto se tiene que hacer asi para no ciclar el efecto usando de dependencia el data.
+	useEffect(() => {
+		const tableBody = document.querySelector('.ant-table-body');
+
+		tableBody?.addEventListener('scroll', async () => {
+			const isBottom = tableBody.scrollTop + tableBody.clientHeight >= tableBody.scrollHeight;
+
+			if (!isBottom) return;
+
+			const elementsWithAttribute = tableBody.querySelectorAll('[data-row-key]');
+			const lastElement = elementsWithAttribute[elementsWithAttribute.length - 1];
+			const lastId = lastElement.getAttribute('data-row-key');
+
+			const doc = await getDocById(collection, lastId!);
+
+			setTableActions(prev => ({ ...prev, lastDoc: doc }));
+		});
+
+		return () => {
+			tableBody?.removeEventListener('scroll', () => { });
+		};
+	}, []);
 
 	const columns = useMemo<ColumnsType<T>>(() => {
 		return [
@@ -40,8 +79,8 @@ const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeho
 					return (
 						<TableActionsButtons
 							record={record}
-							onDeleted={() => setPage(1)}
-							fun={() => patch(urlDisabled, { id: r.id }, abortController.current!)}
+							onDeleted={() => setTableActions(prev => ({ ...prev, lastDoc: undefined }))}
+							fun={() => update(collection, r.id, { disabled: true })}
 							pathEdit={pathEdit}
 						/>
 					)
@@ -53,32 +92,19 @@ const Table = <T extends {}>({ url: urlProp, columns: columnsProp, wait, placeho
 	return (
 		<div>
 			<SearchTable
-				onSearch={(value) => {
-					setSearch(value);
-					setPage(1);
-				}}
+				onSearch={(value) => setTableActions({ search: value, lastDoc: undefined })}
 				placeholder={placeholderSearch}
 			/>
+			<br />
 			<TableAnt
 				sticky
-				scroll={{ x: 400 }}
+				scroll={{ x: 400, y: "75vh", scrollToFirstRowOnChange: false }}
 				columns={columns}
 				dataSource={data}
 				loading={loading}
 				locale={{ emptyText: <Empty image={PRESENTED_IMAGE_SIMPLE} description='Sin registros.' /> }}
 				rowKey="id"
-			// pagination={{
-			// 	total: response?.total,
-			// 	pageSize: limit,
-			// 	current: page,
-			// 	onChange: (_page: number, pageSize: number) => {
-			// 		setPage(_page);
-			// 		setLimit(pageSize);
-			// 	},
-			// 	showTotal: (total: number, range: number[]) => `${range[0]}-${range[1]} de ${total} registros.`,
-			// 	locale: { items_per_page: '/ página' },
-			// 	showSizeChanger: true
-			// }}
+				pagination={false}
 			/>
 		</div>
 	)

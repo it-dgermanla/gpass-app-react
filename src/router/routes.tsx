@@ -9,7 +9,6 @@ const Events = lazy(() => import('../views/events'));
 const EventsRegister = lazy(() => import('../views/events/create'));
 const Users = lazy(() => import('../views/users'));
 
-
 const routes: PathRouteProps[] = [
   {
     path: '/',

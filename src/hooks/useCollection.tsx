@@ -9,17 +9,19 @@ export interface PropsUseCollection<T> {
   formatDate?: string;
   wait?: boolean;
   initLoading?: boolean;
+  mergeResponse?: boolean;
 }
 
-const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true }: PropsUseCollection<T>) => {
+const useCollection = <T extends { id: string } & any>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true, mergeResponse }: PropsUseCollection<T>) => {
   const [loading, setLoading] = useState<boolean>(initLoading);
   const [data, setData] = useState<Array<T>>([]);
   const [error, setError] = useState<unknown>()
+  const [notLoadMore, setNotLoadMore] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
-    if (wait) return;
+    if (wait || notLoadMore) return;
 
     const init = async () => {
       try {
@@ -27,10 +29,14 @@ const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray,
 
         const _snapshot = await getDocs(q(col(getFirestore(), collection), ...query));
 
+        if (!_snapshot.docs.length || _snapshot.docs.length < 10) {
+          setNotLoadMore(true);
+        }
+
         if (!mounted) return;
 
-        setData(
-          _snapshot.docs.map(d => {
+        setData(prev => {
+          const newData = _snapshot.docs.map(d => {
             let dataDoc = d.data();
 
             Object.keys(dataDoc).forEach(key => {
@@ -53,7 +59,13 @@ const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray,
 
             return { ...dataDoc, id: d.id } as unknown as T;
           }) as Array<T>
-        );
+
+          if (mergeResponse) {
+            return [...prev, ...newData]
+          }
+
+          return newData;
+        });
       } catch (error) {
         console.log(error);
         setError(error);
@@ -69,7 +81,7 @@ const useCollection = <T extends {}>({ collection, query, extraPropsByItemArray,
     return () => {
       mounted = false;
     }
-  }, [query, extraPropsByItemArray, formatDate, collection, wait]);
+  }, [query, extraPropsByItemArray, formatDate, collection, wait, notLoadMore]);
 
   return { loading, data, setData, error };
 }
