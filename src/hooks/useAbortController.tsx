@@ -4,10 +4,10 @@ const useAbortController = () => {
   const abortControllerRef = useRef<AbortController | undefined>();
 
   useEffect(() => {
-    const abortController = abortControllerRef.current;
+    abortControllerRef.current = new AbortController();
 
     return () => {
-      if (process.env.NODE_ENV !== "development") abortController?.abort();
+      if (process.env.NODE_ENV !== "development") abortControllerRef.current?.abort();
     }
   }, []);
 

@@ -19,12 +19,11 @@ const Users = () => {
         path="/usuarios/registrar"
       />
       <Table
-        url="usuarios"
         columns={columns}
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/usuarios/editar"
         urlDisabled="usuarios/disable"
-        collection="Companies"
+        collection="Users"
         query={[]}
       />
     </div>

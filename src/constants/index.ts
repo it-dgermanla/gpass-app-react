@@ -15,7 +15,7 @@ export const initEventForm: EventForm = {
   name: "",
   initialDate: dayjs(),
   finalDate: dayjs(),
-  image: "",
+  image: [],
   disable: false,
   createAt: new Date()
 };
