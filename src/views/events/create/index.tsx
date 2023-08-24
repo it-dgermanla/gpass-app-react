@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
-import { Card, Form, message } from 'antd'
-import { add } from '../../../services/firebase';
+import { Card, Form, UploadFile, message } from 'antd'
+import { add, update } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { initEventForm, titleForm, urlImageDefaultEvent } from '../../../constants';
+import { initEventForm, titleForm } from '../../../constants';
 import { EventForm } from '../../../interfaces';
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import dayjs, { Dayjs } from 'dayjs';
+import { setImagesToState } from "../../../utils/functions";
 
 const CreateEvent = () => {
   const [form] = Form.useForm();
@@ -19,11 +20,13 @@ const CreateEvent = () => {
   const [event, setEvent] = useState<EventForm>(initEventForm)
 
   useEffect(() => {
-    const _event = { ...state } as EventForm | null;
+    let _event = { ...state } as EventForm | null;
 
     setType(_event?.id ? "update" : "create");
 
     if (!_event?.id) return;
+
+    _event = setImagesToState(_event);
 
     setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
   }, [state, form])
@@ -35,11 +38,14 @@ const CreateEvent = () => {
 
     const initialDate = event.initialDate.set('hour', 0).set('minute', 0).set('second', 0).toDate();
     const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
-    const _event = { ...event, image: urlImageDefaultEvent, initialDate, finalDate };
+    const _event = { ...event, initialDate, finalDate };
 
     try {
       if (type === "update") {
-        console.log("update")
+        const id = _event.id!;
+
+        delete _event.id;
+        await update("Events", id, _event)
       } else {
         await add("Events", _event)
       }
@@ -95,18 +101,17 @@ const CreateEvent = () => {
               onChange: (value: Dayjs) => setEvent({ ...event, finalDate: value }),
               md: 8
             },
-            // {
-            //   typeControl: "file",
-            //   label:  screens.xs ? "" : "Evento",
-            //   name: "image",
-            //   value: event.image,
-            //   maxCount: 1,
-            //   accept: "image/png, image/jpeg",
-            //   onChange: (value: UploadFile<any>[]) => setEvent({ ...event, image: value }),
-            //   md: 8,
-            //   styleFI: { display: "flex", justifyContent: "center" },
-            //   multiple: false,
-            // }
+            {
+              typeControl: "file",
+              name: "image",
+              value: event.image,
+              maxCount: 1,
+              accept: "image/png, image/jpeg",
+              onChange: (value: UploadFile<any>[]) => setEvent({ ...event, image: value }),
+              md: 8,
+              styleFI: { display: "flex", justifyContent: "center" },
+              multiple: false,
+            }
           ]}
         />
       </Card>

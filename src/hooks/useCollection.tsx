@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { getDocs, Timestamp, query as q, collection as col, QueryConstraint, getFirestore } from 'firebase/firestore';
 import dayjs from 'dayjs';
 
-export interface PropsUseCollection<T> {
+export interface PropsUseCollection {
   collection: string;
   query: QueryConstraint[];
   extraPropsByItemArray?: Record<string, any>;
@@ -12,7 +12,7 @@ export interface PropsUseCollection<T> {
   mergeResponse?: boolean;
 }
 
-const useCollection = <T extends { id: string } & any>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true, mergeResponse }: PropsUseCollection<T>) => {
+const useCollection = <T extends { id: string }>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true, mergeResponse }: PropsUseCollection) => {
   const [loading, setLoading] = useState<boolean>(initLoading);
   const [data, setData] = useState<Array<T>>([]);
   const [error, setError] = useState<unknown>()
@@ -81,7 +81,7 @@ const useCollection = <T extends { id: string } & any>({ collection, query, extr
     return () => {
       mounted = false;
     }
-  }, [query, extraPropsByItemArray, formatDate, collection, wait, notLoadMore]);
+  }, [query, extraPropsByItemArray, formatDate, collection, wait, notLoadMore, mergeResponse]);
 
   return { loading, data, setData, error };
 }

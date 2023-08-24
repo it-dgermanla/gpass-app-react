@@ -3,13 +3,12 @@ import { Empty, Table as TableAnt } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import SearchTable from '../searchTable';
 import TableActionsButtons from "./tableActionsButtons";
-import useAbortController from "../../hooks/useAbortController";
 import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
 import { DocumentData, DocumentSnapshot, QueryConstraint, limit, startAfter } from "firebase/firestore";
 
-interface Props<T> extends PropsUseCollection<T> {
+interface Props<T> extends PropsUseCollection {
 	columns: ColumnsType<T>;
 	wait?: boolean;
 	placeholderSearch?: string;
@@ -38,10 +37,9 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 		_query.push(limit(10))
 
 		return _query;
-	}, [tableActions]);
+	}, [tableActions, queryProp]);
 
-	const { loading, data } = useCollection<T>({ wait, query, collection, formatDate, mergeResponse })
-	const abortController = useAbortController();
+	const { loading, data } = useCollection<T & { id: string }>({ wait, query, collection, formatDate, mergeResponse })
 
 	//esto se tiene que hacer asi para no ciclar el efecto usando de dependencia el data.
 	useEffect(() => {
@@ -64,7 +62,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 		return () => {
 			tableBody?.removeEventListener('scroll', () => { });
 		};
-	}, []);
+	}, [collection]);
 
 	const columns = useMemo<ColumnsType<T>>(() => {
 		return [
@@ -87,7 +85,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 				},
 			}
 		];
-	}, [columnsProp, urlDisabled, pathEdit, abortController]);
+	}, [columnsProp, pathEdit, collection]);
 
 	return (
 		<div>
