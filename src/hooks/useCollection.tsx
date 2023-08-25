@@ -21,6 +21,12 @@ const useCollection = <T extends { id: string }>({ collection, query, extraProps
   useEffect(() => {
     let mounted = true;
 
+    if (!collection) {
+      setData([]);
+      setNotLoadMore(false);
+      return;
+    }
+
     if (wait || notLoadMore) return;
 
     const init = async () => {
