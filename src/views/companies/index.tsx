@@ -35,7 +35,6 @@ const Companies = () => {
         columns={columns}
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/empresas/editar"
-        urlDisabled="empresas/disable"
         collection="Companies"
         query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
       />

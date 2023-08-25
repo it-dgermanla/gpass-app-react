@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { ColumnsType } from 'antd/es/table';
+import { orderBy, where } from 'firebase/firestore';
 import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
-import { orderBy, where } from 'firebase/firestore';
 import { Event } from '../../interfaces';
 import CachedImage from "../../components/cachedImage";
 
@@ -34,7 +34,6 @@ const Events = () => {
         columns={columns}
         placeholderSearch="Buscar por evento..."
         pathEdit="/eventos/editar"
-        urlDisabled="eventos/disable"
         collection="Events"
         query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
         formatDate="DD/MM/YYYY hh:mm a"

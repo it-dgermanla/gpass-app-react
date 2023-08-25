@@ -13,19 +13,19 @@ interface Props<T> extends PropsUseCollection {
 	wait?: boolean;
 	placeholderSearch?: string;
 	pathEdit: string;
-	urlDisabled: string;
 	formatDate?: string;
 }
 
-interface TablePagination {
+interface TableData {
 	search: string;
 	lastDoc?: DocumentSnapshot<DocumentData, DocumentData>;
+	collection: string;
 }
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, urlDisabled, collection, query: queryProp, formatDate, mergeResponse = true }: Props<T>) => {
-	const [tableActions, setTableActions] = useState<TablePagination>({ search: "" });
+const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true }: Props<T>) => {
+	const [tableActions, setTableActions] = useState<TableData>({ search: "", collection });
 
 	const query = useMemo<QueryConstraint[]>(() => {
 		const _query = [...queryProp];
@@ -39,10 +39,11 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 		return _query;
 	}, [tableActions, queryProp]);
 
-	const { loading, data } = useCollection<T & { id: string }>({ wait, query, collection, formatDate, mergeResponse })
-
+	const { loading, data } = useCollection<T & { id: string }>({ wait, query, collection: tableActions.collection, formatDate, mergeResponse });
 	//esto se tiene que hacer asi para no ciclar el efecto usando de dependencia el data.
 	useEffect(() => {
+		if (loading) return;
+
 		const tableBody = document.querySelector('.ant-table-body');
 
 		tableBody?.addEventListener('scroll', async () => {
@@ -51,7 +52,10 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 			if (!isBottom) return;
 
 			const elementsWithAttribute = tableBody.querySelectorAll('[data-row-key]');
-			const lastElement = elementsWithAttribute[elementsWithAttribute.length - 1];
+			const lastElement = elementsWithAttribute[elementsWithAttribute.length - 1] as Element | undefined;
+
+			if (!lastElement) return;
+
 			const lastId = lastElement.getAttribute('data-row-key');
 
 			const doc = await getDocById(collection, lastId!);
@@ -62,7 +66,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 		return () => {
 			tableBody?.removeEventListener('scroll', () => { });
 		};
-	}, [collection]);
+	}, [collection, loading]);
 
 	const columns = useMemo<ColumnsType<T>>(() => {
 		return [
@@ -77,7 +81,13 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 					return (
 						<TableActionsButtons
 							record={record}
-							onDeleted={() => setTableActions(prev => ({ ...prev, lastDoc: undefined }))}
+							onDeleted={() => {
+								setTableActions(prev => ({ ...prev, lastDoc: undefined, collection: "" }))
+
+								setTimeout(() => {
+									setTableActions(prev => ({ ...prev, collection: "Events" }))
+								}, 200)
+							}}
 							fun={() => update(collection, r.id, { disabled: true })}
 							pathEdit={pathEdit}
 						/>
@@ -90,7 +100,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 	return (
 		<div>
 			<SearchTable
-				onSearch={(value) => setTableActions({ search: value, lastDoc: undefined })}
+				onSearch={(value) => setTableActions(prev => ({ ...prev, search: value, lastDoc: undefined }))}
 				placeholder={placeholderSearch}
 			/>
 			<br />

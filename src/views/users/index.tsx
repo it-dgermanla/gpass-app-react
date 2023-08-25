@@ -22,7 +22,6 @@ const Users = () => {
         columns={columns}
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/usuarios/editar"
-        urlDisabled="usuarios/disable"
         collection="Users"
         query={[]}
       />
