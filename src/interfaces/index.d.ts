@@ -17,7 +17,7 @@ export interface Event {
   initialDateFormated?: string;
   finalDateFormated?: string;
   image?: UploadFile<any>[] | string;
-  disable?: boolean;
+  disabled?: boolean;
   createAt: Date;
 }
 
@@ -33,7 +33,8 @@ export interface Company {
   email: string;
   image?: UploadFile<any>[] | string;
   address?: string;
-  disable?: boolean;
+  disabled?: boolean;
+  createAt: Date;
 }
 
 export interface User {

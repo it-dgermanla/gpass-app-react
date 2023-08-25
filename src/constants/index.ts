@@ -16,7 +16,7 @@ export const initEventForm: EventForm = {
   initialDate: dayjs(),
   finalDate: dayjs(),
   image: [],
-  disable: false,
+  disabled: false,
   createAt: new Date()
 };
 
@@ -24,8 +24,8 @@ export const initEvent: Event = {
   name: "",
   initialDate: new Date(),
   finalDate: new Date(),
-  image: "",
-  disable: false,
+  image: [],
+  disabled: false,
   createAt: new Date()
 };
 
@@ -33,9 +33,10 @@ export const initCompany: Company = {
   name: "",
   email: "",
   phone: "",
-  image: "",
+  image: [],
   address: "",
-  disable: false
+  disabled: false,
+  createAt: new Date()
 };
 
 export const initUser: User = {

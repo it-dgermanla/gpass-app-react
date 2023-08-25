@@ -1,44 +1,41 @@
 import { useEffect, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
-import { Card, Form, Grid, message, UploadFile } from 'antd'
-import { add } from '../../../services/firebase';
+import { Card, Form, message, UploadFile } from 'antd'
+import { add, update } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { initCompany, titleForm, urlImageDefaultCompany } from '../../../constants';
+import { initCompany, titleForm } from '../../../constants';
 import { Company } from '../../../interfaces';
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
-// import { setImagesToState } from "../../../utils/functions";
-// import useAbortController from "../../../hooks/useAbortController";
-
-const { useBreakpoint } = Grid;
+import { setImagesToState } from "../../../utils/functions";
 
 const CreateCompany = () => {
-  // const abortController = useAbortController();
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
   const { state } = location;
-  const screens = useBreakpoint();
   const [type, setType] = useState<TypeRute>("create");
   const [saving, setSaving] = useState(false);
   const [company, setCompany] = useState<Company>(initCompany)
-
 
   useEffect(() => {
     let _company = { ...state } as Company | null;
     setType(_company?.id ? "update" : "create");
     if (!_company?.id) return;
-    form.setFieldsValue(_company);
+    // form.setFieldsValue(_company);
+    _company = setImagesToState(_company);
     setCompany(_company);
   }, [state, form])
 
   const onFinish = async () => {
     if (saving) return;
-    const _company = { ...company, ...{ image: urlImageDefaultCompany } };
+    const _company = { ...company };
     setSaving(true);
     try {
       if (type === "update") {
-        console.log("update")
+        const id = _company.id!;
+        delete _company.id;
+        await update("Companies", id, _company)
       } else {
         await add<Company>("Companies", _company)
       }
@@ -58,6 +55,7 @@ const CreateCompany = () => {
       />
       <Card>
         <DynamicForm
+          initialValues={company}
           form={form}
           layout='vertical'
           loading={saving}
@@ -93,18 +91,17 @@ const CreateCompany = () => {
               onChange: (value: string) => setCompany({ ...company, phone: value }),
               md: 8
             },
-            // {
-            //   typeControl: "file",
-            //   label: screens.xs ? "" : "Logo Empresa",
-            //   name: "image",
-            //   value: company.image,
-            //   maxCount: 1,
-            //   accept: "image/png, image/jpeg",
-            //   onChange: (value: UploadFile<any>[]) => setCompany({ ...company, image: value }),
-            //   md: 8,
-            //   styleFI: { display: "flex", justifyContent: "center" },
-            //   multiple: false,
-            // },
+            {
+              typeControl: "file",
+              name: "image",
+              value: company.image,
+              maxCount: 1,
+              accept: "image/png, image/jpeg",
+              onChange: (value: UploadFile<any>[]) => setCompany({ ...company, image: value }),
+              md: 8,
+              styleFI: { display: "flex", justifyContent: "center" },
+              multiple: false,
+            },
             {
               typeControl: 'textarea',
               typeInput: 'text',

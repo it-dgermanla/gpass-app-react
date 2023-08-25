@@ -4,7 +4,7 @@ import HeaderView from '../../components/headerView';
 import Table from '../../components/table';
 import CachedImage from "../../components/cachedImage";
 import { Company } from '../../interfaces';
-import { where } from 'firebase/firestore';
+import { where, orderBy } from 'firebase/firestore';
 
 const Companies = () => {
   const columns: ColumnsType<Company> = useMemo(() => [
@@ -15,7 +15,7 @@ const Companies = () => {
       title: "Imagen",
       dataIndex: "image",
       key: "image",
-      render: (_, company: Company) => (
+      render: (_, company) => (
         <CachedImage
           style={{ width: 70, height: 70, objectFit: "cover" }}
           imageUrl={company.image as string}
@@ -37,7 +37,7 @@ const Companies = () => {
         pathEdit="/empresas/editar"
         urlDisabled="empresas/disable"
         collection="Companies"
-        query={[where("disable", "==", false)]}
+        query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
       />
     </div>
   )

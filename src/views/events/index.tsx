@@ -36,7 +36,7 @@ const Events = () => {
         pathEdit="/eventos/editar"
         urlDisabled="eventos/disable"
         collection="Events"
-        query={[where("disable", "==", false), orderBy("createAt", "desc")]}
+        query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
         formatDate="DD/MM/YYYY hh:mm a"
       />
     </div>
