@@ -86,8 +86,8 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
       {options?.map((option: Option) => <Select.Option key={option.value} value={option.value}>{option.text}</Select.Option>)}
     </Select>,
     textarea: ({ value, onChange }: CustomInput) => <Input.TextArea value={value} onChange={e => onChange && onChange(e.target.value)} />,
-    checkbox: ({ value, onChange }: CustomInput) => <Checkbox checked={value} onChange={e => onChange && onChange(e.target.checked)} />,
-    date: ({ value, onChange }: CustomInput) => <DatePicker style={{ width: '100%' }} value={value} onChange={onChange} />,
+    checkbox: ({ value, onChange }: CustomInput) => <Checkbox checked={value} onChange={e => onChange && onChange(e.target.checked) } />,
+    date: ({ value, onChange, disabledDate }: CustomInput) => <DatePicker style={{ width: '100%' }} value={value} onChange={onChange} disabledDate={disabledDate} />,
     timeRangePicker: ({ value, onChange }) => <TimePicker.RangePicker value={value} onChange={onChange} />,
     file: ({ value, onChange, accept, maxCount, multiple, listType }: CustomInput) => {
       const _value = value as UploadFile<any>[];

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
 import { Card, Form, UploadFile, message } from 'antd'
-import { add, update } from '../../../services/firebase';
+import { add, update, getCollectionGeneric } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { initEventForm, titleForm } from '../../../constants';
 import { EventForm } from '../../../interfaces';
@@ -9,6 +9,9 @@ import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import dayjs, { Dayjs } from 'dayjs';
 import { setImagesToState } from "../../../utils/functions";
+import { where } from 'firebase/firestore';
+
+const collection = "Events";
 
 const CreateEvent = () => {
   const [form] = Form.useForm();
@@ -32,6 +35,14 @@ const CreateEvent = () => {
   }, [state, form])
 
   const onFinish = async () => {
+    const duplicateData = await getCollectionGeneric<EventForm>(collection, [where("name", "==", event.name)])
+
+    if (duplicateData.length || (type === "update" && event.id !== duplicateData[0].id))
+    {
+      message.error('Este evento ya esta registrado.', 4);
+      return;
+    }
+   
     if (saving) return;
 
     setSaving(true);
@@ -45,9 +56,9 @@ const CreateEvent = () => {
         const id = _event.id!;
 
         delete _event.id;
-        await update("Events", id, _event)
+        await update(collection, id, _event)
       } else {
-        await add("Events", _event)
+        await add(collection, _event)
       }
 
       message.success('Evento guardado con éxito.', 4);
@@ -87,6 +98,7 @@ const CreateEvent = () => {
               typeControl: 'date',
               label: 'Fecha Inicial',
               name: 'initialDate',
+              disabledDate: date => date > event.finalDate,
               rules: [{ required: true, message: 'Favor de seleccionar la fecha inicial.' }],
               value: event.initialDate,
               onChange: (value: Dayjs) => setEvent({ ...event, initialDate: value }),
@@ -96,6 +108,7 @@ const CreateEvent = () => {
               typeControl: 'date',
               label: 'Fecha Final',
               name: 'finalDate',
+              disabledDate: date => date < event.initialDate,
               rules: [{ required: true, message: 'Favor de seleccionar la fecha final.' }],
               value: event.finalDate,
               onChange: (value: Dayjs) => setEvent({ ...event, finalDate: value }),

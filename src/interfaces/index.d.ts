@@ -2,7 +2,7 @@ import { Rols, TypeControl, TypeInput } from "../types";
 import { UploadFile } from "antd/es/upload";
 import { FormRule } from 'antd';
 import { UploadListType } from 'antd/lib/upload/interface';
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export interface LatLng {
   lat: number;
@@ -68,6 +68,7 @@ export interface CustomInput {
   multiple?: boolean;
   loading?: boolean;
   listType?: UploadListType;
+  disabledDate?: (date: Dayjs) => boolean;
 }
 
 export interface Option {

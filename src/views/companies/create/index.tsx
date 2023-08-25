@@ -9,6 +9,8 @@ import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import { setImagesToState } from "../../../utils/functions";
 
+const collection = "Companies";
+
 const CreateCompany = () => {
   const [form] = Form.useForm();
   const location = useLocation();
@@ -22,7 +24,6 @@ const CreateCompany = () => {
     let _company = { ...state } as Company | null;
     setType(_company?.id ? "update" : "create");
     if (!_company?.id) return;
-    // form.setFieldsValue(_company);
     _company = setImagesToState(_company);
     setCompany(_company);
   }, [state, form])
@@ -35,9 +36,9 @@ const CreateCompany = () => {
       if (type === "update") {
         const id = _company.id!;
         delete _company.id;
-        await update("Companies", id, _company)
+        await update(collection, id, _company)
       } else {
-        await add<Company>("Companies", _company)
+        await add<Company>(collection, _company)
       }
       message.success('Empresa guardada con éxito.', 4);
       navigate('/empresas')

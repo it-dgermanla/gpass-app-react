@@ -1,4 +1,4 @@
-import { collection, addDoc, updateDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc, getDoc, query, getDocs, QueryConstraint } from "firebase/firestore";
 import { db } from '../firebaseConfig';
 import { handleError } from '../utils/functions';
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -71,6 +71,21 @@ export const uploadFile = async (file: File, path: string) => {
 
     await uploadBytes(storageRef, file);
     return getDownloadURL(storageRef);
+  } catch (error) {
+    throw handleError(error);
+  }
+}
+
+export const getCollection = (path: string, _query: QueryConstraint[]) => getDocs(query(collection(db, path), ..._query))
+
+export const getCollectionGeneric = async <T>(path: string, _query: QueryConstraint[]) => {
+  try {
+    const { docs } = await getDocs(query(collection(db, path), ..._query))
+
+    return docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })) as T[]
   } catch (error) {
     throw handleError(error);
   }
