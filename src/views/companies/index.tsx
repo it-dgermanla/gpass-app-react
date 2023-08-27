@@ -37,6 +37,10 @@ const Companies = () => {
         pathEdit="/empresas/editar"
         collection="Companies"
         query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
+        searchValues={{
+          name: "Nombre",
+          email: "Correo"
+        }}
       />
     </div>
   )

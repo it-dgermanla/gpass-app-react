@@ -24,6 +24,10 @@ const Users = () => {
         pathEdit="/usuarios/editar"
         collection="Users"
         query={[]}
+        searchValues={{
+          name: "Nombre",
+          email: "Correo"
+        }}
       />
     </div>
   )
