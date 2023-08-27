@@ -6,7 +6,7 @@ import TableActionsButtons from "./tableActionsButtons";
 import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
-import { DocumentData, DocumentSnapshot, QueryConstraint, limit, startAfter } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, limit, orderBy, startAfter, startAt } from "firebase/firestore";
 
 interface Props<T> extends PropsUseCollection {
 	columns: ColumnsType<T>;
@@ -14,33 +14,44 @@ interface Props<T> extends PropsUseCollection {
 	placeholderSearch?: string;
 	pathEdit: string;
 	formatDate?: string;
+	searchValues: Record<string, string>;
 }
 
 interface TableData {
 	search: string;
+	searchKey: string;
 	lastDoc?: DocumentSnapshot<DocumentData, DocumentData>;
 	collection: string;
 }
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true }: Props<T>) => {
-	const [tableActions, setTableActions] = useState<TableData>({ search: "", collection });
+const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues }: Props<T>) => {
+	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
 
 	const query = useMemo<QueryConstraint[]>(() => {
-		const _query = [...queryProp];
+		const { search, searchKey, lastDoc } = tableData;
+		const _query = [...queryProp, limit(10)];
 
-		if (tableActions.lastDoc) {
-			_query.push(startAfter(tableActions.lastDoc))
+		if (lastDoc) {
+			_query.push(startAfter(lastDoc));
 		}
 
-		_query.push(limit(10))
+		if (search) {
+			const indexOrderBy = _query.findIndex(q => q.type === "orderBy");
+
+			if (indexOrderBy >= 0) {
+				_query.splice(indexOrderBy, 1);
+			}
+
+			_query.push(...[orderBy(searchKey), startAt(search), endAt(search + '\uf8ff')]);
+		}
 
 		return _query;
-	}, [tableActions, queryProp]);
+	}, [tableData, queryProp]);
 
-	const { loading, data } = useCollection<T & { id: string }>({ wait, query, collection: tableActions.collection, formatDate, mergeResponse });
-	//esto se tiene que hacer asi para no ciclar el efecto usando de dependencia el data.
+	const { loading, data } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
+
 	useEffect(() => {
 		if (loading) return;
 
@@ -60,7 +71,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 
 			const doc = await getDocById(collection, lastId!);
 
-			setTableActions(prev => ({ ...prev, lastDoc: doc }));
+			setTableData(prev => ({ ...prev, lastDoc: doc }));
 		});
 
 		return () => {
@@ -82,10 +93,9 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 						<TableActionsButtons
 							record={record}
 							onDeleted={() => {
-								setTableActions(prev => ({ ...prev, lastDoc: undefined, collection: "" }))
-
+								setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }))
 								setTimeout(() => {
-									setTableActions(prev => ({ ...prev, collection: "Events" }))
+									setTableData(prev => ({ ...prev, collection }))
 								}, 200)
 							}}
 							fun={() => update(collection, r.id, { disabled: true })}
@@ -100,8 +110,14 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 	return (
 		<div>
 			<SearchTable
-				onSearch={(value) => setTableActions(prev => ({ ...prev, search: value, lastDoc: undefined }))}
+				onSearch={(search, searchKey) => {
+					setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }));
+					setTimeout(() => {
+						setTableData(prev => ({ ...prev, search, searchKey, collection }));
+					}, 200)
+				}}
 				placeholder={placeholderSearch}
+				searchValues={searchValues}
 			/>
 			<br />
 			<TableAnt

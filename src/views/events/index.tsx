@@ -32,11 +32,14 @@ const Events = () => {
       />
       <Table
         columns={columns}
-        placeholderSearch="Buscar por evento..."
+        placeholderSearch="Buscar por nombre..."
         pathEdit="/eventos/editar"
         collection="Events"
         query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
         formatDate="DD/MM/YYYY hh:mm a"
+        searchValues={{
+          name: "Nombre",
+        }}
       />
     </div>
   )

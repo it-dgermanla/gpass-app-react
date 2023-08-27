@@ -24,6 +24,7 @@ const useCollection = <T extends { id: string }>({ collection, query, extraProps
     if (!collection) {
       setData([]);
       setNotLoadMore(false);
+
       return;
     }
 
