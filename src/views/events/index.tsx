@@ -9,6 +9,7 @@ import CachedImage from "../../components/cachedImage";
 const Events = () => {
   const columns: ColumnsType<Event> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
+    { title: '#Boletos', dataIndex: 'total', key: 'total' },
     { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },
     { title: 'Fecha Final', dataIndex: 'finalDateFormated', key: 'finalDateFormated' },
     {

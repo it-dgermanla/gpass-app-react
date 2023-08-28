@@ -17,7 +17,8 @@ export const initEventForm: EventForm = {
   finalDate: dayjs(),
   image: [],
   disabled: false,
-  createAt: new Date()
+  createAt: new Date(),
+  total: 0,
 };
 
 export const initEvent: Event = {
@@ -26,7 +27,8 @@ export const initEvent: Event = {
   finalDate: new Date(),
   image: [],
   disabled: false,
-  createAt: new Date()
+  createAt: new Date(),
+  total: 0,
 };
 
 export const initCompany: Company = {

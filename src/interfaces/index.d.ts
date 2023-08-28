@@ -19,6 +19,7 @@ export interface Event {
   image?: UploadFile<any>[] | string;
   disabled?: boolean;
   createAt: Date;
+  total: Number;
 }
 
 export type EventForm = Omit<Event, "initialDate" | "finalDate"> & {

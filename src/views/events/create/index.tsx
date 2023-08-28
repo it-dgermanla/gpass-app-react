@@ -127,10 +127,20 @@ const CreateEvent = () => {
               maxCount: 1,
               accept: "image/png, image/jpeg",
               onChange: (value: UploadFile<any>[]) => setEvent({ ...event, image: value }),
-              md: 8,
+              md: 12,
               styleFI: { display: "flex", justifyContent: "center" },
               multiple: false,
-            }
+            },
+            {
+              typeControl: 'input',
+              typeInput: 'number',
+              label: 'Numero de Boletos',
+              name: 'total',
+              rules: [{ required: true, message: 'Favor de escribir el numero de Boletos.' }],
+              value: event.total,
+              onChange: (value: number) => setEvent({ ...event, total: value }),
+              md: 8
+            },
           ]}
         />
       </Card>
