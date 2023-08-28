@@ -3,12 +3,13 @@ import { db } from '../firebaseConfig';
 import { handleError } from '../utils/functions';
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { UploadFile } from "antd";
-import { urlImageDefaultEvent } from "../constants";
+import { urlImageDefaultEvent, urlImageDefaultCompany } from "../constants";
 
 const storage = getStorage();
 const basesUrlsImages = [urlImageDefaultEvent];
 const basesUrlsImagesByCollection: Record<string, string> = {
-  "Events": urlImageDefaultEvent
+  "Events": urlImageDefaultEvent,
+  "Companies": urlImageDefaultCompany
 }
 
 export const add = async <T extends { id?: string }>(collectionName: string, data: Record<string, any>) => {

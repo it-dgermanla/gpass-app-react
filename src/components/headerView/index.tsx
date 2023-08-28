@@ -14,6 +14,7 @@ const textButtonsCreate: Record<string, string> = {
   "Usuarios": "usuario",
   "Empresas": "empresa",
   "Eventos": "evento",
+  "Lector": "lector",
 } as const;
 
 const HeaderView: FC<Props> = ({ title, path, goBack }) => {

@@ -37,12 +37,6 @@ const CreateEvent = () => {
   const onFinish = async () => {
     const duplicateData = await getCollectionGeneric<EventForm>(collection, [where("name", "==", event.name)])
 
-    if (duplicateData.length || (type === "update" && event.id !== duplicateData[0].id))
-    {
-      message.error('Este evento ya esta registrado.', 4);
-      return;
-    }
-   
     if (saving) return;
 
     setSaving(true);
@@ -52,12 +46,24 @@ const CreateEvent = () => {
     const _event = { ...event, initialDate, finalDate };
 
     try {
+
       if (type === "update") {
+        if (duplicateData.length && event.id !== duplicateData[0].id ) {
+          message.error('Este evento ya esta registrado.', 4);
+          return;
+        }
+        
         const id = _event.id!;
 
         delete _event.id;
         await update(collection, id, _event)
       } else {
+
+        if (duplicateData.length) {
+          message.error('Este evento ya esta registrado.', 4);
+          return;
+        }
+
         await add(collection, _event)
       }
 

@@ -15,7 +15,7 @@ const firstRouteByUser: Record<Rols, string> = Object.freeze({
 });
 
 const privateRoutesByUser: Record<Rols, readonly string[]> = {
-  "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/eventos/registrar", "/eventos/editar", "/usuarios", "/usuarios/registrar"],
+  "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/eventos/registrar", "/eventos/editar", "/usuarios", "/usuarios/registrar", "/lector"],
   "Administrador": ["/empresas", "/eventos", "/usarios"],
   "Embajador": ["/eventos"],
   "Lector": ["/eventos"]
