@@ -38,7 +38,7 @@ const CreateCompany = () => {
         delete _company.id;
         await update(collection, id, _company)
       } else {
-        await add<Company>(collection, _company)
+        await add(collection, _company)
       }
       message.success('Empresa guardada con éxito.', 4);
       navigate('/empresas')
@@ -46,6 +46,8 @@ const CreateCompany = () => {
       setSaving(false)
     }
   }
+
+  console.log(company)
 
   return (
     <div>

@@ -3,10 +3,10 @@ import { db } from '../firebaseConfig';
 import { handleError } from '../utils/functions';
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { UploadFile } from "antd";
-import { urlImageDefaultEvent, urlImageDefaultCompany } from "../constants";
+import { urlImageDefaultEvent, urlImageDefaultCompany, baseUrlStorage } from "../constants";
 
 const storage = getStorage();
-const basesUrlsImages = [urlImageDefaultEvent];
+const basesUrlsImages = [urlImageDefaultEvent, urlImageDefaultCompany];
 const basesUrlsImagesByCollection: Record<string, string> = {
   "Events": urlImageDefaultEvent,
   "Companies": urlImageDefaultCompany
@@ -15,16 +15,16 @@ const basesUrlsImagesByCollection: Record<string, string> = {
 export const add = async <T extends { id?: string }>(collectionName: string, data: Record<string, any>) => {
   try {
 
-    if (data.image) {
-      if (data?.image?.length) {
-        const imgUploadFile = data?.image[0] as UploadFile;
+    if (data?.image?.length) {
+      const imgUploadFile = data?.image[0] as UploadFile;
 
-        if (!basesUrlsImages.includes(imgUploadFile.url!)) {
-          data.image = await uploadFile(imgUploadFile.originFileObj!, collectionName);
-        }
+      if (imgUploadFile.url?.includes(baseUrlStorage)) {
+        data.image = imgUploadFile.url;
       } else {
-        data.image = basesUrlsImagesByCollection[collectionName] || "";
+        data.image = await uploadFile(imgUploadFile.originFileObj!, collectionName);
       }
+    } else {
+      data.image = basesUrlsImagesByCollection[collectionName] || "";
     }
 
     const docRef = await addDoc(collection(db, collectionName), data);
@@ -40,7 +40,9 @@ export const update = async <T extends { id?: string }>(collectionName: string, 
     if (data?.image?.length) {
       const imgUploadFile = data?.image[0] as UploadFile;
 
-      if (!basesUrlsImages.includes(imgUploadFile.url!)) {
+      if (imgUploadFile.url?.includes(baseUrlStorage)) {
+        data.image = imgUploadFile.url;
+      } else {
         data.image = await uploadFile(imgUploadFile.originFileObj!, collectionName);
       }
     }
