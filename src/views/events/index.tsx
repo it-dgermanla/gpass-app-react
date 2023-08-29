@@ -5,6 +5,8 @@ import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
 import { Event } from '../../interfaces';
 import CachedImage from "../../components/cachedImage";
+import { Button } from "antd";
+import { MdConfirmationNumber } from "react-icons/md";
 
 const Events = () => {
   const columns: ColumnsType<Event> = useMemo(() => [
@@ -12,6 +14,17 @@ const Events = () => {
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
     { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },
     { title: 'Fecha Final', dataIndex: 'finalDateFormated', key: 'finalDateFormated' },
+    {
+      title: "Ver boletos",
+      dataIndex: "tickets",
+      key: "tickets",
+      render: (_, event) => (
+        <Button
+          shape="circle"
+          icon={<MdConfirmationNumber />}
+        />
+      )
+    },
     {
       title: "Imagen",
       dataIndex: "image",
@@ -39,7 +52,7 @@ const Events = () => {
         query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
         formatDate="DD/MM/YYYY hh:mm a"
         searchValues={{
-          name: "Nombre",
+          name: "Nombre"
         }}
       />
     </div>

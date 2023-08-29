@@ -11,10 +11,8 @@ import dayjs, { Dayjs } from 'dayjs';
 import { getArrayChunk, setImagesToState } from "../../../utils/functions";
 import { collection, doc, where, writeBatch } from 'firebase/firestore';
 import { db } from "../../../firebaseConfig";
-import { Rule } from "antd/es/form";
 
 const collectionName = "Events";
-const ruleRequiredTickets: Rule = { required: true, message: 'Favor de escribir la cantidad de boletos.' }
 
 const CreateEvent = () => {
   const [form] = Form.useForm();
@@ -168,7 +166,7 @@ const CreateEvent = () => {
                   message: `La cantidad de boletos no puede ser menor a ${initTotalTickets}`,
                   validator: (rule, value?: string) => !value || +value < initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
                 }]
-                : [ruleRequiredTickets],
+                : [{ required: true, message: 'Favor de escribir la cantidad de boletos.' }],
               value: event.total,
               onChange: (value: string) => setEvent({ ...event, total: value ? +value : undefined }),
               md: 6
