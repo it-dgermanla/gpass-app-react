@@ -17,9 +17,11 @@
     "dayjs": "^1.11.9",
     "firebase": "^10.3.0",
     "moment-timezone": "^0.5.43",
+    "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
+    "react-qr-reader": "^3.0.0-beta-1",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "typescript": "^5.1.6"
@@ -27,6 +29,10 @@
   "overrides": {
     "react-scripts": {
       "typescript": "^5"
+    },
+    "react-qr-reader": {
+      "react": "$react",
+      "react-dom": "$react-dom"
     }
   },
   "scripts": {
