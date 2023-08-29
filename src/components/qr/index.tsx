@@ -3,18 +3,7 @@ import { QrReader } from 'react-qr-reader';
 
 const QRScan = ({ ...rest }) => {
     const [isCameraOn, setIsCameraOn] = useState(false);
-    const [qrResult, setQrResult] = useState('');
     const videoRef = useRef<HTMLVideoElement | null>(null);
-
-    const handleScan = (result: any) => {
-        if (result) {
-            setQrResult(result);
-        }
-    };
-
-    const handleError = (error: any) => {
-        console.error(error);
-    };
 
     const toggleCamera = async () => {
         try {
