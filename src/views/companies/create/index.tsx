@@ -22,32 +22,38 @@ const CreateCompany = () => {
 
   useEffect(() => {
     let _company = { ...state } as Company | null;
+
     setType(_company?.id ? "update" : "create");
+
     if (!_company?.id) return;
+
     _company = setImagesToState(_company);
+
     setCompany(_company);
   }, [state, form])
 
   const onFinish = async () => {
     if (saving) return;
-    const _company = { ...company };
+
     setSaving(true);
+
     try {
       if (type === "update") {
-        const id = _company.id!;
-        delete _company.id;
-        await update(collection, id, _company)
+        const id = company.id!;
+
+        delete company.id;
+
+        await update(collection, id, company);
       } else {
-        await add(collection, _company)
+        await add(collection, company);
       }
+
       message.success('Empresa guardada con éxito.', 4);
       navigate('/empresas')
     } finally {
       setSaving(false)
     }
   }
-
-  console.log(company)
 
   return (
     <div>

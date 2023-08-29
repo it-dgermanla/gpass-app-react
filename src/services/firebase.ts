@@ -6,7 +6,6 @@ import { UploadFile } from "antd";
 import { urlImageDefaultEvent, urlImageDefaultCompany, baseUrlStorage } from "../constants";
 
 const storage = getStorage();
-const basesUrlsImages = [urlImageDefaultEvent, urlImageDefaultCompany];
 const basesUrlsImagesByCollection: Record<string, string> = {
   "Events": urlImageDefaultEvent,
   "Companies": urlImageDefaultCompany
