@@ -1,38 +1,34 @@
 import HeaderView from '../../components/headerView';
 import React, { useState } from 'react';
 import QrReader from '../../components/qr'
+import { message } from 'antd'
 
-import './index.css'; // Archivo de estilos CSS para aplicar la superposición
+// Archivo de estilos CSS para aplicar la superposición
 
 const Qr = () => {
-  const [cameraError, setCameraError] = useState(null);
-  const [qrScanResult, setQrScanResult] = useState('');
+  const [qrResult, setQrResult] = useState('');
 
   const handleCameraError = (error: React.SetStateAction<null>) => {
     console.error('Error accessing camera:', error);
-    setCameraError(error);
   };
 
-  const handleScanResult = (result: React.SetStateAction<string>) => {
+  const handleScanResult = (result: any) => {
     if (result) {
-      setQrScanResult(result);
+      setQrResult(result.text)
+      message.success('Codigo leido con : ' + result.text, 4);
     }
   };
-  
+
   return (
     <div style={{ margin: 20 }}>
       <HeaderView
         title="Lector Qr"
       />
       {/* <QrCode /> */}
-      <div className="qr-container">
-        <QrReader
-         onResult={handleScanResult}
-         onError={handleCameraError}
+      <QrReader
+          onResult={handleScanResult}
+          onError={handleCameraError}
         />
-         <p>Resultado del escaneo: {qrScanResult}</p>
-      </div>
-
     </div>
   )
 }
