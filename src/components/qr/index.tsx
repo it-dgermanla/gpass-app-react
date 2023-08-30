@@ -26,8 +26,7 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
     ...videoStyle,
     paddingLeft: '7%',
     paddingRight: '7%',
-    height: '55%',
-    controls: false
+    height: '55%'
   };
 
   const toggleCamera = async () => {
@@ -60,7 +59,7 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
         <div className="container">
           <img src={img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
           <div className={!screens.xs ? "content" : "movil-content"}>
-            <video ref={videoRef} autoPlay playsInline />
+            <video ref={videoRef} autoPlay playsInline muted />
             <QrReader
               {...rest}
               videoStyle={!screens.xs ? videoStyle : mobileVideoStyle}
