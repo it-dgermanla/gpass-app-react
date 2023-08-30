@@ -12,7 +12,7 @@ const QRScan = ({ ...rest }) => {
   const videoStyle = {
     width: '100%',
     height: '70%', // Asegura que el video ocupe el 70% del espacio del contenedor
-    objectFit: 'contain', // Ajusta la relación de aspecto y cubre el contenedor
+    objectFit: 'cover', // Ajusta la relación de aspecto y cubre el contenedor
   };
 
   const toggleCamera = async () => {
