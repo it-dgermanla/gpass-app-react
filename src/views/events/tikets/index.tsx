@@ -83,7 +83,7 @@ const Tickets = () => {
         columns={columns}
         placeholderSearch="Buscar por numero..."
         collection="Tickets"
-        query={[where("eventId", "==", event?.id || ""), orderBy("number"), limit(10)]}
+        query={[where("eventId", "==", event?.id || ""), orderBy("number"), limit(20)]}
         formatDate="DD/MM/YYYY hh:mm a"
         searchValues={{
           number: "Número"
