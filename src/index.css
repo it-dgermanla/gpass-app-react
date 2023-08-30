@@ -23,7 +23,7 @@
 
 .content {
   position: absolute; /* Coloca el contenido en posición absoluta */
-  top: 12%; /* Mueve el contenido hacia el centro vertical */
+  top: 20%; /* Mueve el contenido hacia el centro vertical */
   left: 50%; /* Mueve el contenido hacia el centro horizontal */
   transform: translate(-50%, -50%); /* Centra el contenido exactamente */
   width: 260px; /* Ajusta el ancho según tus necesidades */
