@@ -62,18 +62,7 @@ const QRScan = ({ ...rest }) => {
           </div>
         </div>
       )}
-      {/* <div className="qr-container">
-        {isCameraOn && (
-          <div>
-            <video className="qr-video" ref={videoRef} autoPlay playsInline />
-            <QrReader
-              constraints={{ facingMode: 'user' }}
-              {...rest}
-            />
-          </div>
-        )}
-      </div> */}
-
+      
     </div>
   );
 };
