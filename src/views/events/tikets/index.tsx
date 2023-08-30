@@ -60,7 +60,7 @@ const Tickets = () => {
       dataIndex: "qr",
       key: "qr",
       render: (_, ticket) => (
-        <QRCodeCanvas value={`${event.name}-${ticket.number}`} id={ticket.number.toString()} />
+        <QRCodeCanvas value={`${event.id}-${ticket.number}`} id={ticket.number.toString()} />
       )
     },
     {

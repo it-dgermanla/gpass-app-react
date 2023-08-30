@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { Avatar, Row } from 'antd';
-import { UserOutlined } from '@ant-design/icons'
+import { Row } from 'antd';
 import { useAuth } from '../../context/authContext';
 import { Grid } from 'antd';
+import logo from '../../assets/logo.png';
 
 interface Props {
   collapsed?: boolean;
@@ -23,7 +23,9 @@ const RowHeader: FC<Props> = ({ collapsed }) => {
           { textAlign: "center", backgroundColor: "#304878", margin: 10, paddingTop: 20, paddingBottom: 20, borderRadius: "8px" }
       }
     >
-      <Avatar style={{ backgroundColor: "#87D068" }} size={collapsed ? 48 : 64} icon={<UserOutlined />} />
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '1em' }}>
+        <img src={logo} alt="Logo" style={{ width: '50%', height: 'auto' }} />
+      </div>
       {
         !collapsed && <div style={screens.xs ? { color: "black" } : { color: "white" }}>
           <div style={{ margin: 10 }}>

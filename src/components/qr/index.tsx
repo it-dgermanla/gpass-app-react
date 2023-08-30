@@ -1,14 +1,20 @@
-import { useRef, useState, useEffect } from 'react';
-import { QrReader } from 'react-qr-reader';
+import { useRef, useState, FC } from 'react';
+import { QrReader, QrReaderProps } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
 import { SecurityScanOutlined } from "@ant-design/icons";
+import { Grid } from 'antd';
 
-const QRScan = ({ ...rest }) => {
+interface Props extends QrReaderProps {
+  img: string
+}
+
+const QRScan: FC<Props> = ({ img, ...rest }) => {
+  const { useBreakpoint } = Grid;
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const screens = useBreakpoint();
 
   const videoStyle = {
     width: '100%',
@@ -22,17 +28,6 @@ const QRScan = ({ ...rest }) => {
     paddingRight: '7%',
     height: '55%',
   };
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
-    };
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    return () => {
-      window.removeEventListener('resize', checkIfMobile);
-    };
-  }, []);
 
   const toggleCamera = async () => {
     try {
@@ -51,26 +46,23 @@ const QRScan = ({ ...rest }) => {
 
   return (
     <div >
-      {
-        rest?.type === "Data" && <SaveButton
-          icon={<SecurityScanOutlined />}
-          onClick={toggleCamera}
-          loading={loading}
-          style={{}}
-        >
-          {isCameraOn ? 'Apagar cámara' : 'Encender cámara'}
-        </SaveButton>
-      }
+      <SaveButton
+        icon={<SecurityScanOutlined />}
+        onClick={toggleCamera}
+        loading={loading}
+        style={{}}
+      >
+        {isCameraOn ? 'Apagar cámara' : 'Encender cámara'}
+      </SaveButton>
 
       {isCameraOn && (
         <div className="container">
-          <img src={rest?.img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} alt="qr" />
-          <div className={!isMobile ? "content" : "movil-content"}>
+          <img src={img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
+          <div className={!screens.xs ? "content" : "movil-content"}>
             <video ref={videoRef} autoPlay playsInline />
             <QrReader
-              constraints={{ facingMode: 'environment' }}
-              videoStyle={!isMobile ? videoStyle : mobileVideoStyle}
               {...rest}
+              videoStyle={!screens.xs ? videoStyle : mobileVideoStyle}
             />
           </div>
         </div>

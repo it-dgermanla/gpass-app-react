@@ -1,38 +1,53 @@
 import HeaderView from '../../components/headerView';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import QrReader from '../../components/qr'
 import { message } from 'antd'
-import { useLocation } from 'react-router-dom';
-import { EventForm } from './../../interfaces';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { EventForm, Ticket } from './../../interfaces';
 import { initEventForm } from './../../constants';
+import { OnResultFunction } from 'react-qr-reader';
+import { update, getCollectionGeneric } from './../../services/firebase';
+import { where } from 'firebase/firestore';
+import { useAuth } from '../../context/authContext';
 
-// Archivo de estilos CSS para aplicar la superposición
 
 const Qr = () => {
-  const [qrResult, setQrResult] = useState('');
+  const navigate = useNavigate()
+  const { user } = useAuth();
   const location = useLocation();
   const { state } = location;
-  const [type, setType] = useState("No Data");
   const [event, setEvent] = useState<EventForm>(initEventForm)
 
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
-    setType(_event?.id ? "Data" : "No Data");
 
-    if (!_event?.id) return;
+    if (!_event) {
+      navigate("/eventos")
+      return
+    }
+
     setEvent(_event)
-    console.log(_event)
   }, [state])
 
-  const handleCameraError = (error: React.SetStateAction<null>) => {
-    console.error('Error accessing camera:', error);
-  };
+  const handleScanResult: OnResultFunction = async (result) => {
+    if (!result) return
 
-  const handleScanResult = (result: any) => {
-    if (result) {
-      setQrResult(result.text)
-      message.success('Codigo leido con : ' + result.text, 4);
+    try {
+      const [eventId, numberTicket] = result.getText().split("-");
+      const tickets = await getCollectionGeneric<Ticket>('Tickets', [where('eventId', '==', eventId), where('number', '==', +numberTicket)])
+
+      if (tickets[0].isScanned === "Si") {
+        message.error('Este QR ya esta escaneado.', 4)
+        return
+      }
+
+      //falta guardar el nombre usuario
+      await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, isScanned: "Si", scannedDate: new Date() })
+      message.success('QR escaneado con èxito.', 4);
+    } catch (error) {
+      message.error('Error al procesar QR.', 4);
     }
+
   };
 
   return (
@@ -42,11 +57,10 @@ const Qr = () => {
       />
       {/* <QrCode /> */}
       <QrReader
-        img={event?.image}
-        type={type}
-        delay={1000}
+        img={event?.image as string}
+        scanDelay={5000}
         onResult={handleScanResult}
-        onError={handleCameraError}
+        constraints={{ facingMode: 'environment' }}
       />
     </div>
   )
