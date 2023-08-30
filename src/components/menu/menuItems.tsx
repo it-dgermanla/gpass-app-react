@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { CalendarOutlined, SettingOutlined, ShopOutlined, LogoutOutlined, UserOutlined, ScanOutlined } from '@ant-design/icons';
+import { CalendarOutlined, SettingOutlined, ShopOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { message } from "antd";
 import { getAuth } from "firebase/auth";

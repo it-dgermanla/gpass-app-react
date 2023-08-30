@@ -108,7 +108,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 				},
 			}
 		];
-	}, [columnsProp, pathEdit, collection]);
+	}, [columnsProp, pathEdit, collection, removeTableActions]);
 
 	return (
 		<div>

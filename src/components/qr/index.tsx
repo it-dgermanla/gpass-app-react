@@ -64,7 +64,7 @@ const QRScan = ({ ...rest }) => {
 
       {isCameraOn && (
         <div className="container">
-          <img src={rest?.img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
+          <img src={rest?.img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} alt="qr" />
           <div className={!isMobile ? "content" : "movil-content"}>
             <video ref={videoRef} autoPlay playsInline />
             <QrReader

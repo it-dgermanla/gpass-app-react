@@ -1,7 +1,5 @@
 import { lazy } from "react";
 import { PathRouteProps } from 'react-router-dom';
-import UsersRegister from "../views/users/create";
-import Tickets from "../views/events/tikets";
 
 const LandingPage = lazy(() => import('../views/landingPage'));
 const Companies = lazy(() => import('../views/companies'));
@@ -9,7 +7,9 @@ const CompaniesRegister = lazy(() => import('../views/companies/create'));
 const Events = lazy(() => import('../views/events'));
 const EventsRegister = lazy(() => import('../views/events/create'));
 const Users = lazy(() => import('../views/users'));
-const Lector = lazy(() => import('../views/qr'));
+const UsersRegister = lazy(() => import('../views/users/create'));
+const Scanner = lazy(() => import('../views/qr'));
+const Tickets = lazy(() => import('../views/events/tikets'));
 
 const routes: PathRouteProps[] = [
   {
@@ -46,7 +46,7 @@ const routes: PathRouteProps[] = [
   },
   {
     path: '/lector',
-    element: <Lector />
+    element: <Scanner />
   },
   {
     path: "/usuarios",
