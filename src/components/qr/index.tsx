@@ -47,7 +47,7 @@ const QRScan = ({ ...rest }) => {
         <div className="container">
           <img src={rest?.img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
           <div className="content">
-            <video ref={videoRef} className='qr-video' autoPlay playsInline />
+            <video ref={videoRef} autoPlay playsInline />
             <QrReader
               constraints={{ facingMode: 'environment' }}
               videoStyle={videoStyle}

@@ -4,16 +4,6 @@
   --borderRadius: 6px;
 }
 
-@media (max-width: 767px) { /* Ajusta este valor según tus necesidades */
-  .container {
-    height: auto;
-  }
-  
-  .qr-video {
-    height: 100vw; /* Establece el alto igual al ancho para lograr un cuadrado */
-  }
-}
-
 .container {
   position: relative; /* Establece el contenedor como referencia para el posicionamiento */
   width: 100%; /* Ajusta el ancho según tus necesidades */
