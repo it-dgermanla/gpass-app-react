@@ -42,7 +42,7 @@ const QRScan = ({ ...rest }) => {
           <div className="content">
             <video ref={videoRef} className='qr-video' autoPlay playsInline />
             <QrReader
-              constraints={{ facingMode: 'user' }}
+              constraints={{ facingMode: 'environment' }}
               {...rest}
             />
           </div>
