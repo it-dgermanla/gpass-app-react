@@ -13,6 +13,14 @@ const Events = () => {
   const navigate = useNavigate();
 
   const columns: ColumnsType<Event> = useMemo(() => [
+    {
+      title: "Lector",
+      dataIndex: "lector",
+      key: "lector",
+      render: (_, event) => (
+        <Button onClick={() => navigate("/lector", { state: event })} type="primary" shape="round" icon={<SecurityScanOutlined />} size={"large"} />
+      )
+    },
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
     { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },
@@ -26,14 +34,6 @@ const Events = () => {
           style={{ width: 70, height: 70, objectFit: "cover" }}
           imageUrl={event.image as string}
         />
-      )
-    },
-    {
-      title: "Lector",
-      dataIndex: "lector",
-      key: "lector",
-      render: (_, event) => (
-        <Button onClick={() => navigate("/lector", { state: event })} type="primary" shape="round" icon={<SecurityScanOutlined />} size={"large"} />
       )
     }
   ], []);
