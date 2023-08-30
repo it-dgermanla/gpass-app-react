@@ -4,6 +4,7 @@ import '../../index.css';
 import SaveButton from "../saveButton";
 import { SecurityScanOutlined } from "@ant-design/icons";
 const img = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/Events%2FWhatsApp%20Image%202023-08-22%20at%2018.54.26.jpeg?alt=media&token=148f184b-9fef-42b9-b99c-f74fb31ce315";
+
 const QRScan = ({ ...rest }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
