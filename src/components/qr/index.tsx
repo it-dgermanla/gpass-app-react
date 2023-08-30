@@ -27,6 +27,7 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
     paddingLeft: '7%',
     paddingRight: '7%',
     height: '55%',
+    controls: false
   };
 
   const toggleCamera = async () => {
