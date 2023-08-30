@@ -13,7 +13,10 @@ const QRScan = ({ ...rest }) => {
   const toggleCamera = async () => {
     try {
       setLoading(true)
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: isCameraOn ? 'environment' : 'user' } });
+
+      const facingMode = isCameraOn ? 'user' : 'environment'; // Cambiar a 'environment'
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
