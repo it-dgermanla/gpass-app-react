@@ -18,8 +18,8 @@ const QRScan = ({ ...rest }) => {
 
   const mobileVideoStyle = {
     ...videoStyle,
-    paddingLeft: '9%',
-    paddingRight: '9%',
+    paddingLeft: '7%',
+    paddingRight: '7%',
     height: '55%',
   };
 
