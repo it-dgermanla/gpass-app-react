@@ -6,15 +6,16 @@ import TableActionsButtons from "./tableActionsButtons";
 import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
-import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, limit, orderBy, startAfter, startAt } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, orderBy, startAfter, startAt } from "firebase/firestore";
 
 interface Props<T> extends PropsUseCollection {
 	columns: ColumnsType<T>;
 	wait?: boolean;
 	placeholderSearch?: string;
-	pathEdit: string;
+	pathEdit?: string;
 	formatDate?: string;
 	searchValues: Record<string, string>;
+	removeTableActions?: boolean;
 }
 
 interface TableData {
@@ -26,12 +27,12 @@ interface TableData {
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues }: Props<T>) => {
+const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues, removeTableActions }: Props<T>) => {
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
 
 	const query = useMemo<QueryConstraint[]>(() => {
 		const { search, searchKey, lastDoc } = tableData;
-		const _query = [...queryProp, limit(10)];
+		const _query = [...queryProp];
 
 		if (lastDoc) {
 			_query.push(startAfter(lastDoc));
@@ -80,6 +81,8 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 	}, [collection, loading]);
 
 	const columns = useMemo<ColumnsType<T>>(() => {
+		if (removeTableActions) return columnsProp.map(c => ({ ...c, width: c.width || 150 }));
+
 		return [
 			...columnsProp.map(c => ({ ...c, width: c.width || 150 })),
 			{

@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { orderBy, where } from 'firebase/firestore';
+import { limit, orderBy, where } from 'firebase/firestore';
 import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
 import { Event } from '../../interfaces';
 import CachedImage from "../../components/cachedImage";
 import { Button } from "antd";
 import { MdConfirmationNumber } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const Events = () => {
+  const navigate = useNavigate();
+
   const columns: ColumnsType<Event> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
@@ -20,6 +23,7 @@ const Events = () => {
       key: "tickets",
       render: (_, event) => (
         <Button
+          onClick={() => navigate("/eventos/boletos", { state: event })}
           shape="circle"
           icon={<MdConfirmationNumber />}
         />
@@ -36,7 +40,7 @@ const Events = () => {
         />
       )
     }
-  ], []);
+  ], [navigate]);
 
   return (
     <div style={{ margin: 20 }}>
@@ -49,7 +53,7 @@ const Events = () => {
         placeholderSearch="Buscar por nombre..."
         pathEdit="/eventos/editar"
         collection="Events"
-        query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
+        query={[where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)]}
         formatDate="DD/MM/YYYY hh:mm a"
         searchValues={{
           name: "Nombre"
