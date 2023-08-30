@@ -13,14 +13,14 @@ const QRScan = ({ ...rest }) => {
   const videoStyle = {
     width: '100%',
     height: '65%', // Asegura que el video ocupe el 70% del espacio del contenedor
-    objectFit: 'cover', // Ajusta la relación de aspecto y cubre el contenedor
+    objectFit: 'cover',
+    top: "20%"
   };
 
   const mobileVideoStyle = {
     ...videoStyle,
     paddingLeft: '7%',
-    paddingRight: '7%',
-    top: '-125px'
+    paddingRight: '7%'
   };
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const QRScan = ({ ...rest }) => {
       {isCameraOn && (
         <div className="container">
           <img src={rest?.img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
-          <div className="content">
+          <div className={!isMobile ? "content" : "movil-content"}>
             <video ref={videoRef} autoPlay playsInline />
             <QrReader
               constraints={{ facingMode: 'environment' }}
