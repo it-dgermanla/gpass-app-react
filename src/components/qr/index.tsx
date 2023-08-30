@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { QrReader } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
@@ -8,12 +8,30 @@ const QRScan = ({ ...rest }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const videoStyle = {
     width: '100%',
     height: '65%', // Asegura que el video ocupe el 70% del espacio del contenedor
     objectFit: 'cover', // Ajusta la relación de aspecto y cubre el contenedor
   };
+
+  const mobileVideoStyle = {
+    ...videoStyle,
+    marginLeft: '5%',
+    marginRight: '5%'
+  };
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+    };
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   const toggleCamera = async () => {
     try {
@@ -50,13 +68,13 @@ const QRScan = ({ ...rest }) => {
             <video ref={videoRef} autoPlay playsInline />
             <QrReader
               constraints={{ facingMode: 'environment' }}
-              videoStyle={videoStyle}
+              videoStyle={!isMobile ? videoStyle : mobileVideoStyle}
               {...rest}
             />
           </div>
         </div>
       )}
-      
+
     </div>
   );
 };
