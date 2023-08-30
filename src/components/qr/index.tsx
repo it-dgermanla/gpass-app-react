@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect } from 'react';
+import React, { useRef, useState,useEffect, useMemo } from 'react';
 import { QrReader } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
@@ -39,11 +39,14 @@ const QRScan = ({ ...rest }) => {
     }
   };
 
+  const memoizedToggleCamera = useMemo(() => toggleCamera, [isMobile]);
+
+
   return (
     <div >
       <SaveButton
         icon={<SecurityScanOutlined />}
-        onClick={toggleCamera}
+        onClick={memoizedToggleCamera}
         loading={loading}
         style={{}}
       >
