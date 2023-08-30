@@ -13,8 +13,7 @@ const QRScan = ({ ...rest }) => {
   const videoStyle = {
     width: '100%',
     height: '65%', // Asegura que el video ocupe el 70% del espacio del contenedor
-    objectFit: 'cover',
-    top: "20%"
+    objectFit: 'cover'
   };
 
   const mobileVideoStyle = {
