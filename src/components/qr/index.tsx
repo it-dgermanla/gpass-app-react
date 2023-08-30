@@ -56,7 +56,6 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
         <div className="container">
           <img src={img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
           <div className={!screens.xs ? "content" : "movil-content"}>
-            {/* <video ref={videoRef} autoPlay playsInline muted /> */}
             <QrReader
               {...rest}
               videoStyle={!screens.xs ? videoStyle : mobileVideoStyle}

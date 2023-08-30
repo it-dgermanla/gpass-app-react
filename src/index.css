@@ -14,7 +14,7 @@
 
 .movil-content {
   position: absolute; /* Coloca el contenido en posición absoluta */
-  top: 30%; /* Mueve el contenido hacia el centro vertical */
+  top: 43%; /* Mueve el contenido hacia el centro vertical */
   left: 50%; /* Mueve el contenido hacia el centro horizontal */
   transform: translate(-50%, -50%); /* Centra el contenido exactamente */
   width: 250px; /* Ajusta el ancho según tus necesidades */
