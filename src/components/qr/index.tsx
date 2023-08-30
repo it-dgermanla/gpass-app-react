@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useRef, useState, FC } from 'react';
 import { QrReader, QrReaderProps } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
@@ -14,6 +14,7 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [loading, setLoading] = useState(false);
   const screens = useBreakpoint();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const videoStyle = {
     width: '100%',
@@ -32,11 +33,24 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
   const toggleCamera = async () => {
     try {
       setLoading(true)
-      await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      if (isCameraOn) {
+        if (videoRef.current) {
+          const stream = videoRef.current.srcObject as MediaStream;
+          const tracks = stream?.getTracks();
+          tracks?.forEach(track => track.stop());
+          videoRef.current.srcObject = null;
+        }
+      } else {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }
+
       setIsCameraOn(!isCameraOn);
     } catch (error) {
-      console.error('Error accessing camera:', error);
-    } finally {
+      console.error('Error al accesar a la camara.', error);
+    }finally{
       setLoading(false)
     }
   };
