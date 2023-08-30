@@ -10,8 +10,6 @@ const QRScan = ({ ...rest }) => {
   const [loading, setLoading] = useState(false);
 
   const videoStyle = {
-    marginRight: '2.5%',
-    marginLeft: '2.5%',
     width: '100%',
     height: '65%', // Asegura que el video ocupe el 70% del espacio del contenedor
     objectFit: 'cover', // Ajusta la relación de aspecto y cubre el contenedor
