@@ -9,8 +9,6 @@ import ButtonUpload from "./buttonUpload";
 import Crop from "./crop";
 import { onPreviewImage, validFiles } from "../../utils/functions";
 import { FirebaseError } from "firebase/app";
-import dayjs from 'dayjs';
-import moment from 'moment-timezone';
 import { Store } from 'antd/es/form/interface';
 
 interface Props {
@@ -28,7 +26,7 @@ interface Props {
 const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, loading, justify, textSubmit, styleSubmit, initialValues }) => {
   const [inputs, setInputs] = useState<CustomInput[]>(inputsProp);
   const [loadingForm, setLoadingForm] = useState(true);
-  
+
   useEffect(() => {
     const _inputs = inputsProp.map(input => {
       const { rules, typeControl, typeInput, required, value } = input;
@@ -50,7 +48,7 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
     });
 
     setInputs(_inputs);
-    if(loadingForm)setLoadingForm(false)
+    if (loadingForm) setLoadingForm(false)
   }, [inputsProp, loadingForm]);
 
   const controls: Record<string, (input: CustomInput) => ReactNode> = useMemo(() => ({
@@ -86,7 +84,7 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
       {options?.map((option: Option) => <Select.Option key={option.value} value={option.value}>{option.text}</Select.Option>)}
     </Select>,
     textarea: ({ value, onChange }: CustomInput) => <Input.TextArea value={value} onChange={e => onChange && onChange(e.target.value)} />,
-    checkbox: ({ value, onChange }: CustomInput) => <Checkbox checked={value} onChange={e => onChange && onChange(e.target.checked) } />,
+    checkbox: ({ value, onChange }: CustomInput) => <Checkbox checked={value} onChange={e => onChange && onChange(e.target.checked)} />,
     date: ({ value, onChange, disabledDate }: CustomInput) => <DatePicker style={{ width: '100%' }} value={value} onChange={onChange} disabledDate={disabledDate} />,
     timeRangePicker: ({ value, onChange }) => <TimePicker.RangePicker value={value} onChange={onChange} />,
     file: ({ value, onChange, accept, maxCount, multiple, listType, withOutCrop = false }: CustomInput) => {
@@ -129,8 +127,8 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
     }
   }), []);
 
-  if(loadingForm) return null;
-  
+  if (loadingForm) return null;
+
   return (
     <Form
       initialValues={initialValues}

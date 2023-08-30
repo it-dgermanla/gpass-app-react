@@ -141,3 +141,7 @@ export const confirmDialog = <T>(content: ReactNode, fun: () => Promise<T>, text
       resolve(false as T);
     }
   }));
+
+export const getArrayChunk = <T>(array: Array<T>, size: number) => Array.from({ length: Math.ceil(array.length / size) }, (v, i) =>
+  array.slice(i * size, i * size + size)
+);

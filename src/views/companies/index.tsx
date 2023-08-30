@@ -4,7 +4,7 @@ import HeaderView from '../../components/headerView';
 import Table from '../../components/table';
 import CachedImage from "../../components/cachedImage";
 import { Company } from '../../interfaces';
-import { where, orderBy } from 'firebase/firestore';
+import { where, orderBy, limit } from 'firebase/firestore';
 
 const Companies = () => {
   const columns: ColumnsType<Company> = useMemo(() => [
@@ -36,7 +36,7 @@ const Companies = () => {
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/empresas/editar"
         collection="Companies"
-        query={[where("disabled", "==", false), orderBy("createAt", "desc")]}
+        query={[where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)]}
         searchValues={{
           name: "Nombre",
           email: "Correo"

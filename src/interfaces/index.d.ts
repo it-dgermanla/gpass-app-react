@@ -19,7 +19,17 @@ export interface Event {
   image?: UploadFile<any>[] | string;
   disabled?: boolean;
   createAt: Date;
-  total: Number;
+  total?: number;
+}
+
+export interface Ticket {
+  id?: string;
+  eventId: string;
+  number: number;
+  userScannerId: string;
+  isScanned: "Si" | "No";
+  userScannerName: string;
+  dateScanned?: Date;
 }
 
 export type EventForm = Omit<Event, "initialDate" | "finalDate"> & {

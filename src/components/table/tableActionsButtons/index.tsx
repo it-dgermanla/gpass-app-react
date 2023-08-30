@@ -8,7 +8,7 @@ interface Props {
   record: any;
   onDeleted: () => void;
   fun: () => Promise<any>;
-  pathEdit: string;
+  pathEdit?: string;
 }
 
 const dialogDelete = (fun: () => Promise<any>) =>
@@ -40,14 +40,16 @@ const TableActionsButtons: FC<Props> = ({ record, onDeleted, fun, pathEdit }) =>
 
   return (
     <Space>
-      <Button
-        icon={<EditOutlined />}
-        shape="circle"
-        onClick={() => navigate(pathEdit, { state: record })}
-        size="middle"
-        style={{ color: '#fff', backgroundColor: '#ec9822 ' }}
-        type='default'
-      />
+      {
+        pathEdit && <Button
+          icon={<EditOutlined />}
+          shape="circle"
+          onClick={() => navigate(pathEdit, { state: record })}
+          size="middle"
+          style={{ color: '#fff', backgroundColor: '#ec9822 ' }}
+          type='default'
+        />
+      }
       <DeleteButton onClick={del} />
     </Space>
   )
