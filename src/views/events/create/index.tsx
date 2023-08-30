@@ -162,7 +162,7 @@ const CreateEvent = () => {
               rules: event.id
                 ? [{
                   message: `La cantidad de boletos no puede ser menor a ${initTotalTickets}`,
-                  validator: (rule, value?: string) => !value || +value < initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
+                  validator: (rule, value?: string) => !value || +value <initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
                 }]
                 : [{ required: true, message: 'Favor de escribir la cantidad de boletos.' }],
               value: event.total,
@@ -178,8 +178,9 @@ const CreateEvent = () => {
               onChange: (value: UploadFile<any>[]) => setEvent({ ...event, image: value }),
               md: 12,
               styleFI: { display: "flex", justifyContent: "center" },
-              multiple: false
-            }
+              multiple: false,
+              withOutCrop: true
+            },
           ]}
         />
       </Card>

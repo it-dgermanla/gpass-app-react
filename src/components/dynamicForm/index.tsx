@@ -87,10 +87,11 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
     checkbox: ({ value, onChange }: CustomInput) => <Checkbox checked={value} onChange={e => onChange && onChange(e.target.checked)} />,
     date: ({ value, onChange, disabledDate }: CustomInput) => <DatePicker style={{ width: '100%' }} value={value} onChange={onChange} disabledDate={disabledDate} />,
     timeRangePicker: ({ value, onChange }) => <TimePicker.RangePicker value={value} onChange={onChange} />,
-    file: ({ value, onChange, accept, maxCount, multiple, listType }: CustomInput) => {
+    file: ({ value, onChange, accept, maxCount, multiple, listType, withOutCrop = false }: CustomInput) => {
       const _value = value as UploadFile<any>[];
       const count = _value?.length || 0;
-
+      console.log('withOutCrop')
+      console.log(withOutCrop)
       maxCount = maxCount || 1;
 
       const disabled = count >= maxCount;
@@ -118,7 +119,7 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
         children: <ButtonUpload value={_value} multiple={multiple} maxCount={maxCount} disabled={Boolean(multiple) && disabled} />
       };
 
-      return accept?.includes("image")
+      return !withOutCrop && accept?.includes("image")
         ? <Crop beforeCrop={(_, fileList) => validFiles(fileList, accept)}>
           <Upload {...propsUpload} />
         </Crop>

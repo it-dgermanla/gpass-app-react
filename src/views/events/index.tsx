@@ -8,11 +8,21 @@ import CachedImage from "../../components/cachedImage";
 import { Button } from "antd";
 import { MdConfirmationNumber } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { SecurityScanOutlined } from '@ant-design/icons';
+
 
 const Events = () => {
   const navigate = useNavigate();
 
   const columns: ColumnsType<Event> = useMemo(() => [
+    {
+      title: "Lector",
+      dataIndex: "lector",
+      key: "lector",
+      render: (_, event) => (
+        <Button onClick={() => navigate("/lector", { state: event })} type="primary" shape="round" icon={<SecurityScanOutlined />} size={"large"} />
+      )
+    },
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
     { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },

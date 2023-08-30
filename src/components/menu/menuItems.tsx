@@ -29,12 +29,6 @@ const menuItems = [
     icon: <UserOutlined style={styleIcon} />
   },
   {
-    key: '/lector',
-    title: '',
-    label: <Link to="/lector">Lector</Link>,
-    icon: <ScanOutlined style={styleIcon} />
-  },
-  {
     key: '/configuracion',
     title: '',
     icon: <SettingOutlined style={styleIcon} />,
