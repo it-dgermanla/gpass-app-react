@@ -20,7 +20,7 @@ const QRScan = ({ ...rest }) => {
     ...videoStyle,
     paddingLeft: '5%',
     paddingRight: '5%',
-    paddingBottom: '5%'
+    paddingBottom: '25%'
   };
 
   useEffect(() => {
