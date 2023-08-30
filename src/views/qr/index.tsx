@@ -26,9 +26,10 @@ const Qr = () => {
       />
       {/* <QrCode /> */}
       <QrReader
-          onResult={handleScanResult}
-          onError={handleCameraError}
-        />
+        delay={1000}
+        onResult={handleScanResult}
+        onError={handleCameraError}
+      />
     </div>
   )
 }

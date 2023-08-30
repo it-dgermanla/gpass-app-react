@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect, useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 import { QrReader } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
@@ -9,25 +9,11 @@ const QRScan = ({ ...rest }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
-    };
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    return () => {
-      window.removeEventListener('resize', checkIfMobile);
-    };
-  }, []);
 
   const toggleCamera = async () => {
     try {
       setLoading(true)
-      const facingMode = !isMobile ? 'user' : 'environment'; // Cambiar a 'environment'
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
-     
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
@@ -39,14 +25,11 @@ const QRScan = ({ ...rest }) => {
     }
   };
 
-  const memoizedToggleCamera = useMemo(() => toggleCamera, [isMobile]);
-
-
   return (
     <div >
       <SaveButton
         icon={<SecurityScanOutlined />}
-        onClick={memoizedToggleCamera}
+        onClick={toggleCamera}
         loading={loading}
         style={{}}
       >
@@ -65,7 +48,18 @@ const QRScan = ({ ...rest }) => {
           </div>
         </div>
       )}
-      
+      {/* <div className="qr-container">
+        {isCameraOn && (
+          <div>
+            <video className="qr-video" ref={videoRef} autoPlay playsInline />
+            <QrReader
+              constraints={{ facingMode: 'user' }}
+              {...rest}
+            />
+          </div>
+        )}
+      </div> */}
+
     </div>
   );
 };
