@@ -130,6 +130,7 @@ const CreateEvent = () => {
               md: 12,
               styleFI: { display: "flex", justifyContent: "center" },
               multiple: false,
+              withOutCrop: true
             },
             {
               typeControl: 'input',

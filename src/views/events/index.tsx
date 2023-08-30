@@ -5,8 +5,13 @@ import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
 import { Event } from '../../interfaces';
 import CachedImage from "../../components/cachedImage";
+import { SecurityScanOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const Events = () => {
+  const navigate = useNavigate();
+
   const columns: ColumnsType<Event> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
@@ -21,6 +26,14 @@ const Events = () => {
           style={{ width: 70, height: 70, objectFit: "cover" }}
           imageUrl={event.image as string}
         />
+      )
+    },
+    {
+      title: "Lector",
+      dataIndex: "lector",
+      key: "lector",
+      render: (_, event) => (
+        <Button onClick={() => navigate("/lector", { state: event })} type="primary" shape="round" icon={<SecurityScanOutlined />} size={"large"} />
       )
     }
   ], []);

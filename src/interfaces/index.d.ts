@@ -70,6 +70,7 @@ export interface CustomInput {
   loading?: boolean;
   listType?: UploadListType;
   disabledDate?: (date: Dayjs) => boolean;
+  withOutCrop?: boolean; 
 }
 
 export interface Option {

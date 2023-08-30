@@ -31,12 +31,6 @@
   height: 150px; /* Ajusta la altura según tus necesidades */
 }
 
-.qr-video {
-  width: 100px!important;
-  height: 100px !important;
-  
-}
-
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
 	background: transparent;
 }
