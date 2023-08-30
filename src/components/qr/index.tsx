@@ -27,7 +27,7 @@ const QRScan = ({ ...rest }) => {
       setLoading(true)
       const facingMode = !isMobile ? 'user' : 'environment'; // Cambiar a 'environment'
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
-
+     
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
