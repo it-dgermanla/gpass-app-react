@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import { QrReader } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
@@ -9,12 +9,23 @@ const QRScan = ({ ...rest }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+    };
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   const toggleCamera = async () => {
     try {
       setLoading(true)
-
-      const facingMode = isCameraOn ? 'user' : 'environment'; // Cambiar a 'environment'
+      const facingMode = !isMobile ? 'user' : 'environment'; // Cambiar a 'environment'
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
 
       if (videoRef.current) {
