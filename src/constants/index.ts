@@ -7,6 +7,8 @@ export const baseUrlStorage = "https://firebasestorage.googleapis.com/v0/b/gpass
 export const urlImageDefaultCompany = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/company%2Fcompany.png?alt=media&token=4a25e724-96c5-4303-bbfd-0e2d03a2ccc1";
 export const urlImageDefaultEvent = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/Events%2Fevento.png?alt=media&token=43afcd4d-5e32-4569-8a45-502e78932e1d";
 
+export const urlCloudFunction = "https://us-central1-gpass-apps.cloudfunctions.net/api";
+
 export const initEventForm: EventForm = {
   name: "",
   initialDate: dayjs(),

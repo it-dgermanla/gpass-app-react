@@ -1,7 +1,7 @@
 //import { UploadFile } from "antd";
 import {/*  fileToBase64, */ getCurrentToken, handleError } from '../utils/functions';
 
-const baseUrl = "http://localhost:3001/";
+const baseUrl = "https://us-central1-gpass-apps.cloudfunctions.net/api";
 //const baseUrl = process.env.REACT_APP_SERVER_lOCAL;
 
 const getHeaders = (token: string) => ({

@@ -57,6 +57,10 @@ const routes: PathRouteProps[] = [
     element: <UsersRegister />
   },
   {
+    path: "/usuarios/editar",
+    element: <UsersRegister />
+  },
+  {
     path: '*',
     element: <div>404 not found</div>
   }

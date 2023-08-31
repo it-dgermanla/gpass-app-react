@@ -57,7 +57,7 @@ const Qr = () => {
       {/* <QrCode /> */}
       <QrReader
         img={event?.image as string}
-        scanDelay={5000}
+        scanDelay={7000}
         onResult={handleScanResult}
         constraints={{ facingMode: 'environment' }}
       />

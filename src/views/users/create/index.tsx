@@ -5,9 +5,11 @@ import { initUser, rulePassword, titleForm } from '../../../constants';
 import { User, Option, Company } from '../../../interfaces';
 import { Rols, TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
-import { add, getCollectionGeneric, update } from '../../../services/firebase';
+import { getCollectionGeneric } from '../../../services/firebase';
+import { post, put } from '../../../services/index';
 import { where } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import useAbortController from "../../../hooks/useAbortController";
 
 const roles = [
   {
@@ -25,16 +27,29 @@ const roles = [
     text: 'Lector'
   }
 ]
-const collection = "Users";
+const collection = "users";
 
 const UsersRegister = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const { state } = location;
   const [form] = Form.useForm();
   const [type, setType] = useState<TypeRute>("create");
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<User>(initUser)
   const [companies, setCompanies] = useState<Option[]>()
+  const abortController = useAbortController();
+
+  useEffect(() => {
+    let _user = { ...state } as User | null;
+
+    setType(_user?.id ? "update" : "create");
+
+    if (!_user?.id) return;
+
+    form.setFieldsValue(_user);
+    setUser(_user);
+  }, [state, form])
 
   const dataCompanies = async () => {
     const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
@@ -60,7 +75,7 @@ const UsersRegister = () => {
     setSaving(true);
 
     const { password, confirmPassword } = user;
-    
+
     if (confirmPassword !== password) {
       message.error('Las contraseñas no coinciden.');
       setSaving(false)
@@ -71,15 +86,10 @@ const UsersRegister = () => {
 
     try {
       if (type === "update") {
-        const id = user.id!;
-
-        delete user.id;
-
-        await update(collection, id, user);
+           await post(`/users/${type}`, user, abortController.current!);
       } else {
-        await add(collection, user);
+        await post(`/users/${type}`, user, abortController.current!);
       }
-
       message.success('Usuario guardado con éxito.', 4);
       navigate('/usuarios')
     } finally {
@@ -116,6 +126,7 @@ const UsersRegister = () => {
               typeControl: 'input',
               typeInput: 'email',
               label: 'Correo',
+              disabled: type === "update" ? false : true,
               name: 'email',
               value: user.email,
               onChange: (value: string) => setUser({ ...user, email: value }),

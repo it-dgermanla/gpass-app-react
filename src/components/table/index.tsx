@@ -11,6 +11,9 @@ import { PDFDownloadLink, Document, Page, Image, StyleSheet } from '@react-pdf/r
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Ticket } from "../../interfaces";
+import { post } from './../../services/index';
+import useAbortController from "./../../hooks/useAbortController";
+import { useLocation } from 'react-router-dom';
 
 interface Props<T> extends PropsUseCollection {
 	columns: ColumnsType<T>;
@@ -54,8 +57,17 @@ const stylesPDF = StyleSheet.create({
 	},
 });
 
+
+
 const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues, removeTableActions, downloadPdf, imageEventUrl }: Props<T>) => {
+	const location = useLocation();
+	const path = location;
+	const abortController = useAbortController();
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
+
+	const onDelete = async (r: any) => {
+		await post(`/users/del`, r, abortController.current!);
+	}
 
 	const query = useMemo<QueryConstraint[]>(() => {
 		const { search, searchKey, lastDoc } = tableData;
@@ -187,7 +199,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 									setTableData(prev => ({ ...prev, collection }))
 								}, 200)
 							}}
-							fun={() => update(collection, r.id, { disabled: true })}
+							fun={() => path.pathname === "/usuarios" ? onDelete(r) : update(collection, r.id, { disabled: true })}
 							pathEdit={pathEdit}
 						/>
 					)
