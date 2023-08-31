@@ -1,19 +1,90 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
-import { Card, Form } from 'antd'
+import { Card, Form, message } from 'antd'
 import { initUser, rulePassword, titleForm } from '../../../constants';
-import { User } from '../../../interfaces';
+import { User, Option, Company } from '../../../interfaces';
 import { Rols, TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
+import { add, getCollectionGeneric, update } from '../../../services/firebase';
+import { where } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+
+const roles = [
+  {
+    value: 'Administrador',
+    text: 'Administrador'
+  },
+  ,
+  {
+    value: 'Embajador',
+    text: 'Embajador'
+  },
+  ,
+  {
+    value: 'Lector',
+    text: 'Lector'
+  }
+]
+const collection = "Users";
 
 const UsersRegister = () => {
+  const navigate = useNavigate();
+
   const [form] = Form.useForm();
   const [type, setType] = useState<TypeRute>("create");
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<User>(initUser)
+  const [companies, setCompanies] = useState<Option[]>()
+
+  const dataCompanies = async () => {
+    const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
+    if (!response) return
+
+    const selectComapanies = response.map((company) => {
+      return {
+        value: company.name + "-" + company.id,
+        text: company.name
+      }
+    })
+
+    setCompanies(selectComapanies as Option[])
+  }
+
+  useEffect(() => {
+    dataCompanies()
+  }, [])
 
   const onFinish = async () => {
+    if (saving) return;
 
+    setSaving(true);
+
+    const { password, confirmPassword } = user;
+    
+    if (confirmPassword !== password) {
+      message.error('Las contraseñas no coinciden.');
+      setSaving(false)
+      return;
+    }
+
+    delete user.confirmPassword;
+
+    try {
+      if (type === "update") {
+        const id = user.id!;
+
+        delete user.id;
+
+        await update(collection, id, user);
+      } else {
+        await add(collection, user);
+      }
+
+      message.success('Usuario guardado con éxito.', 4);
+      navigate('/usuarios')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -64,7 +135,8 @@ const UsersRegister = () => {
               name: 'company',
               value: user.company,
               onChange: (value: string) => setUser({ ...user, company: value }),
-              md: 6
+              md: 6,
+              options: companies
             },
             {
               typeControl: 'select',
@@ -72,7 +144,8 @@ const UsersRegister = () => {
               name: 'role',
               value: user.role,
               onChange: (value: Rols) => setUser({ ...user, role: value }),
-              md: 6
+              md: 6,
+              options: roles as Option[]
             },
             {
               md: 6,
@@ -80,6 +153,8 @@ const UsersRegister = () => {
               typeInput: "password",
               label: "Contraseña",
               name: "password",
+              value: user.password,
+              onChange: (value: Rols) => setUser({ ...user, password: value }),
               rules: [rulePassword],
             },
             {
@@ -88,6 +163,8 @@ const UsersRegister = () => {
               typeInput: "password",
               label: "Confirmar contraseña",
               name: "confirmPassword",
+              value: user.confirmPassword,
+              onChange: (value: Rols) => setUser({ ...user, confirmPassword: value }),
               rules: [rulePassword],
             },
           ]}

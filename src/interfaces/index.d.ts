@@ -54,9 +54,11 @@ export interface User {
   phone: string;
   email: string;
   company: Company | string;
-  passowrd: string;
-  confirmPassword: string;
+  password: string;
+  confirmPassword?: string;
   role?: Rols;
+  createAt: Date,
+  disabled?: boolean;
 }
 
 export interface CustomInput {

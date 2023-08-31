@@ -42,8 +42,10 @@ export const initUser: User = {
   email: "",
   phone: "",
   company: "",
-  passowrd: "",
+  password: "",
   confirmPassword: "",
+  disabled: false,
+  createAt: new Date()
 };
 
 export const rulePhoneInput: FormRule = {
