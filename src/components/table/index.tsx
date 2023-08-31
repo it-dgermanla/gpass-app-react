@@ -194,7 +194,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 				},
 			}
 		];
-	}, [columnsProp, pathEdit, collection, removeTableActions]);
+	}, [columnsProp, pathEdit, collection, removeTableActions, downloadPdf, imageEventUrl, setData]);
 
 	return (
 		<div>
