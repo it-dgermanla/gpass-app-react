@@ -7,6 +7,10 @@ import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
 import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, orderBy, startAfter, startAt } from "firebase/firestore";
+import { PDFDownloadLink, Document, Page, Image, StyleSheet } from '@react-pdf/renderer';
+import { Button } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
+import { Ticket } from "../../interfaces";
 
 interface Props<T> extends PropsUseCollection {
 	columns: ColumnsType<T>;
@@ -16,6 +20,8 @@ interface Props<T> extends PropsUseCollection {
 	formatDate?: string;
 	searchValues: Record<string, string>;
 	removeTableActions?: boolean;
+	downloadPdf?: boolean;
+	imageEventUrl?: string;
 }
 
 interface TableData {
@@ -27,7 +33,28 @@ interface TableData {
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
-const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues, removeTableActions }: Props<T>) => {
+const stylesPDF = StyleSheet.create({
+	page: {
+		flexDirection: 'column',
+		backgroundColor: '#FFFFFF',
+		position: 'relative',
+	},
+	backgroundImage: {
+		position: 'absolute',
+		width: '100%',
+		height: '100%',
+	},
+	qrImage: {
+		position: 'absolute',
+		top: '45%',
+		left: '48%',
+		transform: 'translate(-50%, -50%)',
+		width: 120, // Ajusta el tamaño del código QR según tus necesidades
+		height: 120,
+	},
+});
+
+const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues, removeTableActions, downloadPdf, imageEventUrl }: Props<T>) => {
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
 
 	const query = useMemo<QueryConstraint[]>(() => {
@@ -51,7 +78,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 		return _query;
 	}, [tableData, queryProp]);
 
-	const { loading, data } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
+	const { loading, data, setData } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
 
 	useEffect(() => {
 		if (loading) return;
@@ -81,6 +108,65 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 	}, [collection, loading]);
 
 	const columns = useMemo<ColumnsType<T>>(() => {
+		if (downloadPdf) {
+			columnsProp.push({
+				title: "Descargar QR",
+				dataIndex: "downlaodQr",
+				key: "downlaodQr",
+				render: (_, ticket) => {
+					const t = ticket as any as Ticket & { ticketUrl: string };
+
+					return (
+						<>
+							<Button
+								icon={<DownloadOutlined />}
+								onClick={() => {
+									const elementPDFDownloadLink = document.getElementsByClassName(`ticket-${t.number}`)[0] as HTMLAnchorElement;
+									const canvas = document.getElementById(t.number.toString()) as HTMLCanvasElement;
+									const newWidth = 400;
+									const newHeight = 400;
+									const resizedCanvas = document.createElement("canvas");
+
+									resizedCanvas.width = newWidth;
+									resizedCanvas.height = newHeight;
+
+									const ctx = resizedCanvas.getContext("2d");
+
+									ctx?.drawImage(canvas, 0, 0, newWidth, newHeight);
+
+									const ticketUrl = resizedCanvas.toDataURL("image/octet-stream");
+
+									setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, ticketUrl }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
+
+									setTimeout(() => {
+										elementPDFDownloadLink.click();
+									}, 200);
+								}}
+							/>
+							<PDFDownloadLink
+								style={{ display: "none" }}
+								className={`ticket-${t.number}`}
+								fileName={`Ticket-${t.number}`}
+								document={<Document>
+									<Page size={{ width: 440, height: 800 }} style={stylesPDF.page}>
+										<Image src={imageEventUrl} style={stylesPDF.backgroundImage} />
+										{
+											t.ticketUrl && t.ticketUrl !== "" &&
+											<Image
+												src={t.ticketUrl}
+												style={stylesPDF.qrImage}
+											/>
+										}
+									</Page>
+								</Document>
+								}
+							/>
+						</>
+					)
+				}
+			})
+		}
+
 		if (removeTableActions) return columnsProp.map(c => ({ ...c, width: c.width || 150 }));
 
 		return [
@@ -108,7 +194,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 				},
 			}
 		];
-	}, [columnsProp, pathEdit, collection, removeTableActions]);
+	}, [columnsProp, pathEdit, collection, removeTableActions, downloadPdf, imageEventUrl, setData]);
 
 	return (
 		<div>
