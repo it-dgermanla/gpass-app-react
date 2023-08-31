@@ -43,7 +43,7 @@ const Qr = () => {
 
       //falta guardar el nombre usuario
       await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, isScanned: "Si", scannedDate: new Date() })
-      message.success('QR escaneado con èxito.', 4);
+      message.success('QR escaneado con èxito.', 7);
     } catch (error) {
       message.error('Error al procesar QR.', 4);
     }
