@@ -6,7 +6,7 @@ import { User, Option, Company } from '../../../interfaces';
 import { Rols, TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import { getCollectionGeneric } from '../../../services/firebase';
-import { post, put } from '../../../services/index';
+import { post } from '../../../services/index';
 import { where } from 'firebase/firestore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAbortController from "../../../hooks/useAbortController";
@@ -27,7 +27,7 @@ const roles = [
     text: 'Lector'
   }
 ]
-const collection = "users";
+const collection = "Users";
 
 const UsersRegister = () => {
   const navigate = useNavigate();
@@ -73,6 +73,14 @@ const UsersRegister = () => {
     if (saving) return;
 
     setSaving(true);
+
+    const duplicateData = await getCollectionGeneric<User>(collection, [where("email", "==", user.email)])
+
+    if (duplicateData.length && (!user.id || (user.id && user.id !== duplicateData[0].id))) {
+      message.error('Este usuario ya esta registrado.', 4);
+      setSaving(false)
+      return;
+    }
 
     const { password, confirmPassword } = user;
 

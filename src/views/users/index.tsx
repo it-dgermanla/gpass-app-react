@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import HeaderView from '../../components/headerView';
 import Table from '../../components/table';
 import { limit, orderBy, where } from 'firebase/firestore';
-import { Tag } from 'antd';
 
 const Users = () => {
   const columns: ColumnsType<any> = useMemo(() => [
