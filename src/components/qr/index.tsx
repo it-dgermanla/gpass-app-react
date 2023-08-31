@@ -50,7 +50,7 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
       setIsCameraOn(!isCameraOn);
     } catch (error) {
       console.error('Error al accesar a la camara.', error);
-    }finally{
+    } finally {
       setLoading(false)
     }
   };
@@ -65,10 +65,9 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
       >
         {isCameraOn ? 'Apagar cámara' : 'Encender cámara'}
       </SaveButton>
-
       {isCameraOn && (
         <div className="container">
-          <img src={img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} />
+          <img src={img} style={{ width: "100%", height: "70vh", objectFit: "contain" }} alt="qrimg" />
           <div className={!screens.xs ? "content" : "movil-content"}>
             <QrReader
               {...rest}
@@ -77,7 +76,6 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

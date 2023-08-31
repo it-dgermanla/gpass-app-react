@@ -2,7 +2,7 @@ import HeaderView from '../../components/headerView';
 import { useState, useEffect } from 'react';
 import QrReader from '../../components/qr'
 import { message } from 'antd'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { EventForm, Ticket } from './../../interfaces';
 import { initEventForm } from './../../constants';
 import { OnResultFunction } from 'react-qr-reader';
@@ -27,7 +27,7 @@ const Qr = () => {
     }
 
     setEvent(_event)
-  }, [state])
+  }, [state, navigate])
 
   const handleScanResult: OnResultFunction = async (result) => {
     if (!result) return
@@ -47,7 +47,6 @@ const Qr = () => {
     } catch (error) {
       message.error('Error al procesar QR.', 4);
     }
-
   };
 
   return (
