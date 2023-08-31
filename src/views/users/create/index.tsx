@@ -133,8 +133,8 @@ const UsersRegister = () => {
               typeControl: 'select',
               label: 'Empresa',
               name: 'company',
-              value: user.company,
-              onChange: (value: string) => setUser({ ...user, company: value }),
+              value: user.companyName,
+              onChange: (value: string) => setUser({ ...user, companyName: value.split("-")[0], companyUid: value.split("-")[1] }),
               md: 6,
               options: companies
             },

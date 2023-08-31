@@ -53,7 +53,8 @@ export interface User {
   name: string;
   phone: string;
   email: string;
-  company: Company | string;
+  companyName: Company | string;
+  companyUid: Company | string;
   password: string;
   confirmPassword?: string;
   role?: Rols;

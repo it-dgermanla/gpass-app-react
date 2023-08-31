@@ -24,7 +24,7 @@ const RowHeader: FC<Props> = ({ collapsed }) => {
       }
     >
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '1em' }}>
-        <img src={logo} alt="Logo" style={{ width: '50%', height: 'auto' }} />
+        <img src={logo} alt="Logo" style={{ width: '50%', height: 'auto', borderRadius: '20%' }} />
       </div>
       {
         !collapsed && <div style={screens.xs ? { color: "black" } : { color: "white" }}>
