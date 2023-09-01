@@ -90,8 +90,7 @@ const DynamicForm: FC<Props> = ({ inputs: inputsProp, layout, form, onFinish, lo
     file: ({ value, onChange, accept, maxCount, multiple, listType, withOutCrop = false }: CustomInput) => {
       const _value = value as UploadFile<any>[];
       const count = _value?.length || 0;
-      console.log('withOutCrop')
-      console.log(withOutCrop)
+
       maxCount = maxCount || 1;
 
       const disabled = count >= maxCount;

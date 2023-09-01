@@ -16,17 +16,16 @@ const roles = [
     value: 'Administrador',
     text: 'Administrador'
   },
-  ,
   {
     value: 'Embajador',
     text: 'Embajador'
   },
-  ,
   {
     value: 'Lector',
     text: 'Lector'
   }
-]
+];
+
 const collection = "Users";
 
 const UsersRegister = () => {
@@ -94,7 +93,7 @@ const UsersRegister = () => {
 
     try {
       if (type === "update") {
-           await post(`/users/${type}`, user, abortController.current!);
+        await post(`/users/${type}`, user, abortController.current!);
       } else {
         await post(`/users/${type}`, user, abortController.current!);
       }

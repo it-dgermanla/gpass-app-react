@@ -13,22 +13,23 @@ const basesUrlsImagesByCollection: Record<string, string> = {
 
 export const add = async <T extends { id?: string }>(collectionName: string, data: Record<string, any>) => {
   try {
+    const _data = { ...data };
 
-    if (data?.image?.length) {
-      const imgUploadFile = data?.image[0] as UploadFile;
+    if (_data?.image?.length) {
+      const imgUploadFile = _data?.image[0] as UploadFile;
 
       if (imgUploadFile.url?.includes(baseUrlStorage)) {
-        data.image = imgUploadFile.url;
+        _data.image = imgUploadFile.url;
       } else {
-        data.image = await uploadFile(imgUploadFile.originFileObj!, collectionName);
+        _data.image = await uploadFile(imgUploadFile.originFileObj!, collectionName);
       }
     } else {
-      data.image = basesUrlsImagesByCollection[collectionName] || "";
+      _data.image = basesUrlsImagesByCollection[collectionName] || "";
     }
 
-    const docRef = await addDoc(collection(db, collectionName), data);
+    const docRef = await addDoc(collection(db, collectionName), _data);
 
-    return { id: docRef.id, ...data } as T;
+    return { id: docRef.id, ..._data } as T;
   } catch (error) {
     throw handleError(error);
   }
@@ -55,6 +56,16 @@ export const update = async <T extends { id?: string }>(collectionName: string, 
 }
 
 export const getDocById = (collectionName: string, id: string) => getDoc(doc(db, collectionName, id));
+
+export const getDocByIdGeneric = async <T extends { id?: string }>(collectionName: string, id: string) => {
+  try {
+    const d = await getDoc(doc(db, collectionName, id));
+
+    return { id: d.id, ...d.data() } as T;
+  } catch (error) {
+    throw handleError(error);
+  }
+}
 
 export const getGenericDocById = async <T extends { id?: string }>(collectionName: string, id: string) => {
   try {

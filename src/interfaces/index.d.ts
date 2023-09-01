@@ -26,10 +26,12 @@ export interface Ticket {
   id?: string;
   eventId: string;
   number: number;
-  userScannerId: string;
   isScanned: "Si" | "No";
-  userScannerName: string;
   dateScanned?: Date;
+  userAmbassadorId?: string;
+  userAmbassadorName?: string;
+  userScannerId?: string;
+  userScannerName?: string;
 }
 
 export type EventForm = Omit<Event, "initialDate" | "finalDate"> & {
@@ -83,7 +85,7 @@ export interface CustomInput {
   loading?: boolean;
   listType?: UploadListType;
   disabledDate?: (date: Dayjs) => boolean;
-  withOutCrop?: boolean; 
+  withOutCrop?: boolean;
 }
 
 export interface Option {

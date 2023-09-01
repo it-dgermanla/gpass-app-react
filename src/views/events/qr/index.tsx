@@ -1,19 +1,16 @@
-import HeaderView from '../../components/headerView';
+import HeaderView from '../../../components/headerView';
 import { useState, useEffect } from 'react';
-import QrReader from '../../components/qr'
+import QrReader from '../../../components/qr'
 import { message } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { EventForm, Ticket } from './../../interfaces';
-import { initEventForm } from './../../constants';
+import { EventForm, Ticket } from '../../../interfaces';
+import { initEventForm } from '../../../constants';
 import { OnResultFunction } from 'react-qr-reader';
-import { update, getCollectionGeneric } from './../../services/firebase';
+import { update, getCollectionGeneric } from '../../../services/firebase';
 import { where } from 'firebase/firestore';
-import { useAuth } from '../../context/authContext';
-
 
 const Qr = () => {
   const navigate = useNavigate()
-  const { user } = useAuth();
   const location = useLocation();
   const { state } = location;
   const [event, setEvent] = useState<EventForm>(initEventForm)
@@ -37,12 +34,11 @@ const Qr = () => {
       const tickets = await getCollectionGeneric<Ticket>('Tickets', [where('eventId', '==', eventId), where('number', '==', +numberTicket)])
 
       if (tickets[0].isScanned === "Si") {
-        message.error('Este QR ya esta escaneado.', 4)
+        message.error('Este QR ya esta escaneado.', 4);
         return
       }
 
-      //falta guardar el nombre usuario
-      await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, isScanned: "Si", scannedDate: new Date() })
+      await update('Tickets', tickets[0].id!, { isScanned: "Si", scannedDate: new Date() })
       message.success('QR escaneado con èxito.', 7);
     } catch (error) {
       message.error('Error al procesar QR.', 4);
