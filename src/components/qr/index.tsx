@@ -1,4 +1,4 @@
-import { useRef, useState, FC } from 'react';
+import { useRef, useState, FC, useEffect } from 'react';
 import { QrReader, QrReaderProps } from 'react-qr-reader';
 import '../../index.css';
 import SaveButton from "../saveButton";
@@ -6,12 +6,13 @@ import { SecurityScanOutlined } from "@ant-design/icons";
 import { Grid } from 'antd';
 
 interface Props extends QrReaderProps {
-  img: string
+  img: string,
+  offCamera: boolean,
 }
 
-const QRScan: FC<Props> = ({ img, ...rest }) => {
+const QRScan: FC<Props> = ({ img, offCamera, ...rest }) => {
   const { useBreakpoint } = Grid;
-  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(true);
   const [loading, setLoading] = useState(false);
   const screens = useBreakpoint();
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -54,6 +55,10 @@ const QRScan: FC<Props> = ({ img, ...rest }) => {
       setLoading(false)
     }
   };
+
+  useEffect(() =>{
+    setIsCameraOn(offCamera)
+  },[offCamera])
 
   return (
     <div >

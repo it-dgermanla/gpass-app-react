@@ -1,7 +1,7 @@
 import HeaderView from '../../components/headerView';
 import { useState, useEffect } from 'react';
 import QrReader from '../../components/qr'
-import { message } from 'antd'
+import { Alert, Button, message, Modal, Space } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EventForm, Ticket } from './../../interfaces';
 import { initEventForm } from './../../constants';
@@ -17,6 +17,8 @@ const Qr = () => {
   const location = useLocation();
   const { state } = location;
   const [event, setEvent] = useState<EventForm>(initEventForm)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resultText, setResultText] = useState("");
 
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
@@ -43,7 +45,9 @@ const Qr = () => {
 
       //falta guardar el nombre usuario
       await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, isScanned: "Si", scannedDate: new Date() })
-      message.success('QR escaneado con èxito.', 7);
+      // message.success('QR escaneado con èxito.', 7);
+      setIsModalOpen(true)
+      setResultText(numberTicket)
     } catch (error) {
       message.error('Error al procesar QR.', 4);
     }
@@ -56,11 +60,25 @@ const Qr = () => {
       />
       {/* <QrCode /> */}
       <QrReader
+        offCamera={!isModalOpen}
         img={event?.image as string}
-        scanDelay={7000}
+        scanDelay={5000}
         onResult={handleScanResult}
         constraints={{ facingMode: 'environment' }}
       />
+      <Modal title="QR válido" open={isModalOpen} footer={null}>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Alert
+            message={`Listo ya puedes otorgar la Pizza del QR numero ${resultText} del evento.`}
+            description="Muchas gracias por el apoyo."
+            type="success"
+            showIcon
+          />
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <Button type="primary" onClick={() => setIsModalOpen(false)}>Listo</Button>
+          </div>
+        </Space>
+      </Modal>
     </div>
   )
 }
