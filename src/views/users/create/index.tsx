@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
-import { Card, Form, message } from 'antd'
+import { Card, Form, message, FormRule } from 'antd'
 import { initUser, rulePassword, titleForm } from '../../../constants';
 import { User, Option, Company } from '../../../interfaces';
 import { Rols, TypeRute } from '../../../types';
@@ -39,6 +39,10 @@ const UsersRegister = () => {
   const [user, setUser] = useState<User>(initUser)
   const [companies, setCompanies] = useState<Option[]>()
   const abortController = useAbortController();
+
+  const rulesPassword: FormRule[] = useMemo(() => [
+    { required: !user.id && user.password !== "", min: 6, message: 'La contraseña tiene que ser de 6 dígitos o más.' },
+  ], [user.password, user.id])
 
   useEffect(() => {
     let _user = { ...state } as User | null;
@@ -94,7 +98,7 @@ const UsersRegister = () => {
 
     try {
       if (type === "update") {
-           await post(`/users/${type}`, user, abortController.current!);
+        await post(`/users/${type}`, user, abortController.current!);
       } else {
         await post(`/users/${type}`, user, abortController.current!);
       }
@@ -151,8 +155,8 @@ const UsersRegister = () => {
             {
               typeControl: 'select',
               label: 'Empresa',
-              name: 'company',
-              value: user.companyName,
+              name: 'companyName',
+              value: user.companyName + "-" + user.companyUid,
               onChange: (value: string) => setUser({ ...user, companyName: value.split("-")[0], companyUid: value.split("-")[1] }),
               md: 6,
               options: companies
@@ -174,7 +178,7 @@ const UsersRegister = () => {
               name: "password",
               value: user.password,
               onChange: (value: Rols) => setUser({ ...user, password: value }),
-              rules: [rulePassword],
+              rules: rulesPassword,
             },
             {
               md: 6,
@@ -184,7 +188,7 @@ const UsersRegister = () => {
               name: "confirmPassword",
               value: user.confirmPassword,
               onChange: (value: Rols) => setUser({ ...user, confirmPassword: value }),
-              rules: [rulePassword],
+              rules: rulesPassword,
             },
           ]}
         />

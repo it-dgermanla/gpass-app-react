@@ -9,16 +9,16 @@ import { Rols } from "../../types";
 
 const firstRouteByUser: Record<Rols, string> = Object.freeze({
   "SuperAdministrador": "/empresas",
-  "Administrador": "/empresas",
+  "Administrador": "/eventos",
   "Embajador": "/eventos",
   "Lector": "/eventos"
 });
 
 const privateRoutesByUser: Record<Rols, readonly string[]> = {
   "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/eventos/registrar", "/eventos/editar", "/eventos/boletos", "/eventos/boletos", "/usuarios", "/usuarios/registrar", "/usuarios/editar", "/lector"],
-  "Administrador": ["/empresas", "/eventos", "/usarios"],
-  "Embajador": ["/eventos"],
-  "Lector": ["/eventos"]
+  "Administrador": ["/eventos", "/usuarios", "/lector"],
+  "Embajador": ["/eventos", "/lector"],
+  "Lector": ["/eventos", "/lector"]
 } as const;
 
 const RoterChecker = () => {
