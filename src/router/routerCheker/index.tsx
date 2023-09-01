@@ -6,6 +6,7 @@ import MenuComponent from '../../components/menu';
 import Breadcrumb from '../../components/breadcrumb';
 import FullLoader from "../../components/fullLoader";
 import { Rols } from "../../types";
+import { privateRoutesByUser } from './../../constants'; 
 
 const firstRouteByUser: Record<Rols, string> = Object.freeze({
   "SuperAdministrador": "/empresas",
@@ -13,13 +14,6 @@ const firstRouteByUser: Record<Rols, string> = Object.freeze({
   "Embajador": "/eventos",
   "Lector": "/eventos"
 });
-
-const privateRoutesByUser: Record<Rols, readonly string[]> = {
-  "SuperAdministrador": ["/empresas", "/empresas/registrar", "/empresas/editar", "/eventos", "/eventos/registrar", "/eventos/editar", "/eventos/boletos", "/eventos/boletos", "/usuarios", "/usuarios/registrar", "/usuarios/editar", "/lector"],
-  "Administrador": ["/eventos", "/usuarios", "/lector"],
-  "Embajador": ["/eventos", "/lector"],
-  "Lector": ["/eventos", "/lector"]
-} as const;
 
 const RoterChecker = () => {
   const { user, loading } = useAuth();

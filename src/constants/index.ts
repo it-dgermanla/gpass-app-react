@@ -1,5 +1,5 @@
 import { FormRule } from "antd";
-import { TypeRute } from "../types";
+import { Rols, TypeRute } from "../types";
 import { Company, User, EventForm, Event } from "../interfaces";
 import dayjs from "dayjs";
 
@@ -8,6 +8,26 @@ export const urlImageDefaultCompany = "https://firebasestorage.googleapis.com/v0
 export const urlImageDefaultEvent = "https://firebasestorage.googleapis.com/v0/b/gpass-apps.appspot.com/o/Events%2Fevento.png?alt=media&token=43afcd4d-5e32-4569-8a45-502e78932e1d";
 
 export const urlCloudFunction = "https://us-central1-gpass-apps.cloudfunctions.net/api";
+
+export const privateRoutesByUser: Record<Rols, string[]> = {
+  'SuperAdministrador': [
+    "/empresas",
+    "/empresas/registrar",
+    "/empresas/editar",
+    "/eventos",
+    "/eventos/registrar",
+    "/eventos/editar",
+    "/eventos/boletos",
+    "/eventos/boletos",
+    "/usuarios",
+    "/usuarios/registrar",
+    "/usuarios/editar",
+    "/lector"
+  ],
+  'Administrador': ["/eventos", "/usuarios", "/lector"],
+  'Embajador': ["/eventos", "/lector"],
+  'Lector': ["/eventos", "/lector"]
+}
 
 export const initEventForm: EventForm = {
   name: "",

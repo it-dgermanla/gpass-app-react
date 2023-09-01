@@ -12,6 +12,8 @@ interface Props {
 
 const Drawer: FC<Props> = ({ open, onClose }) => {
   const location = useLocation();
+  
+  console.log(menuItems)
 
   return (
     <DrawerAnt
