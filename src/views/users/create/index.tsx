@@ -84,8 +84,8 @@ const UsersRegister = () => {
       setSaving(false)
       return;
     }
-
-    const { password, confirmPassword } = user;
+    let _user = { ...user }
+    const { password, confirmPassword } = _user;
 
     if (confirmPassword !== password) {
       message.error('Las contraseñas no coinciden.');
@@ -93,13 +93,14 @@ const UsersRegister = () => {
       return;
     }
 
-    delete user.confirmPassword;
-
+    delete _user.confirmPassword;
+    _user.email = _user.email.toLocaleLowerCase()
+    
     try {
       if (type === "update") {
-        await post(`/users/${type}`, user, abortController.current!);
+        await post(`/users/${type}`, _user, abortController.current!);
       } else {
-        await post(`/users/${type}`, user, abortController.current!);
+        await post(`/users/${type}`, _user, abortController.current!);
       }
       message.success('Usuario guardado con éxito.', 4);
       navigate('/usuarios')
