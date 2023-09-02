@@ -27,8 +27,7 @@ const Users = () => {
         query={[where("disabled", "==", false), orderBy("createAt", "desc"), limit(20)]}
         searchValues={{
           name: "Nombre",
-          email: "Correo",
-          dateRange: "Rango de fechas"
+          email: "Correo"
         }}
       />
     </div>
