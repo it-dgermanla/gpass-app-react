@@ -30,6 +30,8 @@ export interface Ticket {
   isScanned: "Si" | "No";
   userScannerName: string;
   dateScanned?: Date;
+  isDownloaded: boolean;
+  createAt: Date,
 }
 
 export type EventForm = Omit<Event, "initialDate" | "finalDate"> & {

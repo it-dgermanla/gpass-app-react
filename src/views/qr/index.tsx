@@ -70,7 +70,7 @@ const Qr = () => {
         <Space direction="vertical" style={{ width: '100%' }}>
           <Alert
             message={`Listo ya puedes otorgar la Pizza del QR numero ${resultText} del evento.`}
-            description="Muchas gracias por el apoyo."
+            description="gracias por su apoyo."
             type="success"
             showIcon
           />

@@ -131,8 +131,9 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 					return (
 						<>
 							<Button
-								icon={<DownloadOutlined />}
-								onClick={() => {
+								icon={<DownloadOutlined style={{ color: t.isDownloaded ? '#ffffff' : "" }} />}
+								style={{ backgroundColor: t.isDownloaded ? '#34d960' : "" }}
+								onClick={async () => {
 									const elementPDFDownloadLink = document.getElementsByClassName(`ticket-${t.number}`)[0] as HTMLAnchorElement;
 									const canvas = document.getElementById(t.number.toString()) as HTMLCanvasElement;
 									const newWidth = 400;
@@ -149,6 +150,12 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 									const ticketUrl = resizedCanvas.toDataURL("image/octet-stream");
 
 									setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, ticketUrl }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
+									
+									if (!t.isDownloaded) {
+										await update("Tickets", t.id as string, { ...t, isDownloaded: true })
+										setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, isDownloaded: true }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
+									
+									}
 
 									setTimeout(() => {
 										elementPDFDownloadLink.click();

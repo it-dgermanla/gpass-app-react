@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
 import { Card, Form, message, FormRule } from 'antd'
-import { initUser, rulePassword, titleForm } from '../../../constants';
+import { initUser, titleForm } from '../../../constants';
 import { User, Option, Company } from '../../../interfaces';
 import { Rols, TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
