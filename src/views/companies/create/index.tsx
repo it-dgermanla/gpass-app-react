@@ -110,6 +110,7 @@ const CreateCompany = () => {
               md: 8,
               styleFI: { display: "flex", justifyContent: "center" },
               multiple: false,
+              withOutCrop: true
             },
             {
               typeControl: 'textarea',

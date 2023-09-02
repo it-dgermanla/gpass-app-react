@@ -65,13 +65,13 @@ const CreateEvent = () => {
           setTotalTicketsSaved(initTotalTickets);
 
           const totalNewTickets = _event.total! - initTotalTickets;
-          const tickets = Array.from({ length: totalNewTickets }).map((_, index) => ({ number: index + 1 + initTotalTickets, eventId: id, userScannerId: "", userScannerName: "", isScanned: "No" })) as Ticket[];
+          const tickets = Array.from({ length: totalNewTickets }).map((_, index) => ({ number: index + 1 + initTotalTickets, eventId: id, userScannerId: "", userScannerName: "", isScanned: "No", isDownloaded: false, createAt: new Date() })) as Ticket[];
 
           await saveTickets(tickets);
         }
       } else {
         const newEvent = await add<Event>(collectionName, _event);
-        const tickets = Array.from({ length: newEvent.total! }).map((_, index) => ({ number: index + 1, eventId: newEvent.id, userScannerId: "", userScannerName: "", isScanned: "No" })) as Ticket[];
+        const tickets = Array.from({ length: newEvent.total! }).map((_, index) => ({ number: index + 1, eventId: newEvent.id, userScannerId: "", userScannerName: "", isScanned: "No", isDownloaded: false, createAt: new Date() })) as Ticket[];
 
         await saveTickets(tickets);
       }
