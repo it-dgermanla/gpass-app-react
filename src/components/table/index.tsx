@@ -15,6 +15,17 @@ import { post } from './../../services/index';
 import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
 
+
+export interface Option {
+	key: string;
+	label: string;
+}
+
+export interface OptiosSearchValues {
+	propSearch: string;
+	options: Option[];
+}
+
 export interface PropsTable<T> extends PropsUseCollection {
 	header?: ReactNode;
 	columns: ColumnsType<T>;
@@ -27,6 +38,7 @@ export interface PropsTable<T> extends PropsUseCollection {
 	downloadPdf?: boolean;
 	imageEventUrl?: string;
 	onLoadData?: (data: T[]) => void;
+	optiosSearchValues?: OptiosSearchValues[];
 }
 
 interface TableData {
@@ -59,7 +71,21 @@ const stylesPDF = StyleSheet.create({
 	},
 });
 
-const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues, removeTableActions, downloadPdf, imageEventUrl, onLoadData }: PropsTable<T>) => {
+const Table = <T extends {}>({
+	columns: columnsProp,
+	wait, placeholderSearch,
+	pathEdit,
+	collection,
+	query: queryProp,
+	formatDate,
+	mergeResponse = true,
+	searchValues,
+	removeTableActions,
+	downloadPdf,
+	imageEventUrl,
+	onLoadData,
+	optiosSearchValues
+}: PropsTable<T>) => {
 	const location = useLocation();
 	const path = location;
 	const abortController = useAbortController();
@@ -219,6 +245,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 				}}
 				placeholder={placeholderSearch}
 				searchValues={searchValues}
+				optiosSearchValues={optiosSearchValues}
 			/>
 			<br />
 			<TableAnt

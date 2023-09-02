@@ -8,8 +8,10 @@ import { initEventForm } from '../../../constants';
 import { OnResultFunction } from 'react-qr-reader';
 import { update, getCollectionGeneric } from '../../../services/firebase';
 import { where } from 'firebase/firestore';
+import { useAuth } from "../../../context/authContext";
 
 const Qr = () => {
+  const { user } = useAuth();
   const navigate = useNavigate()
   const location = useLocation();
   const { state } = location;
@@ -38,7 +40,7 @@ const Qr = () => {
         return
       }
 
-      await update('Tickets', tickets[0].id!, { isScanned: "Si", scannedDate: new Date() })
+      await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, isScanned: "Si", scannedDate: new Date(), })
       message.success('QR escaneado con èxito.', 7);
     } catch (error) {
       message.error('Error al procesar QR.', 4);
