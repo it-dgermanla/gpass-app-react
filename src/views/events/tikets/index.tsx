@@ -1,4 +1,4 @@
-import { collection, doc, limit, orderBy, where, writeBatch } from "firebase/firestore"
+import { doc, limit, orderBy, where, writeBatch } from "firebase/firestore"
 import HeaderView from "../../../components/headerView"
 import Table, { PropsTable } from "../../../components/table"
 import { useEffect, useMemo, useState } from "react"
@@ -26,7 +26,6 @@ const Tickets = () => {
     query: [where("role", "in", ["Embajador", "Lector"])]
   }), []);
   const { loading, data: users } = useCollection<User>(propsUseCollection);
-  const [collectionName, setColletionName] = useState("Tickets");
   const [tickets, setTickets] = useState<TicketTable[]>([]);
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
@@ -92,7 +91,7 @@ const Tickets = () => {
     wait: loading,
     columns: columns,
     placeholderSearch: "Buscar por numero...",
-    collection: collectionName,
+    collection: "Tickets",
     query: [where("eventId", "==", event?.id || ""), orderBy("number"), limit(20)],
     formatDate: "DD/MM/YYYY hh:mm a",
     searchValues: {
@@ -118,7 +117,7 @@ const Tickets = () => {
     downloadPdf: true,
     imageEventUrl: event.image as string,
     onLoadData: setTickets
-  }), [event, columns, loading, collectionName]);
+  }), [event, columns, loading]);
 
   const onFinish = async (values: Record<string, string | undefined>) => {
     if (saving) return;
