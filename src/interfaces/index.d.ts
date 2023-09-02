@@ -20,6 +20,8 @@ export interface Event {
   disabled?: boolean;
   createAt: Date;
   total?: number;
+  companyName: Company | string;
+  companyUid: Company | string;
 }
 
 export interface Ticket {

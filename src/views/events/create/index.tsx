@@ -11,10 +11,12 @@ import dayjs, { Dayjs } from 'dayjs';
 import { getArrayChunk, setImagesToState } from "../../../utils/functions";
 import { collection, doc, where, writeBatch } from 'firebase/firestore';
 import { db } from "../../../firebaseConfig";
+import { useAuth } from '../../../context/authContext';
 
 const collectionName = "Events";
 
 const CreateEvent = () => {
+  const { user } = useAuth();
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const CreateEvent = () => {
   const [event, setEvent] = useState<EventForm>(initEventForm);
   const [totalTicketsSaved, setTotalTicketsSaved] = useState(0);
   const [initTotalTickets, setInitTotalTickets] = useState(0);
+ 
 
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
@@ -34,16 +37,17 @@ const CreateEvent = () => {
 
     _event = setImagesToState(_event);
 
-    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
+    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate)});
     setInitTotalTickets(_event.total!);
   }, [state, form])
 
   const onFinish = async () => {
+    
     if (saving) return;
 
     try {
       setSaving(true);
-
+      const dataUser = await getCollectionGeneric<EventForm>("Users", [where("email", "==", user?.email)])
       const duplicateData = await getCollectionGeneric<EventForm>(collectionName, [where("name", "==", event.name)])
 
       if (duplicateData.length && (!event.id || (event.id && event.id !== duplicateData[0].id))) {
@@ -53,8 +57,8 @@ const CreateEvent = () => {
 
       const initialDate = event.initialDate.set('hour', 0).set('minute', 0).set('second', 0).toDate();
       const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
-      const _event = { ...event, initialDate, finalDate };
-
+      const _event = { ...event, initialDate, finalDate, companyName: dataUser[0].companyName, companyUid: dataUser[0].companyUid};
+     
       if (type === "update") {
         const id = _event.id!;
 

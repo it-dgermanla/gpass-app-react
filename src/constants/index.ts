@@ -36,6 +36,8 @@ export const initEventForm: EventForm = {
   disabled: false,
   createAt: new Date(),
   total: 0,
+  companyName: "",
+  companyUid: "",
 };
 
 export const initEvent: Event = {
@@ -46,6 +48,8 @@ export const initEvent: Event = {
   disabled: false,
   createAt: new Date(),
   total: 0,
+  companyName: "",
+  companyUid: "",
 };
 
 export const initCompany: Company = {
