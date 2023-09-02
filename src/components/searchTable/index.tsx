@@ -1,15 +1,17 @@
 import { FC, useState } from 'react';
 import { Col, Input, Row, Select } from 'antd';
+import { OptiosSearchValues } from "../table";
 
 interface Props {
   onSearch: (search: string, keySearch: string) => void;
   placeholder?: string;
   searchValues: Record<string, string>;
+  optiosSearchValues?: OptiosSearchValues[];
 }
 
 const { Search } = Input;
 
-const SearchTable: FC<Props> = ({ onSearch, placeholder, searchValues }) => {
+const SearchTable: FC<Props> = ({ onSearch, placeholder, searchValues, optiosSearchValues }) => {
   const [keySearch, setKeySearch] = useState<string>(Object.keys(searchValues)[0]);
 
   return (
@@ -28,12 +30,25 @@ const SearchTable: FC<Props> = ({ onSearch, placeholder, searchValues }) => {
         </Select>
       </Col>
       <Col md={20}>
-        <Search
-          enterButton
-          onSearch={(value) => onSearch(value, keySearch)}
-          placeholder={placeholder}
-          style={{ width: '100%' }}
-        />
+        {
+          optiosSearchValues?.some(option => option.propSearch === keySearch)
+            ? <Select style={{ width: '100%' }} onChange={(value) => onSearch(value, keySearch)}>
+              {
+                optiosSearchValues.find(optionSearch => optionSearch.propSearch === keySearch)?.options.map(option => (
+                  <Select.Option key={option.key} value={option.key}>
+                    {option.label}
+                  </Select.Option>
+                ))
+              }
+            </Select>
+            : <Search
+              enterButton
+              onSearch={(value) => onSearch(value, keySearch)}
+              placeholder={placeholder}
+              style={{ width: '100%' }}
+            />
+        }
+
       </Col>
     </Row>
   )

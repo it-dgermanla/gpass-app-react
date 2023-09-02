@@ -16,17 +16,16 @@ const roles = [
     value: 'Administrador',
     text: 'Administrador'
   },
-  ,
   {
     value: 'Embajador',
     text: 'Embajador'
   },
-  ,
   {
     value: 'Lector',
     text: 'Lector'
   }
-]
+];
+
 const collection = "Users";
 
 const UsersRegister = () => {

@@ -115,9 +115,9 @@ const CreateCompany = () => {
             {
               typeControl: 'textarea',
               typeInput: 'text',
-              label: 'Descripción',
+              label: 'Dirección',
               name: 'address',
-              rules: [{ required: true, message: 'Favor de escribir la direccion de la empresa.' }],
+              rules: [{ required: true, message: 'Favor de escribir la dirección de la empresa.' }],
               value: company.address,
               onChange: (value: string) => setCompany({ ...company, address: value }),
               md: 24

@@ -12,7 +12,7 @@ export interface PropsUseCollection {
   mergeResponse?: boolean;
 }
 
-const useCollection = <T extends { id: string }>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true, mergeResponse }: PropsUseCollection) => {
+const useCollection = <T extends { id?: string }>({ collection, query, extraPropsByItemArray, formatDate, wait, initLoading = true, mergeResponse }: PropsUseCollection) => {
   const [loading, setLoading] = useState<boolean>(initLoading);
   const [data, setData] = useState<Array<T>>([]);
   const [error, setError] = useState<unknown>()

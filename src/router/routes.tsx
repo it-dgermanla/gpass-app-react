@@ -8,7 +8,7 @@ const Events = lazy(() => import('../views/events'));
 const EventsRegister = lazy(() => import('../views/events/create'));
 const Users = lazy(() => import('../views/users'));
 const UsersRegister = lazy(() => import('../views/users/create'));
-const Scanner = lazy(() => import('../views/qr'));
+const Scanner = lazy(() => import('../views/events/qr'));
 const Tickets = lazy(() => import('../views/events/tikets'));
 
 const routes: PathRouteProps[] = [

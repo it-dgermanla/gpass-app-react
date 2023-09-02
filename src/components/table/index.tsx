@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Empty, Table as TableAnt } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import SearchTable from '../searchTable';
@@ -15,7 +15,19 @@ import { post } from './../../services/index';
 import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
 
-interface Props<T> extends PropsUseCollection {
+
+export interface Option {
+	key: string;
+	label: string;
+}
+
+export interface OptiosSearchValues {
+	propSearch: string;
+	options: Option[];
+}
+
+export interface PropsTable<T> extends PropsUseCollection {
+	header?: ReactNode;
 	columns: ColumnsType<T>;
 	wait?: boolean;
 	placeholderSearch?: string;
@@ -25,6 +37,8 @@ interface Props<T> extends PropsUseCollection {
 	removeTableActions?: boolean;
 	downloadPdf?: boolean;
 	imageEventUrl?: string;
+	onLoadData?: (data: T[]) => void;
+	optiosSearchValues?: OptiosSearchValues[];
 }
 
 interface TableData {
@@ -57,18 +71,25 @@ const stylesPDF = StyleSheet.create({
 	},
 });
 
-
-
-const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pathEdit, collection, query: queryProp, formatDate, mergeResponse = true, searchValues, removeTableActions, downloadPdf, imageEventUrl }: Props<T>) => {
+const Table = <T extends {}>({
+	columns: columnsProp,
+	wait, placeholderSearch,
+	pathEdit,
+	collection,
+	query: queryProp,
+	formatDate,
+	mergeResponse = true,
+	searchValues,
+	removeTableActions,
+	downloadPdf,
+	imageEventUrl,
+	onLoadData,
+	optiosSearchValues
+}: PropsTable<T>) => {
 	const location = useLocation();
 	const path = location;
 	const abortController = useAbortController();
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
-
-	const onDelete = async (r: any) => {
-		await post(`/users/del`, r, abortController.current!);
-	}
-
 	const query = useMemo<QueryConstraint[]>(() => {
 		const { search, searchKey, lastDoc } = tableData;
 		const _query = [...queryProp];
@@ -89,8 +110,9 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 
 		return _query;
 	}, [tableData, queryProp]);
-
 	const { loading, data, setData } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
+
+	const deleteUser = useCallback((r: T & { id: string; }) => post(`/users/del`, r, abortController.current!), [abortController]);
 
 	useEffect(() => {
 		if (loading) return;
@@ -118,6 +140,10 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 			tableBody?.removeEventListener('scroll', () => { });
 		};
 	}, [collection, loading]);
+
+	useEffect(() => {
+		onLoadData && onLoadData(data)
+	}, [data, onLoadData])
 
 	const columns = useMemo<ColumnsType<T>>(() => {
 		if (downloadPdf) {
@@ -159,7 +185,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 
 									setTimeout(() => {
 										elementPDFDownloadLink.click();
-									}, 200);
+									}, 1000);
 								}}
 							/>
 							<PDFDownloadLink
@@ -206,14 +232,14 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 									setTableData(prev => ({ ...prev, collection }))
 								}, 200)
 							}}
-							fun={() => path.pathname === "/usuarios" ? onDelete(r) : update(collection, r.id, { disabled: true })}
+							fun={() => path.pathname === "/usuarios" ? deleteUser(r) : update(collection, r.id, { disabled: true })}
 							pathEdit={pathEdit}
 						/>
 					)
 				},
 			}
 		];
-	}, [columnsProp, pathEdit, collection, removeTableActions, downloadPdf, imageEventUrl, setData, path]);
+	}, [columnsProp, pathEdit, collection, removeTableActions, downloadPdf, imageEventUrl, setData, path, deleteUser]);
 
 	return (
 		<div>
@@ -226,6 +252,7 @@ const Table = <T extends {}>({ columns: columnsProp, wait, placeholderSearch, pa
 				}}
 				placeholder={placeholderSearch}
 				searchValues={searchValues}
+				optiosSearchValues={optiosSearchValues}
 			/>
 			<br />
 			<TableAnt
