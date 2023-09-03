@@ -10,7 +10,7 @@ const Users = () => {
     { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
     { title: 'Correo', dataIndex: 'email', key: 'email' },
     { title: 'Teléfono', dataIndex: 'phone', key: 'phone' },
-    { title: 'Rol', dataIndex: 'role', key: 'phone' }
+    { title: 'Rol', dataIndex: 'role', key: 'role' }
   ], [])
 
   return (
@@ -27,8 +27,30 @@ const Users = () => {
         query={[where("disabled", "==", false), orderBy("createAt", "desc"), limit(20)]}
         searchValues={{
           name: "Nombre",
-          email: "Correo"
+          email: "Correo",
+          role: "Rol"
         }}
+        optiosSearchValues={
+          [
+            {
+              propSearch: "role",
+              options: [
+                {
+                  key: "Administrador",
+                  label: "Administrador"
+                },
+                {
+                  key: "Embajador",
+                  label: "Embajador"
+                },
+                {
+                  key: "Lector",
+                  label: "Lector"
+                }
+              ]
+            }
+          ]
+         }
       />
     </div>
   )
