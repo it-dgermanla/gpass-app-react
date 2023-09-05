@@ -13,8 +13,6 @@ interface Props {
 const Drawer: FC<Props> = ({ open, onClose }) => {
   const location = useLocation();
   
-  console.log(menuItems)
-
   return (
     <DrawerAnt
       headerStyle={{ backgroundColor: '#CF9F29', color: "white" }}
