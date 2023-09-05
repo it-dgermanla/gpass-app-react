@@ -1,15 +1,15 @@
 import HeaderView from '../../../components/headerView';
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Alert, Button, message, Modal, Space } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EventForm, Ticket, Event, User } from '../../../interfaces';
-import { initEventForm } from '../../../constants';
-import { OnResultFunction } from 'react-qr-reader';
+import { initEvent, initEventForm } from '../../../constants';
 import { update, getCollectionGeneric, getGenericDocById } from '../../../services/firebase';
 import { Timestamp, where } from 'firebase/firestore';
 import { useAuth } from "../../../context/authContext";
 import QRScan from "../../../components/QRScan";
 import { Spin } from 'antd';
+import { OnResultFunction } from 'react-qr-reader';
 
 interface AlertProps {
   message: string;
@@ -22,7 +22,6 @@ const Qr = () => {
   const navigate = useNavigate()
   const location = useLocation();
   const { state } = location;
-  const [event, setEvent] = useState<EventForm>(initEventForm)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setIsModalData] = useState<AlertProps>({
     message: "",
@@ -31,16 +30,16 @@ const Qr = () => {
   });
   const [scanActive, setScanActive] = useState(true);
 
-  useEffect(() => {
-    let _event = { ...state } as EventForm | null;
-
-    if (!_event) {
-      navigate("/eventos")
-      return
+  const event = useMemo(() => {
+    if (state) {
+      return state as Event;
     }
 
-    setEvent(_event)
-  }, [state, navigate])
+    window.location.href = "/eventos";
+
+    return initEvent;
+  }, [state]);
+  
 
   const handleScanResult: OnResultFunction = async (result) => {
     if (!result) return
@@ -52,6 +51,19 @@ const Qr = () => {
       const responseEvent = await getGenericDocById<Event>('Events', eventId)
       const tickets = await getCollectionGeneric<Ticket>('Tickets', [where('eventId', '==', eventId), where('number', '==', + numberTicket)])
       const finalDate = responseEvent.finalDate as any as Timestamp;
+
+      console.log(eventId)
+      console.log(event)
+      console.log(event.id)
+      if (eventId !== event.id) {
+        setIsModalData({
+          message: `Este boleto no coincide con el evento - ${event?.name.toUpperCase()}`,
+          description: "favor de seleccionar un boleto correspondiente al evento.",
+          type: "error"
+        })
+
+        return
+      }
 
       if (responseEvent.disabled) {
         setIsModalData({
@@ -66,7 +78,7 @@ const Qr = () => {
       if (finalDate.toDate() < new Date()) {
         setIsModalData({
           message: `Este evento se encuentra vencido.`,
-          description: "favor de intentar con otro ticket válido",
+          description: "favor de intentar con otro boleto válido",
           type: "error"
         })
 
@@ -76,7 +88,7 @@ const Qr = () => {
       if (tickets[0].isScanned === "Si") {
         setIsModalData({
           message: `Este QR ya esta escaneado.`,
-          description: "favor de intentar con otro ticket válido",
+          description: "favor de intentar con otro boleto válido",
           type: "error"
         })
 
@@ -100,7 +112,7 @@ const Qr = () => {
   return (
     <div style={{ margin: 20 }}>
       <HeaderView
-        title="Lector Qr"
+        title={"Lector de Boletos - " + event?.name}
       />
       {/* <QrCode /> */}
       {scanActive ? (
@@ -115,7 +127,7 @@ const Qr = () => {
         <Spin />
       )}
 
-      <Modal title="QR válido" open={isModalOpen} footer={null}>
+      <Modal title="" open={isModalOpen} footer={null}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Alert
             message={modalData.message}
