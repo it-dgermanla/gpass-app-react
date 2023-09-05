@@ -6,7 +6,7 @@ import TableActionsButtons from "./tableActionsButtons";
 import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
-import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, orderBy, startAfter, startAt } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, orderBy, startAfter, startAt, where } from "firebase/firestore";
 import { PDFDownloadLink, Document, Page, Image, StyleSheet } from '@react-pdf/renderer';
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
@@ -14,6 +14,7 @@ import { Ticket } from "../../interfaces";
 import { post } from './../../services/index';
 import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
+import { Dayjs } from "dayjs";
 
 
 export interface Option {
@@ -42,7 +43,7 @@ export interface PropsTable<T> extends PropsUseCollection {
 }
 
 interface TableData {
-	search: string;
+	search: string | Dayjs[];
 	searchKey: string;
 	lastDoc?: DocumentSnapshot<DocumentData, DocumentData>;
 	collection: string;
@@ -94,11 +95,7 @@ const Table = <T extends {}>({
 		const { search, searchKey, lastDoc } = tableData;
 		const _query = [...queryProp];
 
-		if (lastDoc) {
-			_query.push(startAfter(lastDoc));
-		}
-
-		if (search) {
+		if (search && typeof search === "string") {
 			const indexOrderBy = _query.findIndex(q => q.type === "orderBy");
 
 			if (indexOrderBy >= 0) {
@@ -106,6 +103,22 @@ const Table = <T extends {}>({
 			}
 
 			_query.push(...[orderBy(searchKey), startAt(search), endAt(search + '\uf8ff')]);
+		}
+
+		if (search && Array.isArray(search)) {
+			const indexOrderBy = _query.findIndex(q => q.type === "orderBy");
+
+			if (indexOrderBy >= 0) {
+				_query.splice(indexOrderBy, 1);
+			}
+
+			const _search = search as Dayjs[];
+
+			_query.push(...[orderBy(searchKey, "desc"), where(searchKey, ">=", _search[0].toDate()), where(searchKey, "<=", _search[1].toDate())])
+		}
+
+		if (lastDoc) {
+			_query.push(startAfter(lastDoc));
 		}
 
 		return _query;
@@ -142,7 +155,7 @@ const Table = <T extends {}>({
 	}, [collection, loading]);
 
 	useEffect(() => {
-		onLoadData && onLoadData(data)
+		onLoadData && onLoadData(data);
 	}, [data, onLoadData])
 
 	const columns = useMemo<ColumnsType<T>>(() => {
@@ -176,11 +189,10 @@ const Table = <T extends {}>({
 									const ticketUrl = resizedCanvas.toDataURL("image/octet-stream");
 
 									setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, ticketUrl }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
-									
+
 									if (!t.isDownloaded) {
 										await update("Tickets", t.id as string, { ...t, isDownloaded: true })
 										setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, isDownloaded: true }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
-									
 									}
 
 									setTimeout(() => {

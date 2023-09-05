@@ -11,7 +11,6 @@ const App = () => {
         <MyRouter />
       </AuthProvider>
     </ConfigProvider>
-  
   )
 }
 

@@ -56,6 +56,8 @@ const Qr = () => {
     <div style={{ margin: 20 }}>
       <HeaderView
         title="Lector Qr"
+        path="/eventos"
+        goBack
       />
       {/* <QrCode /> */}
       <QRScan

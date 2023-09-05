@@ -8,7 +8,7 @@ import { EventForm, Event, Ticket } from '../../../interfaces';
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import dayjs, { Dayjs } from 'dayjs';
-import { getArrayChunk, setImagesToState } from "../../../utils/functions";
+import { getArrayChunk, setImagesToState, sleep } from "../../../utils/functions";
 import { collection, doc, where, writeBatch } from 'firebase/firestore';
 import { db } from "../../../firebaseConfig";
 import { useAuth } from '../../../context/authContext';
@@ -26,7 +26,7 @@ const CreateEvent = () => {
   const [event, setEvent] = useState<EventForm>(initEventForm);
   const [totalTicketsSaved, setTotalTicketsSaved] = useState(0);
   const [initTotalTickets, setInitTotalTickets] = useState(0);
- 
+
 
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
@@ -37,12 +37,12 @@ const CreateEvent = () => {
 
     _event = setImagesToState(_event);
 
-    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate)});
+    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
     setInitTotalTickets(_event.total!);
   }, [state, form])
 
   const onFinish = async () => {
-    
+
     if (saving) return;
 
     try {
@@ -57,8 +57,8 @@ const CreateEvent = () => {
 
       const initialDate = event.initialDate.set('hour', 0).set('minute', 0).set('second', 0).toDate();
       const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
-      const _event = { ...event, initialDate, finalDate, companyName: dataUser[0].companyName, companyUid: dataUser[0].companyUid};
-     
+      const _event = { ...event, initialDate, finalDate, companyName: dataUser[0].companyName, companyUid: dataUser[0].companyUid };
+
       if (type === "update") {
         const id = _event.id!;
 
@@ -92,6 +92,10 @@ const CreateEvent = () => {
       const ticketsChunk = getArrayChunk(tickets, 500);
 
       for (let i = 0; i < ticketsChunk.length; i++) {
+        if (i > 0 && i % 20 === 0) {
+          await sleep(80000);
+        }
+
         const batch = writeBatch(db);
         const _tickets = ticketsChunk[i];
 
@@ -166,7 +170,7 @@ const CreateEvent = () => {
               rules: event.id
                 ? [{
                   message: `La cantidad de boletos no puede ser menor a ${initTotalTickets}`,
-                  validator: (rule, value?: string) => !value || +value <initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
+                  validator: (rule, value?: string) => !value || +value < initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
                 }]
                 : [{ required: true, message: 'Favor de escribir la cantidad de boletos.' }],
               value: event.total,

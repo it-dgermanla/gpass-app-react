@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { limit, orderBy, where } from 'firebase/firestore';
+import { QueryConstraint, limit, orderBy, where } from 'firebase/firestore';
 import HeaderView from "../../components/headerView";
 import Table from '../../components/table';
 import { Event } from '../../interfaces';
@@ -9,10 +9,11 @@ import { Button } from "antd";
 import { MdConfirmationNumber } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { SecurityScanOutlined } from '@ant-design/icons';
-
+import { useAuth } from "../../context/authContext";
 
 const Events = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   const columns: ColumnsType<Event> = useMemo(() => [
     {
@@ -20,7 +21,12 @@ const Events = () => {
       dataIndex: "lector",
       key: "lector",
       render: (_, event) => (
-        <Button onClick={() => navigate("/lector", { state: event })} type="primary" shape="round" icon={<SecurityScanOutlined />} size={"large"} />
+        <Button
+          onClick={() => navigate("/lector", { state: event })}
+          type="primary"
+          shape="circle"
+          icon={<SecurityScanOutlined />}
+        />
       )
     },
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
@@ -33,9 +39,23 @@ const Events = () => {
       key: "tickets",
       render: (_, event) => (
         <Button
+          type="primary"
           onClick={() => navigate("/eventos/boletos", { state: event })}
           shape="circle"
-          icon={<MdConfirmationNumber />}
+          icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
+        />
+      )
+    },
+    {
+      title: "Asignar boletos",
+      dataIndex: "tickets",
+      key: "tickets",
+      render: (_, event) => (
+        <Button
+          type="primary"
+          onClick={() => navigate("/eventos/asignar-boletos", { state: event })}
+          shape="circle"
+          icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
         />
       )
     },
@@ -52,6 +72,18 @@ const Events = () => {
     }
   ], [navigate]);
 
+  const query = useMemo<QueryConstraint[]>(() => {
+    if (loading) return [];
+
+    const query = [where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)];
+
+    if (!["SuperAdministrador", "Administrador"].includes(user?.displayName!)) {
+
+    }
+
+    return query;
+  }, [user, loading])
+
   return (
     <div style={{ margin: 20 }}>
       <HeaderView
@@ -63,7 +95,7 @@ const Events = () => {
         placeholderSearch="Buscar por nombre..."
         pathEdit="/eventos/editar"
         collection="Events"
-        query={[where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)]}
+        query={query}
         formatDate="DD/MM/YYYY hh:mm a"
         searchValues={{
           name: "Nombre"
