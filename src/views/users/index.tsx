@@ -23,7 +23,7 @@ const Users = () => {
       const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
       const selectComapanies = response.map((company) => {
         return {
-          key: company.name,
+          key: company.id,
           label: company.name
         }
       })
@@ -49,7 +49,7 @@ const Users = () => {
           name: "Nombre",
           email: "Correo",
           role: "Rol",
-          companyName: "Empresa"
+          companyUid: "Empresa"
         }}
         optiosSearchValues={
           [
@@ -71,7 +71,7 @@ const Users = () => {
               ]
             },
             {
-              propSearch: "companyName",
+              propSearch: "companyUid",
               options: companies
             } 
           ]
