@@ -77,9 +77,7 @@ const Users = () => {
       )
     },
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
-    { title: 'Correo', dataIndex: 'email', key: 'email' },
-    { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
-    { title: 'Rol', dataIndex: 'role', key: 'role' }
+    { title: 'Correo', dataIndex: 'email', key: 'email' }
   ], [onChange])
 
   return (
@@ -94,7 +92,7 @@ const Users = () => {
         collection="Users"
         query={[
           where("disabled", "==", false), orderBy("createAt", "desc"), limit(10),
-          where("companyName", "==", userFirestore?.companyName),
+          where("companyName", "==", event?.companyName),
           where("role", "==", "Lector")
         ]}
         searchValues={{
