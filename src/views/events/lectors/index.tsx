@@ -94,7 +94,7 @@ const Users = () => {
         collection="Users"
         query={[
           where("disabled", "==", false), orderBy("createAt", "desc"), limit(10),
-          where("companyName", "==", userData.companyName),
+          where("companyName", "==", event.companyName),
           where("role", "==", "Lector")
         ]}
         searchValues={{
