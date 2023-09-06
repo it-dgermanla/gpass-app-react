@@ -9,10 +9,11 @@ import { Button } from "antd";
 import { MdConfirmationNumber } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { SecurityScanOutlined, UserAddOutlined } from '@ant-design/icons';
-
+import { useAuth } from "./../../context/authContext";
 
 const Events = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const columns: ColumnsType<Event> = useMemo(() => [
     {
@@ -32,11 +33,15 @@ const Events = () => {
       dataIndex: "tickets",
       key: "tickets",
       render: (_, event) => (
-        <Button
-          onClick={() => navigate("/eventos/boletos", { state: event })}
-          shape="circle"
-          icon={<MdConfirmationNumber />}
-        />
+        <>
+          {
+            ["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!) && <Button
+              onClick={() => navigate("/eventos/boletos", { state: event })}
+              shape="circle"
+              icon={<MdConfirmationNumber />}
+            />
+          }
+        </>
       )
     },
     {
@@ -44,11 +49,16 @@ const Events = () => {
       dataIndex: "lector",
       key: "lector",
       render: (_, event) => (
-        <Button
-          onClick={() => navigate("/eventos/lectores", { state: event })}
-          shape="circle"
-          icon={<UserAddOutlined />}
-        />
+        <>
+          {
+            ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && <Button
+              onClick={() => navigate("/eventos/lectores", { state: event })}
+              shape="circle"
+              icon={<UserAddOutlined />}
+            />
+          }
+        </>
+
       )
     },
     {
