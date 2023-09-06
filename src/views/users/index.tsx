@@ -3,9 +3,10 @@ import { useMemo } from 'react';
 import HeaderView from '../../components/headerView';
 import Table from '../../components/table';
 import { limit, orderBy, where } from 'firebase/firestore';
+import { User } from "../../interfaces";
 
 const Users = () => {
-  const columns: ColumnsType<any> = useMemo(() => [
+  const columns: ColumnsType<User> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
     { title: 'Correo', dataIndex: 'email', key: 'email' },

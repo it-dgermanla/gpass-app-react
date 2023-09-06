@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { PathRouteProps } from 'react-router-dom';
+import AssignTickets from "../views/events/assignTickets";
 
 const LandingPage = lazy(() => import('../views/landingPage'));
 const Companies = lazy(() => import('../views/companies'));
@@ -44,6 +45,10 @@ const routes: PathRouteProps[] = [
   {
     path: '/eventos/boletos',
     element: <Tickets />
+  },
+  {
+    path: '/eventos/asignar-boletos',
+    element: <AssignTickets />
   },
   {
     path: '/eventos/lectores',

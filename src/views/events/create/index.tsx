@@ -8,7 +8,7 @@ import { EventForm, Event, Ticket, Company, Option, CustomInput } from '../../..
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import dayjs, { Dayjs } from 'dayjs';
-import { getArrayChunk, setImagesToState } from "../../../utils/functions";
+import { getArrayChunk, setImagesToState, sleep } from "../../../utils/functions";
 import { collection, doc, where, writeBatch } from 'firebase/firestore';
 import { db } from "../../../firebaseConfig";
 import { useAuth } from '../../../context/authContext';
@@ -26,24 +26,36 @@ const CreateEvent = () => {
   const [event, setEvent] = useState<EventForm>(initEventForm);
   const [totalTicketsSaved, setTotalTicketsSaved] = useState(0);
   const [initTotalTickets, setInitTotalTickets] = useState(0);
-  const [companies, setCompanies] = useState<Option[]>()
+  const [companies, setCompanies] = useState<Option[]>();
+  
+  useEffect(() => {
+    let _event = { ...state } as EventForm | null;
 
-  const dataCompanies = async () => {
-    const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
-    if (!response) return
+    setType(_event?.id ? "update" : "create");
 
-    const selectComapanies = response.map((company) => {
-      return {
-        value: company.name + "-" + company.id,
-        text: company.name
-      }
-    })
+    if (!_event?.id) return;
 
-    setCompanies(selectComapanies as Option[])
-  }
+    _event = setImagesToState(_event);
+
+     const init = () => {
+      const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
+      
+      const selectComapanies = response.map((company) => {
+        return {
+          value: company.name + "-" + company.id,
+          text: company.name
+        }
+      })
+
+      setCompanies(selectComapanies as Option[]);     
+      setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
+      setInitTotalTickets(_event.total!);
+     }
+     
+     init();
+  }, [state, form])
 
   const onFinish = async () => {
-
     if (saving) return;
 
     try {
@@ -60,11 +72,13 @@ const CreateEvent = () => {
       const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
 
       const _event = {
-        ...event, initialDate, finalDate,
+        ...event, 
+        initialDate, 
+        finalDate,
         companyName: user?.displayName !== "SuperAdministrador" ? dataUser[0]?.companyName : event.companyName,
         companyUid: user?.displayName !== "SuperAdministrador" ? dataUser[0]?.companyUid : event.companyUid
       };
-      console.log(_event)
+  
       if (type === "update") {
         const id = _event.id!;
 
@@ -80,7 +94,7 @@ const CreateEvent = () => {
           await saveTickets(tickets);
         }
       } else {
-        const newEvent = await add<Event>(collectionName, _event);
+        const newEvent = await add<Event>(collectionName, { ..._event, ambassadorsRanges: [], userAmbassadorIds: [] });
         const tickets = Array.from({ length: newEvent.total! }).map((_, index) => ({ number: index + 1, eventId: newEvent.id, userScannerId: "", userScannerName: "", isScanned: "No", isDownloaded: false, createAt: new Date() })) as Ticket[];
 
         await saveTickets(tickets);
@@ -98,6 +112,10 @@ const CreateEvent = () => {
       const ticketsChunk = getArrayChunk(tickets, 500);
 
       for (let i = 0; i < ticketsChunk.length; i++) {
+        if (i > 0 && i % 20 === 0) {
+          await sleep(80000);
+        }
+
         const batch = writeBatch(db);
         const _tickets = ticketsChunk[i];
 
@@ -115,23 +133,6 @@ const CreateEvent = () => {
       throw error;
     }
   }
-
-  useEffect(() => {
-    dataCompanies()
-  }, [])
-
-  useEffect(() => {
-    let _event = { ...state } as EventForm | null;
-
-    setType(_event?.id ? "update" : "create");
-
-    if (!_event?.id) return;
-
-    _event = setImagesToState(_event);
-
-    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
-    setInitTotalTickets(_event.total!);
-  }, [state, form])
 
   const inputs = useMemo(() => {
     const inputs: CustomInput[] = [

@@ -22,6 +22,19 @@ export interface Event {
   total?: number;
   companyName: Company | string;
   companyUid: Company | string;
+  userAmbassadorIds: string[];
+  ambassadorsRanges: AmbassadorRanges[];
+}
+
+export interface AmbassadorRanges {
+  userAmbassadorId: string;
+  ranges: Range[];
+}
+
+export interface Range {
+  index: number;
+  startRange?: number;
+  endRange?: number;
   userScannerIds?: string[]
 }
 
@@ -36,12 +49,12 @@ export interface Ticket {
   userScannerId?: string;
   userScannerName?: string;
   isDownloaded: boolean;
-  createAt: Date,
+  createAt: Date;
 }
 
 export type EventForm = Omit<Event, "initialDate" | "finalDate"> & {
-  initialDate: Dayjs
-  finalDate: Dayjs
+  initialDate: Dayjs;
+  finalDate: Dayjs;
 }
 
 export interface Company {
@@ -60,7 +73,7 @@ export interface User {
   name: string;
   phone: string;
   email: string;
-  companyName: Company | string;
+  companyName: string;
   companyUid: Company | string;
   password: string;
   confirmPassword?: string;

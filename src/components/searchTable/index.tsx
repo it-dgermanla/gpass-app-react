@@ -1,9 +1,10 @@
 import { FC, useState } from 'react';
-import { Col, Input, Row, Select } from 'antd';
+import { Col, Input, Row, Select, DatePicker } from 'antd';
 import { OptiosSearchValues } from "../table";
+import { Dayjs } from "dayjs";
 
 interface Props {
-  onSearch: (search: string, keySearch: string) => void;
+  onSearch: (search: string | Dayjs[], keySearch: string) => void;
   placeholder?: string;
   searchValues: Record<string, string>;
   optiosSearchValues?: OptiosSearchValues[];
@@ -31,22 +32,26 @@ const SearchTable: FC<Props> = ({ onSearch, placeholder, searchValues, optiosSea
       </Col>
       <Col md={20}>
         {
-          optiosSearchValues?.some(option => option.propSearch === keySearch)
-            ? <Select style={{ width: '100%' }} onChange={(value) => onSearch(value, keySearch)}>
-              {
-                optiosSearchValues.find(optionSearch => optionSearch.propSearch === keySearch)?.options.map(option => (
-                  <Select.Option key={option.key} value={option.key}>
-                    {option.label}
-                  </Select.Option>
-                ))
-              }
-            </Select>
-            : <Search
-              enterButton
-              onSearch={(value) => onSearch(value, keySearch)}
-              placeholder={placeholder}
-              style={{ width: '100%' }}
-            />
+          Object.keys(searchValues)?.some(key => key.includes("date") && keySearch.includes("date"))
+            ?
+            <DatePicker.RangePicker onChange={value => onSearch(value as any, "dateScanned")} />
+            :
+            optiosSearchValues?.some(option => option.propSearch === keySearch)
+              ? <Select style={{ width: '100%' }} onChange={(value) => onSearch(value, keySearch)}>
+                {
+                  optiosSearchValues.find(optionSearch => optionSearch.propSearch === keySearch)?.options.map(option => (
+                    <Select.Option key={option.key} value={option.key}>
+                      {option.label}
+                    </Select.Option>
+                  ))
+                }
+              </Select>
+              : <Search
+                enterButton
+                onSearch={(value) => onSearch(value, keySearch)}
+                placeholder={placeholder}
+                style={{ width: '100%' }}
+              />
         }
 
       </Col>

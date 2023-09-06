@@ -1,24 +1,22 @@
-import { doc, limit, orderBy, where, writeBatch } from "firebase/firestore"
+import { useEffect, useMemo, useState } from "react"
+import { QueryConstraint, limit, orderBy, where } from "firebase/firestore"
 import HeaderView from "../../../components/headerView"
 import Table, { PropsTable } from "../../../components/table"
-import { useEffect, useMemo, useState } from "react"
 import { ColumnsType } from "antd/es/table"
 import { Event, Ticket, User } from "../../../interfaces"
 import { useLocation } from "react-router-dom"
-import { initEvent } from "../../../constants"
 import dayjs from "dayjs"
 import { QRCodeCanvas } from "qrcode.react"
 import useCollection, { PropsUseCollection } from "../../../hooks/useCollection"
-import { Button, Form, Row, Select, message } from "antd"
-import FormItem from "antd/es/form/FormItem"
-import { getArrayChunk } from "../../../utils/functions"
-import { db } from "../../../firebaseConfig"
+import { Form } from "antd"
+import { useAuth } from "../../../context/authContext"
 
 interface TicketTable extends Ticket {
   ticketUrl?: string;
 }
 
 const Tickets = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const { state } = location;
   const propsUseCollection = useMemo<PropsUseCollection>(() => ({
@@ -27,7 +25,6 @@ const Tickets = () => {
   }), []);
   const { loading, data: users } = useCollection<User>(propsUseCollection);
   const [tickets, setTickets] = useState<TicketTable[]>([]);
-  const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -47,7 +44,9 @@ const Tickets = () => {
       return state as Event;
     }
 
-    return initEvent;
+    window.location.href = "/eventos";
+
+    return undefined;
   }, [state]);
 
   const columns = useMemo<ColumnsType<TicketTable>>(() => [
@@ -64,39 +63,43 @@ const Tickets = () => {
       title: "Embajador",
       dataIndex: "userAmbassadorId",
       key: "userAmbassadorId",
-      render: (_, ticket) => (
-        <FormItem style={{ marginBottom: 0 }} name={`userAmbassadorId-${ticket.number}`}>
-          <Select>
-            <Select.Option key="" value="">Sin embajador</Select.Option>
-            {
-              users.filter(u => u.role === "Embajador").map(u => (
-                <Select.Option key={u.id} value={u.id}>{u.name}</Select.Option>
-              ))
-            }
-          </Select>
-        </FormItem>
-      )
+      render: (_, ticket) => (users.find(u => u.id === ticket.userAmbassadorId)?.name || "")
     },
     {
       title: "",
       dataIndex: "qr",
       key: "qr",
       render: (_, ticket) => (
-        <QRCodeCanvas value={`${event.id}-${ticket.number}`} id={ticket.number.toString()} style={{ display: "none" }} />
+        <QRCodeCanvas value={`${event?.id}-${ticket.number}`} id={ticket.number.toString()} style={{ display: "none" }} />
       )
     }
   ], [event, users]);
+
+  const query = useMemo<QueryConstraint[]>(() => {
+    const query = [where("eventId", "==", event?.id || ""), orderBy("number"), limit(20)];
+
+    if (user?.displayName === "Lector") {
+      query.push(where("userScannerId", "==", user.uid || ""));
+    }
+
+    if (user?.displayName === "Embajador") {
+      query.push(where("userAmbassadorId", "==", user.uid || ""));
+    }
+
+    return query;
+  }, [event, user]);
 
   const propsTable = useMemo<PropsTable<TicketTable>>(() => ({
     wait: loading,
     columns: columns,
     placeholderSearch: "Buscar por numero...",
     collection: "Tickets",
-    query: [where("eventId", "==", event?.id || ""), orderBy("number"), limit(20)],
+    query,
     formatDate: "DD/MM/YYYY hh:mm a",
     searchValues: {
       number: "Número",
-      isScanned: "Escanedo"
+      isScanned: "Escanedo",
+      dateScanned: "Fecha escaneado",
     },
     optiosSearchValues: [
       {
@@ -115,71 +118,18 @@ const Tickets = () => {
     ],
     removeTableActions: true,
     downloadPdf: true,
-    imageEventUrl: event.image as string,
+    imageEventUrl: event?.image as string,
     onLoadData: setTickets
-  }), [event, columns, loading]);
-
-  const onFinish = async (values: Record<string, string | undefined>) => {
-    if (saving) return;
-
-    try {
-      setSaving(true);
-
-      const userAmbassadors: { number: number; userAmbassadorId: string; idTicket: string; }[] = [];
-
-      Object.keys(values).forEach((key) => {
-        const number = +key.split("-")[1];
-
-        const ticketAmbassador = tickets.find(t => t.number === number && t.userAmbassadorId !== values[key])
-
-        if (values[key] !== undefined && key.includes("userAmbassadorId") && ticketAmbassador) {
-          userAmbassadors.push({ number, userAmbassadorId: values[key]!, idTicket: ticketAmbassador.id! });
-        }
-      });
-
-      const userAmbassadorsChunk = getArrayChunk(userAmbassadors, 500);
-
-      for (let i = 0; i < userAmbassadorsChunk.length; i++) {
-        const _userAmbassadors = userAmbassadorsChunk[i];
-        const batch = writeBatch(db);
-
-        for (let j = 0; j < _userAmbassadors.length; j++) {
-          const userAmbassador = _userAmbassadors[j];
-
-          batch.update(
-            doc(db, "Tickets", userAmbassador.idTicket),
-            {
-              userAmbassadorId: userAmbassador.userAmbassadorId,
-              userAmbassadorName: users.find(u => u.id === userAmbassador.userAmbassadorId)?.name || "",
-            }
-          );
-        }
-
-        await batch.commit();
-      }
-
-      message.success("Asignaciones guardadas con éxito!");
-    } catch (error) {
-      console.log(error);
-      message.error("Error al asignar usuarios");
-    } finally {
-      setSaving(false);
-    }
-  }
+  }), [event, columns, loading, query]);
 
   return (
     <div style={{ margin: 20 }}>
       <HeaderView
+        path="/eventos"
         title={`Tickets ${event?.name}`}
         goBack
       />
-      <Form onFinish={onFinish} form={form}>
-        <Row justify="end">
-          <Button loading={saving} type="primary" htmlType="submit">Asignar usuarios</Button>
-        </Row>
-        <br />
-        <Table {...propsTable} />
-      </Form>
+      <Table {...propsTable} />
     </div>
   )
 }

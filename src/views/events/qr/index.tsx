@@ -108,6 +108,8 @@ const Qr = () => {
   return (
     <div style={{ margin: 20 }}>
       <HeaderView
+        path="/eventos"
+        goBack
         title={"Lector de Boletos - " + event?.name}
       />
       {/* <QrCode /> */}
