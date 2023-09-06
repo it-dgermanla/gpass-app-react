@@ -263,14 +263,21 @@ const Table = <T extends {}>({
 		<div>
 			<SearchTable
 				onSearch={(search, searchKey) => {
-					let _search: any = search;
-					_search[0] = dayjs(search[0]).hour(0).minute(0).second(0);
-					_search[1] = dayjs(search[1]).hour(23).minute(59).second(59);
 
 					setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }));
-					setTimeout(() => {
-						setTableData(prev => ({ ...prev, _search, searchKey, collection }));
-					}, 200)
+
+					if (searchKey === "dateScanned") {
+						let _search: any = null;
+						_search[0] = dayjs(search[0]).hour(0).minute(0).second(0);
+						_search[1] = dayjs(search[1]).hour(23).minute(59).second(0);
+						setTimeout(() => {
+							setTableData(prev => ({ ...prev, _search, searchKey, collection }));
+						}, 200)
+					} else {
+						setTimeout(() => {
+							setTableData(prev => ({ ...prev, search, searchKey, collection }));
+						}, 200)
+					}
 				}}
 				placeholder={placeholderSearch}
 				searchValues={searchValues}

@@ -33,28 +33,25 @@ const Events = () => {
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
     { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },
     { title: 'Fecha Final', dataIndex: 'finalDateFormated', key: 'finalDateFormated' },
-    {
+    ["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!) ? {
       title: "Ver boletos",
       dataIndex: "tickets",
       key: "tickets",
       render: (_, event) => (
-        <>
-          {
-            ["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!) && <Button
-              onClick={() => navigate("/eventos/boletos", { state: event })}
-              shape="circle"
-              icon={<MdConfirmationNumber />}
-            />
-          }
-        </>
+        <Button
+          onClick={() => navigate("/eventos/boletos", { state: event })}
+          shape="circle"
+          icon={<MdConfirmationNumber />}
+        />
       )
-    },
-    {
+    } : {}
+    ,
+    ["SuperAdministrador", "Administrador"].includes(user?.displayName!) ? {
       title: "Asignar boletos embajadores",
       dataIndex: "assignTickets",
       key: "assignTickets",
       render: (_, event) => (
-        <> 
+        <>
           {
             ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && <Button
               type="primary"
@@ -65,8 +62,10 @@ const Events = () => {
           }
         </>
       )
-    },
-    {
+    } : {}
+    ,
+
+    ["SuperAdministrador", "Administrador"].includes(user?.displayName!) ? {
       title: "Asignar Lectores",
       dataIndex: "lector",
       key: "lector",
@@ -81,7 +80,8 @@ const Events = () => {
           }
         </>
       )
-    },
+    } : {}
+    ,
     {
       title: "Imagen",
       dataIndex: "image",
