@@ -23,17 +23,16 @@ const AssignTickets = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = location;
-  
+  const [form] = Form.useForm();
+  const [event, setEvent] = useState<EventAssign>();
   const query = useMemo<QueryConstraint[]>(() => {
     return [
       where("role", "==", "Embajador"),
-      where("companyUid", "==", userFirestore?.companyUid || ""),
+      where("companyUid", "==", event?.companyUid || ""),
       limit(20),
       orderBy("name")
     ]
-  }, [userFirestore]);
-  const [form] = Form.useForm();
-  const [event, setEvent] = useState<EventAssign>();
+  }, [event]);
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [rangesToDelete, setRangesToDelete] = useState<Range[]>([]);
