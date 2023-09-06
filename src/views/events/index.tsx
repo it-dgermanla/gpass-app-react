@@ -13,7 +13,7 @@ import { useAuth } from "../../context/authContext";
 
 const Events = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, userFirestore } = useAuth();
 
   const columns: ColumnsType<Event> = useMemo(() => [
     {
@@ -47,7 +47,7 @@ const Events = () => {
       )
     },
     {
-      title: "Asignar boletos",
+      title: "Asignar boletos embajadores",
       dataIndex: "tickets",
       key: "tickets",
       render: (_, event) => (
@@ -73,16 +73,22 @@ const Events = () => {
   ], [navigate]);
 
   const query = useMemo<QueryConstraint[]>(() => {
-    if (loading) return [];
-
     const query = [where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)];
 
-    if (!["SuperAdministrador", "Administrador"].includes(user?.displayName!)) {
+    if (user?.displayName === "Lector") {
+      query.push(where("userScannerIds", "array-contains", user.uid || ""));
+    }
 
+    if (user?.displayName === "Embajador") {
+      query.push(where("userAmbassadorIds", "array-contains", user.uid || ""));
+    }
+
+    if (user?.displayName === "Administrador") {
+      query.push(where("companyUid", "array-contains", userFirestore?.companyUid || ""));
     }
 
     return query;
-  }, [user, loading])
+  }, [user, userFirestore])
 
   return (
     <div style={{ margin: 20 }}>

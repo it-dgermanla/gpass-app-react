@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { limit, orderBy, where } from "firebase/firestore"
+import { QueryConstraint, limit, orderBy, where } from "firebase/firestore"
 import HeaderView from "../../../components/headerView"
 import Table, { PropsTable } from "../../../components/table"
 import { ColumnsType } from "antd/es/table"
@@ -9,12 +9,14 @@ import dayjs from "dayjs"
 import { QRCodeCanvas } from "qrcode.react"
 import useCollection, { PropsUseCollection } from "../../../hooks/useCollection"
 import { Form } from "antd"
+import { useAuth } from "../../../context/authContext"
 
 interface TicketTable extends Ticket {
   ticketUrl?: string;
 }
 
 const Tickets = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const { state } = location;
   const propsUseCollection = useMemo<PropsUseCollection>(() => ({
@@ -73,12 +75,26 @@ const Tickets = () => {
     }
   ], [event, users]);
 
+  const query = useMemo<QueryConstraint[]>(() => {
+    const query = [where("eventId", "==", event?.id || ""), orderBy("number"), limit(20)];
+
+    if (user?.displayName === "Lector") {
+      query.push(where("userScannerId", "==", user.uid || ""));
+    }
+
+    if (user?.displayName === "Embajador") {
+      query.push(where("userAmbassadorId", "==", user.uid || ""));
+    }
+
+    return query;
+  }, [event, user]);
+
   const propsTable = useMemo<PropsTable<TicketTable>>(() => ({
     wait: loading,
     columns: columns,
     placeholderSearch: "Buscar por numero...",
     collection: "Tickets",
-    query: [where("eventId", "==", event?.id || ""), orderBy("number"), limit(20)],
+    query,
     formatDate: "DD/MM/YYYY hh:mm a",
     searchValues: {
       number: "Número",
@@ -104,59 +120,7 @@ const Tickets = () => {
     downloadPdf: true,
     imageEventUrl: event?.image as string,
     onLoadData: setTickets
-  }), [event, columns, loading]);
-
-  /* const onFinish = async (values: Record<string, string | undefined>) => {
-    if (saving) return;
-
-    try {
-      setSaving(true);
-
-      const userAmbassadors: { number: number; userAmbassadorId: string; idTicket: string; }[] = [];
-
-      Object.keys(values).forEach((key) => {
-        const number = +key.split("-")[1];
-
-        const ticketAmbassador = tickets.find(t => t.number === number && t.userAmbassadorId !== values[key])
-
-        if (values[key] !== undefined && key.includes("userAmbassadorId") && ticketAmbassador) {
-          userAmbassadors.push({ number, userAmbassadorId: values[key]!, idTicket: ticketAmbassador.id! });
-        }
-      });
-
-      const userAmbassadorsChunk = getArrayChunk(userAmbassadors, 500);
-
-      for (let i = 0; i < userAmbassadorsChunk.length; i++) {
-        if (i > 0 && i % 20 === 0) {
-          await sleep(80000);
-        }
-
-        const _userAmbassadors = userAmbassadorsChunk[i];
-        const batch = writeBatch(db);
-
-        for (let j = 0; j < _userAmbassadors.length; j++) {
-          const userAmbassador = _userAmbassadors[j];
-
-          batch.update(
-            doc(db, "Tickets", userAmbassador.idTicket),
-            {
-              userAmbassadorId: userAmbassador.userAmbassadorId,
-              userAmbassadorName: users.find(u => u.id === userAmbassador.userAmbassadorId)?.name || "",
-            }
-          );
-        }
-
-        await batch.commit();
-      }
-
-      message.success("Asignaciones guardadas con éxito!");
-    } catch (error) {
-      console.log(error);
-      message.error("Error al asignar usuarios");
-    } finally {
-      setSaving(false);
-    }
-  } */
+  }), [event, columns, loading, query]);
 
   return (
     <div style={{ margin: 20 }}>

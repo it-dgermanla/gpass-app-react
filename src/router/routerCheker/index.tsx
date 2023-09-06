@@ -6,7 +6,7 @@ import MenuComponent from '../../components/menu';
 import Breadcrumb from '../../components/breadcrumb';
 import FullLoader from "../../components/fullLoader";
 import { Rols } from "../../types";
-import { privateRoutesByUser } from './../../constants'; 
+import { privateRoutesByUser } from './../../constants';
 
 const firstRouteByUser: Record<Rols, string> = Object.freeze({
   "SuperAdministrador": "/empresas",

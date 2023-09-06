@@ -72,7 +72,7 @@ export interface User {
   name: string;
   phone: string;
   email: string;
-  companyName: Company | string;
+  companyName: string;
   companyUid: Company | string;
   password: string;
   confirmPassword?: string;

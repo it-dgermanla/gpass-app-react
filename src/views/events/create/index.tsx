@@ -27,7 +27,6 @@ const CreateEvent = () => {
   const [totalTicketsSaved, setTotalTicketsSaved] = useState(0);
   const [initTotalTickets, setInitTotalTickets] = useState(0);
 
-
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
 
@@ -74,7 +73,7 @@ const CreateEvent = () => {
           await saveTickets(tickets);
         }
       } else {
-        const newEvent = await add<Event>(collectionName, _event);
+        const newEvent = await add<Event>(collectionName, { ..._event, ambassadorsRanges: [], userAmbassadorIds: [] });
         const tickets = Array.from({ length: newEvent.total! }).map((_, index) => ({ number: index + 1, eventId: newEvent.id, userScannerId: "", userScannerName: "", isScanned: "No", isDownloaded: false, createAt: new Date() })) as Ticket[];
 
         await saveTickets(tickets);

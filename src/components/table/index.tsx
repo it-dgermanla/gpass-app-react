@@ -15,6 +15,7 @@ import { post } from './../../services/index';
 import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
 import { Dayjs } from "dayjs";
+import { ExpandableConfig } from "antd/lib/table/interface";
 
 
 export interface Option {
@@ -40,6 +41,8 @@ export interface PropsTable<T> extends PropsUseCollection {
 	imageEventUrl?: string;
 	onLoadData?: (data: T[]) => void;
 	optiosSearchValues?: OptiosSearchValues[];
+	expandable?: ExpandableConfig<any>;
+	scrollY?: string;
 }
 
 interface TableData {
@@ -85,7 +88,9 @@ const Table = <T extends {}>({
 	downloadPdf,
 	imageEventUrl,
 	onLoadData,
-	optiosSearchValues
+	optiosSearchValues,
+	expandable,
+	scrollY
 }: PropsTable<T>) => {
 	const location = useLocation();
 	const path = location;
@@ -269,13 +274,14 @@ const Table = <T extends {}>({
 			<br />
 			<TableAnt
 				sticky
-				scroll={{ x: 400, y: "75vh", scrollToFirstRowOnChange: false }}
+				scroll={{ x: 400, y: scrollY || "75vh", scrollToFirstRowOnChange: false }}
 				columns={columns}
 				dataSource={data}
 				loading={loading}
 				locale={{ emptyText: <Empty image={PRESENTED_IMAGE_SIMPLE} description='Sin registros.' /> }}
 				rowKey="id"
 				pagination={false}
+				expandable={expandable}
 			/>
 		</div>
 	)
