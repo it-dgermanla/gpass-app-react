@@ -24,7 +24,7 @@ const Users = () => {
         placeholderSearch="Buscar por nombre ó correo..."
         pathEdit="/usuarios/editar"
         collection="Users"
-        query={[where("disabled", "==", false), orderBy("createAt", "desc"), limit(20)]}
+        query={[where("disabled", "==", false), limit(20), orderBy("createAt", "desc")]}
         searchValues={{
           name: "Nombre",
           email: "Correo",
@@ -50,7 +50,7 @@ const Users = () => {
               ]
             }
           ]
-         }
+        }
       />
     </div>
   )

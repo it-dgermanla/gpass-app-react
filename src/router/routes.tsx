@@ -10,6 +10,7 @@ const Users = lazy(() => import('../views/users'));
 const UsersRegister = lazy(() => import('../views/users/create'));
 const Scanner = lazy(() => import('../views/events/qr'));
 const Tickets = lazy(() => import('../views/events/tikets'));
+const Lectors = lazy(() => import('../views/events/lectors'));
 
 const routes: PathRouteProps[] = [
   {
@@ -43,6 +44,10 @@ const routes: PathRouteProps[] = [
   {
     path: '/eventos/boletos',
     element: <Tickets />
+  },
+  {
+    path: '/eventos/lectores',
+    element: <Lectors />
   },
   {
     path: '/lector',

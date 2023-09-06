@@ -21,9 +21,10 @@ export const privateRoutesByUser: Record<Rols, string[]> = {
     "/usuarios",
     "/usuarios/registrar",
     "/usuarios/editar",
-    "/lector"
+    "/lector",
+    "/eventos/lectores"
   ],
-  'Administrador': ["/eventos", "/usuarios", "/usuarios/registrar", "/lector", "/eventos/boletos","/eventos/registrar"],
+  'Administrador': ["/eventos", "/usuarios", "/usuarios/registrar", "/lector", "/eventos/boletos","/eventos/registrar", "/eventos/lectores"],
   'Embajador': ["/eventos", "/lector", "/eventos/boletos"],
   'Lector': ["/eventos", "/lector"]
 }

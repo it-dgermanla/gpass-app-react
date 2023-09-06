@@ -1,9 +1,9 @@
 import HeaderView from '../../../components/headerView';
 import { useState, useMemo } from 'react';
 import { Alert, Button, message, Modal, Space } from 'antd'
-import { useLocation, useNavigate } from 'react-router-dom';
-import { EventForm, Ticket, Event, User } from '../../../interfaces';
-import { initEvent, initEventForm } from '../../../constants';
+import { useLocation } from 'react-router-dom';
+import { Ticket, Event, User } from '../../../interfaces';
+import { initEvent } from '../../../constants';
 import { update, getCollectionGeneric, getGenericDocById } from '../../../services/firebase';
 import { Timestamp, where } from 'firebase/firestore';
 import { useAuth } from "../../../context/authContext";
@@ -19,7 +19,6 @@ interface AlertProps {
 
 const Qr = () => {
   const { user } = useAuth();
-  const navigate = useNavigate()
   const location = useLocation();
   const { state } = location;
   const [isModalOpen, setIsModalOpen] = useState(false);

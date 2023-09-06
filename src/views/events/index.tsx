@@ -8,7 +8,7 @@ import CachedImage from "../../components/cachedImage";
 import { Button } from "antd";
 import { MdConfirmationNumber } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { SecurityScanOutlined } from '@ant-design/icons';
+import { SecurityScanOutlined, UserAddOutlined } from '@ant-design/icons';
 
 
 const Events = () => {
@@ -36,6 +36,18 @@ const Events = () => {
           onClick={() => navigate("/eventos/boletos", { state: event })}
           shape="circle"
           icon={<MdConfirmationNumber />}
+        />
+      )
+    },
+    {
+      title: "Asignar Lectores",
+      dataIndex: "lector",
+      key: "lector",
+      render: (_, event) => (
+        <Button
+          onClick={() => navigate("/eventos/lectores", { state: event })}
+          shape="circle"
+          icon={<UserAddOutlined />}
         />
       )
     },
