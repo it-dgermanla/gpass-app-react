@@ -54,12 +54,16 @@ const Events = () => {
       dataIndex: "assignTickets",
       key: "assignTickets",
       render: (_, event) => (
-        <Button
-          type="primary"
-          onClick={() => navigate("/eventos/asignar-boletos", { state: event })}
-          shape="circle"
-          icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
-        />
+        <> 
+          {
+            ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && <Button
+              type="primary"
+              onClick={() => navigate("/eventos/asignar-boletos", { state: event })}
+              shape="circle"
+              icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
+            />
+          }
+        </>
       )
     },
     {

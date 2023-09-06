@@ -14,7 +14,7 @@ import { Ticket } from "../../interfaces";
 import { post } from './../../services/index';
 import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { ExpandableConfig } from "antd/lib/table/interface";
 import { useAuth } from "./../../context/authContext";
 
@@ -263,9 +263,13 @@ const Table = <T extends {}>({
 		<div>
 			<SearchTable
 				onSearch={(search, searchKey) => {
+					let _search: any = search;
+					_search[0] = dayjs(search[0]).hour(0).minute(0).second(0);
+					_search[1] = dayjs(search[1]).hour(23).minute(59).second(59);
+
 					setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }));
 					setTimeout(() => {
-						setTableData(prev => ({ ...prev, search, searchKey, collection }));
+						setTableData(prev => ({ ...prev, _search, searchKey, collection }));
 					}, 200)
 				}}
 				placeholder={placeholderSearch}
