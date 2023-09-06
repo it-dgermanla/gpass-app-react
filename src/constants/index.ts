@@ -24,7 +24,7 @@ export const privateRoutesByUser: Record<Rols, string[]> = {
     "/usuarios/editar",
     "/lector",
   ],
-  'Administrador': ["/eventos", "/usuarios",  "/usuarios/registrar", "/lector", "/eventos/boletos", "/eventos/registrar", "/eventos/asignar-boletos", "/eventos/lectores"],
+  'Administrador': ["/eventos", "/usuarios", "/usuarios/registrar", "/lector", "/eventos/boletos", "/eventos/registrar", "/eventos/asignar-boletos", "/eventos/lectores"],
   'Embajador': ["/eventos", "/lector", "/eventos/boletos"],
   'Lector': ["/eventos", "/lector"]
 }
@@ -40,7 +40,8 @@ export const initEventForm: EventForm = {
   companyName: "",
   companyUid: "",
   userAmbassadorIds: [],
-  ambassadorsRanges: []
+  ambassadorsRanges: [],
+  userScannerIds: []
 };
 
 export const initEvent: Event = {
@@ -54,7 +55,8 @@ export const initEvent: Event = {
   companyName: "",
   companyUid: "",
   userAmbassadorIds: [],
-  ambassadorsRanges: []
+  ambassadorsRanges: [],
+  userScannerIds: []
 };
 
 export const initCompany: Company = {

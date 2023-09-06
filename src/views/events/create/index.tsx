@@ -27,7 +27,7 @@ const CreateEvent = () => {
   const [totalTicketsSaved, setTotalTicketsSaved] = useState(0);
   const [initTotalTickets, setInitTotalTickets] = useState(0);
   const [companies, setCompanies] = useState<Option[]>();
-  
+
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
 
@@ -37,9 +37,9 @@ const CreateEvent = () => {
 
     _event = setImagesToState(_event);
 
-     const init = () => {
+    const init = async () => {
       const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
-      
+
       const selectComapanies = response.map((company) => {
         return {
           value: company.name + "-" + company.id,
@@ -47,12 +47,12 @@ const CreateEvent = () => {
         }
       })
 
-      setCompanies(selectComapanies as Option[]);     
-      setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
-      setInitTotalTickets(_event.total!);
-     }
-     
-     init();
+      setCompanies(selectComapanies as Option[]);
+      setEvent({ ..._event!, initialDate: dayjs(_event!.initialDate), finalDate: dayjs(_event!.finalDate) });
+      setInitTotalTickets(_event!.total!);
+    }
+
+    init();
   }, [state, form])
 
   const onFinish = async () => {
@@ -72,13 +72,13 @@ const CreateEvent = () => {
       const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
 
       const _event = {
-        ...event, 
-        initialDate, 
+        ...event,
+        initialDate,
         finalDate,
         companyName: user?.displayName !== "SuperAdministrador" ? dataUser[0]?.companyName : event.companyName,
         companyUid: user?.displayName !== "SuperAdministrador" ? dataUser[0]?.companyUid : event.companyUid
       };
-  
+
       if (type === "update") {
         const id = _event.id!;
 
@@ -208,7 +208,7 @@ const CreateEvent = () => {
       })
     }
     return inputs
-  }, [companies])
+  }, [companies, event, initTotalTickets, type, user?.displayName])
 
   return (
     <div>

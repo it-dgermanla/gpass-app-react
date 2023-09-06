@@ -8,7 +8,7 @@ import CachedImage from "../../components/cachedImage";
 import { Button } from "antd";
 import { MdConfirmationNumber } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { SecurityScanOutlined } from '@ant-design/icons';
+import { SecurityScanOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useAuth } from "../../context/authContext";
 
 const Events = () => {
@@ -38,7 +38,7 @@ const Events = () => {
       dataIndex: "tickets",
       key: "tickets",
       render: (_, event) => (
-         <>
+        <>
           {
             ["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!) && <Button
               onClick={() => navigate("/eventos/boletos", { state: event })}
@@ -89,7 +89,7 @@ const Events = () => {
         />
       )
     }
-  ], [navigate]);
+  ], [navigate, user?.displayName]);
 
   const query = useMemo<QueryConstraint[]>(() => {
     const query = [where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)];

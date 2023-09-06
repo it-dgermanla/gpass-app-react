@@ -1,5 +1,5 @@
 import { ColumnsType } from 'antd/es/table';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import HeaderView from '../../../components/headerView';
 import { useLocation } from 'react-router-dom';
 import Table from '../../../components/table';
@@ -19,30 +19,34 @@ const Users = () => {
     if (state) {
       return state as Event;
     }
+
     window.location.href = "/eventos";
 
     return initEvent;
   }, [state]);
 
+  //este valor deberias tomarlo del evento y no debes usar variables que no sean estados para dibujar cosas en el jsx
   let userScannerIds: any[] = []
-
-  const onUser = async (uid: string) => {
-    const responceUser = await getGenericDocById<User>('Users', uid)
-    const responceEvent = await getGenericDocById<Event>('Events', event.id!)
-
-    if (responceEvent.userScannerIds) userScannerIds = responceEvent.userScannerIds
-    setUserData(responceUser)
-  }
 
   useEffect(() => {
     if (!user) return
 
-    onUser(user?.uid!)
+    const init = async () => {
+      try {
+        const responceUser = await getGenericDocById<User>('Users', user.uid)
+        const responceEvent = await getGenericDocById<Event>('Events', event.id!)
 
+        if (responceEvent.userScannerIds) userScannerIds = responceEvent.userScannerIds
+        setUserData(responceUser)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    init();
   }, [user]);
 
-
-  const onChange = async (checked: boolean, _user: User) => {
+  const onChange = useCallback(async (checked: boolean, _user: User) => {
     try {
       if (checked) {
         if (userScannerIds.indexOf(_user.id) === -1) {
@@ -57,7 +61,7 @@ const Users = () => {
     } catch (error) {
       console.log(error)
     }
-  };
+  }, [event.id]);
 
   const columns: ColumnsType<any> = useMemo(() => [
     {
@@ -78,7 +82,7 @@ const Users = () => {
     { title: 'Correo', dataIndex: 'email', key: 'email' },
     { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
     { title: 'Rol', dataIndex: 'role', key: 'role' }
-  ], [])
+  ], [onChange])
 
   if (userData?.companyName === "") return
 

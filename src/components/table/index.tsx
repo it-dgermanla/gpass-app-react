@@ -257,7 +257,7 @@ const Table = <T extends {}>({
 				},
 			}
 		];
-	}, [columnsProp, pathEdit, collection, removeTableActions, downloadPdf, imageEventUrl, setData, path, deleteUser]);
+	}, [columnsProp, pathEdit, collection, removeTableActions, downloadPdf, imageEventUrl, setData, path, deleteUser, user?.displayName]);
 
 	return (
 		<div>

@@ -23,6 +23,7 @@ export interface Event {
   companyName: Company | string;
   companyUid: Company | string;
   userAmbassadorIds: string[];
+  userScannerIds: string[];
   ambassadorsRanges: AmbassadorRanges[];
 }
 
