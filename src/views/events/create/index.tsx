@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import DynamicForm from '../../../components/dynamicForm'
 import { Card, Form, UploadFile, message } from 'antd'
 import { add, update, getCollectionGeneric } from '../../../services/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { initEventForm, titleForm } from '../../../constants';
-import { EventForm, Event, Ticket } from '../../../interfaces';
+import { EventForm, Event, Ticket, Company, Option, CustomInput } from '../../../interfaces';
 import { TypeRute } from '../../../types';
 import HeaderView from "../../../components/headerView";
 import dayjs, { Dayjs } from 'dayjs';
@@ -26,7 +26,8 @@ const CreateEvent = () => {
   const [event, setEvent] = useState<EventForm>(initEventForm);
   const [totalTicketsSaved, setTotalTicketsSaved] = useState(0);
   const [initTotalTickets, setInitTotalTickets] = useState(0);
-
+  const [companies, setCompanies] = useState<Option[]>();
+  
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
 
@@ -36,12 +37,25 @@ const CreateEvent = () => {
 
     _event = setImagesToState(_event);
 
-    setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
-    setInitTotalTickets(_event.total!);
+     const init = () => {
+      const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
+      
+      const selectComapanies = response.map((company) => {
+        return {
+          value: company.name + "-" + company.id,
+          text: company.name
+        }
+      })
+
+      setCompanies(selectComapanies as Option[]);     
+      setEvent({ ..._event, initialDate: dayjs(_event.initialDate), finalDate: dayjs(_event.finalDate) });
+      setInitTotalTickets(_event.total!);
+     }
+     
+     init();
   }, [state, form])
 
   const onFinish = async () => {
-
     if (saving) return;
 
     try {
@@ -56,8 +70,15 @@ const CreateEvent = () => {
 
       const initialDate = event.initialDate.set('hour', 0).set('minute', 0).set('second', 0).toDate();
       const finalDate = event.finalDate.set('hour', 23).set('minute', 59).set('second', 59).toDate();
-      const _event = { ...event, initialDate, finalDate, companyName: dataUser[0].companyName, companyUid: dataUser[0].companyUid };
 
+      const _event = {
+        ...event, 
+        initialDate, 
+        finalDate,
+        companyName: user?.displayName !== "SuperAdministrador" ? dataUser[0]?.companyName : event.companyName,
+        companyUid: user?.displayName !== "SuperAdministrador" ? dataUser[0]?.companyUid : event.companyUid
+      };
+  
       if (type === "update") {
         const id = _event.id!;
 
@@ -113,6 +134,82 @@ const CreateEvent = () => {
     }
   }
 
+  const inputs = useMemo(() => {
+    const inputs: CustomInput[] = [
+      {
+        typeControl: 'input',
+        typeInput: 'text',
+        label: 'Nombre',
+        name: 'name',
+        rules: [{ required: true, message: 'Favor de escribir el nombre del evento.' }],
+        value: event.name,
+        onChange: (value: string) => setEvent(e => ({ ...e, name: value })),
+        md: 6
+      },
+      {
+        typeControl: 'date',
+        label: 'Fecha Inicial',
+        name: 'initialDate',
+        disabledDate: date => date > event.finalDate,
+        rules: [{ required: true, message: 'Favor de seleccionar la fecha inicial.' }],
+        value: event.initialDate,
+        onChange: (value: Dayjs) => setEvent(e => ({ ...e, initialDate: value })),
+        md: 6
+      },
+      {
+        typeControl: 'date',
+        label: 'Fecha Final',
+        name: 'finalDate',
+        disabledDate: date => date < event.initialDate,
+        rules: [{ required: true, message: 'Favor de seleccionar la fecha final.' }],
+        value: event.finalDate,
+        onChange: (value: Dayjs) => setEvent(e => ({ ...e, finalDate: value })),
+        md: 6
+      },
+      {
+        typeControl: 'input',
+        typeInput: 'number',
+        label: 'Cantidad de boletos',
+        name: 'total',
+        disabled: type === "update",
+        rules: event.id
+          ? [{
+            message: `La cantidad de boletos no puede ser menor a ${initTotalTickets}`,
+            validator: (rule, value?: string) => !value || +value < initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
+          }]
+          : [{ required: true, message: 'Favor de escribir la cantidad de boletos.' }],
+        value: event.total,
+        onChange: (value: string) => setEvent(e => ({ ...e, total: value ? +value : undefined })),
+        md: 6
+      },
+      {
+        typeControl: "file",
+        name: "image",
+        value: event.image,
+        maxCount: 1,
+        accept: "image/png, image/jpeg",
+        onChange: (value: UploadFile<any>[]) => setEvent(e => ({ ...e, image: value })),
+        md: 12,
+        styleFI: { display: "flex", justifyContent: "center" },
+        multiple: false,
+        withOutCrop: true
+      },
+    ];
+
+    if (user?.displayName === "SuperAdministrador") {
+      inputs.push({
+        typeControl: 'select',
+        label: 'Empresa',
+        name: 'companyName',
+        value: event.companyName + "-" + event.companyUid,
+        onChange: (value: string) => setEvent(e => ({ ...e, companyName: value.split("-")[0], companyUid: value.split("-")[1] })),
+        md: 12,
+        options: companies
+      })
+    }
+    return inputs
+  }, [companies])
+
   return (
     <div>
       <HeaderView
@@ -129,66 +226,7 @@ const CreateEvent = () => {
           onFinish={onFinish}
           justify="center"
           textSubmit={saving ? `Guardando boletos ${totalTicketsSaved} de ${event.total}` : undefined}
-          inputs={[
-            {
-              typeControl: 'input',
-              typeInput: 'text',
-              label: 'Nombre',
-              name: 'name',
-              rules: [{ required: true, message: 'Favor de escribir el nombre del evento.' }],
-              value: event.name,
-              onChange: (value: string) => setEvent({ ...event, name: value }),
-              md: 6
-            },
-            {
-              typeControl: 'date',
-              label: 'Fecha Inicial',
-              name: 'initialDate',
-              disabledDate: date => date > event.finalDate,
-              rules: [{ required: true, message: 'Favor de seleccionar la fecha inicial.' }],
-              value: event.initialDate,
-              onChange: (value: Dayjs) => setEvent({ ...event, initialDate: value }),
-              md: 6
-            },
-            {
-              typeControl: 'date',
-              label: 'Fecha Final',
-              name: 'finalDate',
-              disabledDate: date => date < event.initialDate,
-              rules: [{ required: true, message: 'Favor de seleccionar la fecha final.' }],
-              value: event.finalDate,
-              onChange: (value: Dayjs) => setEvent({ ...event, finalDate: value }),
-              md: 6
-            },
-            {
-              typeControl: 'input',
-              typeInput: 'number',
-              label: 'Cantidad de boletos',
-              name: 'total',
-              disabled: type === "update",
-              rules: event.id
-                ? [{
-                  message: `La cantidad de boletos no puede ser menor a ${initTotalTickets}`,
-                  validator: (rule, value?: string) => !value || +value < initTotalTickets ? Promise.reject(rule.message) : Promise.resolve(),
-                }]
-                : [{ required: true, message: 'Favor de escribir la cantidad de boletos.' }],
-              value: event.total,
-              onChange: (value: string) => setEvent({ ...event, total: value ? +value : undefined }),
-              md: 6
-            },
-            {
-              typeControl: "file",
-              name: "image",
-              value: event.image,
-              maxCount: 1,
-              accept: "image/png, image/jpeg",
-              onChange: (value: UploadFile<any>[]) => setEvent({ ...event, image: value }),
-              md: 12,
-              styleFI: { display: "flex", justifyContent: "center" },
-              multiple: false,
-              withOutCrop: true
-            },
-          ]}
+          inputs={inputs}
         />
       </Card>
     </div>

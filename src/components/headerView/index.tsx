@@ -3,6 +3,7 @@ import { Col, Row } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import CreateButton from '../registerButton';
 import BackButton from '../backButton';
+import { useAuth } from "./../../context/authContext";
 
 interface Props {
   title: string;
@@ -19,7 +20,8 @@ const textButtonsCreate: Record<string, string> = {
 
 const HeaderView: FC<Props> = ({ title, path, goBack }) => {
   const navigate = useNavigate();
-
+	const { user } = useAuth();
+  
   return (
     <>
       <Row justify='space-between' align="middle">
@@ -28,16 +30,20 @@ const HeaderView: FC<Props> = ({ title, path, goBack }) => {
             {title}
           </h1>
         </Col>
+
         {
-          path && <Col>
-            {
-              goBack
-                ? <BackButton onClick={() => navigate(path)} />
-                : <CreateButton onClick={() => navigate(path)}>
-                  {"Registrar " + textButtonsCreate[title]}
-                </CreateButton>
-            }
-          </Col>
+          ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && (
+            path && <Col>
+              {
+                goBack
+                  ? <BackButton onClick={() => navigate(path)} />
+                  : <CreateButton onClick={() => navigate(path)}>
+                    {"Registrar " + textButtonsCreate[title]}
+                  </CreateButton>
+              }
+            </Col>
+          )
+
         }
       </Row>
       <br />

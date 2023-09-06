@@ -38,18 +38,21 @@ const Events = () => {
       dataIndex: "tickets",
       key: "tickets",
       render: (_, event) => (
-        <Button
-          type="primary"
-          onClick={() => navigate("/eventos/boletos", { state: event })}
-          shape="circle"
-          icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
-        />
+         <>
+          {
+            ["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!) && <Button
+              onClick={() => navigate("/eventos/boletos", { state: event })}
+              shape="circle"
+              icon={<MdConfirmationNumber />}
+            />
+          }
+        </>
       )
     },
     {
       title: "Asignar boletos embajadores",
-      dataIndex: "tickets",
-      key: "tickets",
+      dataIndex: "assignTickets",
+      key: "assignTickets",
       render: (_, event) => (
         <Button
           type="primary"
@@ -57,6 +60,22 @@ const Events = () => {
           shape="circle"
           icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
         />
+      )
+    },
+    {
+      title: "Asignar Lectores",
+      dataIndex: "lector",
+      key: "lector",
+      render: (_, event) => (
+        <>
+          {
+            ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && <Button
+              onClick={() => navigate("/eventos/lectores", { state: event })}
+              shape="circle"
+              icon={<UserAddOutlined />}
+            />
+          }
+        </>
       )
     },
     {

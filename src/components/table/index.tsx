@@ -16,7 +16,7 @@ import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
 import { Dayjs } from "dayjs";
 import { ExpandableConfig } from "antd/lib/table/interface";
-
+import { useAuth } from "./../../context/authContext";
 
 export interface Option {
 	key: string;
@@ -129,6 +129,7 @@ const Table = <T extends {}>({
 		return _query;
 	}, [tableData, queryProp]);
 	const { loading, data, setData } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
+	const { user } = useAuth();
 
 	const deleteUser = useCallback((r: T & { id: string; }) => post(`/users/del`, r, abortController.current!), [abortController]);
 
@@ -241,7 +242,7 @@ const Table = <T extends {}>({
 				render: (_, record: T) => {
 					const r = record as T & { id: string };
 					return (
-						<TableActionsButtons
+						["SuperAdministrador"].includes(user?.displayName!) && <TableActionsButtons
 							record={record}
 							onDeleted={() => {
 								setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }))

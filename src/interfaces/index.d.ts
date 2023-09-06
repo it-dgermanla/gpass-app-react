@@ -35,6 +35,7 @@ export interface Range {
   index: number;
   startRange?: number;
   endRange?: number;
+  userScannerIds?: string[]
 }
 
 export interface Ticket {
