@@ -54,22 +54,12 @@ const CreateEvent = () => {
     _event = setImagesToState(_event);
 
     const init = async () => {
-      const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
-
-      const selectComapanies = response.map((company) => {
-        return {
-          value: company.name + "-" + company.id,
-          text: company.name
-        }
-      })
-      console.log(selectComapanies)
-      setCompanies(selectComapanies as Option[]);
       setEvent({ ..._event!, initialDate: dayjs(_event!.initialDate), finalDate: dayjs(_event!.finalDate) });
       setInitTotalTickets(_event!.total!);
     }
 
     init();
-  }, [state])
+  }, [state, form])
 
   const onFinish = async () => {
     if (saving) return;
