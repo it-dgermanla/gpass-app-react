@@ -2,7 +2,7 @@ import HeaderView from '../../../components/headerView';
 import { useState, useMemo } from 'react';
 import { Alert, Button, message, Modal, Space } from 'antd'
 import { useLocation } from 'react-router-dom';
-import { Ticket, Event, User } from '../../../interfaces';
+import { Ticket, Event } from '../../../interfaces';
 import { initEvent } from '../../../constants';
 import { update, getCollectionGeneric, getGenericDocById } from '../../../services/firebase';
 import { Timestamp, where } from 'firebase/firestore';
@@ -18,7 +18,7 @@ interface AlertProps {
 }
 
 const Qr = () => {
-  const { user } = useAuth();
+  const { user, userFirestore } = useAuth();
   const location = useLocation();
   const { state } = location;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,8 +45,6 @@ const Qr = () => {
     setScanActive(false)
     try {
       const [eventId, numberTicket] = result.getText().split("-");
-      
-      const responseUser = await getGenericDocById<User>('Users', user?.uid!)
       const responseEvent = await getGenericDocById<Event>('Events', eventId)
       const tickets = await getCollectionGeneric<Ticket>('Tickets', [where('eventId', '==', eventId), where('number', '==', + numberTicket)])
       const finalDate = responseEvent.finalDate as any as Timestamp;
@@ -91,7 +89,7 @@ const Qr = () => {
         return
       }
 
-      await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, userScannerName: responseUser?.name, isScanned: "Si", dateScanned: new Date() })
+      await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, userScannerName: userFirestore?.name, isScanned: "Si", dateScanned: new Date() })
       setIsModalData({
         message: `Listo ya puedes otorgar la Pizza del QR numero ${numberTicket} del evento.`,
         description: "Gracias por su apoyo.",

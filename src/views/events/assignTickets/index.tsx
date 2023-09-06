@@ -25,14 +25,6 @@ const AssignTickets = () => {
   const { state } = location;
   const [form] = Form.useForm();
   const [event, setEvent] = useState<EventAssign>();
-  const query = useMemo<QueryConstraint[]>(() => {
-    return [
-      where("role", "==", "Embajador"),
-      where("companyUid", "==", event?.companyUid || ""),
-      limit(20),
-      orderBy("name")
-    ]
-  }, [event]);
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [rangesToDelete, setRangesToDelete] = useState<Range[]>([]);
@@ -58,6 +50,16 @@ const AssignTickets = () => {
     form.setFieldsValue(rangesValues);
     setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, init: true })) });
   }, [state, form]);
+
+  const query = useMemo<QueryConstraint[]>(() => {
+    const { companyUid } = state as EventAssign;
+    return [
+      where("role", "==", "Embajador"),
+      where("companyUid", "==", companyUid),
+      limit(20),
+      orderBy("name")
+    ]
+  }, [state]);
 
   const ruleMaxRangeForEvent = useMemo<Rule>(() => ({
     message: "El rango no puede ser mayor a la cantidad de boletos del evento.",
