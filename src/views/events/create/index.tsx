@@ -28,6 +28,22 @@ const CreateEvent = () => {
   const [initTotalTickets, setInitTotalTickets] = useState(0);
   const [companies, setCompanies] = useState<Option[]>();
 
+
+  useEffect(() => {
+    const init1 = async () => {
+      const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
+      const selectComapanies = response.map((company) => {
+        return {
+          value: company.name + "-" + company.id,
+          text: company.name
+        }
+      })
+      setCompanies(selectComapanies as Option[]);
+    }
+
+    init1();
+  }, [])
+
   useEffect(() => {
     let _event = { ...state } as EventForm | null;
 
@@ -46,14 +62,14 @@ const CreateEvent = () => {
           text: company.name
         }
       })
-
+      console.log(selectComapanies)
       setCompanies(selectComapanies as Option[]);
       setEvent({ ..._event!, initialDate: dayjs(_event!.initialDate), finalDate: dayjs(_event!.finalDate) });
       setInitTotalTickets(_event!.total!);
     }
 
     init();
-  }, [state, form])
+  }, [state])
 
   const onFinish = async () => {
     if (saving) return;
