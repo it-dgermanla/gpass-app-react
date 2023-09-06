@@ -39,22 +39,20 @@ const Qr = () => {
 
     return initEvent;
   }, [state]);
-  
+
 
   const handleScanResult: OnResultFunction = async (result) => {
     if (!result) return
     setScanActive(false)
     try {
       const [eventId, numberTicket] = result.getText().split("-");
-      
+
       const responseUser = await getGenericDocById<User>('Users', user?.uid!)
       const responseEvent = await getGenericDocById<Event>('Events', eventId)
       const tickets = await getCollectionGeneric<Ticket>('Tickets', [where('eventId', '==', eventId), where('number', '==', + numberTicket)])
       const finalDate = responseEvent.finalDate as any as Timestamp;
+      let userScannerIds = [];
 
-      console.log(eventId)
-      console.log(event)
-      console.log(event.id)
       if (eventId !== event.id) {
         setIsModalData({
           message: `Este boleto no coincide con el evento - ${event?.name.toUpperCase()}`,
@@ -84,7 +82,7 @@ const Qr = () => {
 
         return
       }
-     
+
       if (tickets[0].isScanned === "Si") {
         setIsModalData({
           message: `Este QR ya esta escaneado.`,
@@ -94,6 +92,17 @@ const Qr = () => {
 
         return
       }
+
+      if (!responseEvent?.userScannerIds) {
+        userScannerIds.push(user?.uid!)
+      } else {
+        userScannerIds = responseEvent?.userScannerIds
+        if (userScannerIds.indexOf(user?.uid!) === -1) {
+          userScannerIds.push(user?.uid!)
+        }
+      }
+
+      await update('Events', event.id, { userScannerIds })
 
       await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, userScannerName: responseUser?.name, isScanned: "Si", dateScanned: new Date() })
       setIsModalData({

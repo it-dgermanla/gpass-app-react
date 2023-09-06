@@ -22,6 +22,7 @@ export interface Event {
   total?: number;
   companyName: Company | string;
   companyUid: Company | string;
+  userScannerIds?: string[]
 }
 
 export interface Ticket {
