@@ -6,15 +6,14 @@ import Table from '../../../components/table';
 import { limit, orderBy, where } from 'firebase/firestore';
 import { useAuth } from "../../../context/authContext";
 import { User, Event } from '../../../interfaces';
-import { initEvent, initUser } from '../../../constants';
+import { initEvent } from '../../../constants';
 import { getGenericDocById, update } from '../../../services/firebase';
 import { Switch } from 'antd';
 
 const Users = () => {
-  const { user } = useAuth();
+  const { user, userFirestore} = useAuth();
   const location = useLocation();
   const { state } = location;
-  const [userData, setUserData] = useState<User>(initUser)
   const event = useMemo(() => {
     if (state) {
       return state as Event;
@@ -33,11 +32,10 @@ const Users = () => {
 
     const init = async () => {
       try {
-        const responceUser = await getGenericDocById<User>('Users', user.uid)
         const responceEvent = await getGenericDocById<Event>('Events', event.id!)
 
         if (responceEvent.userScannerIds) userScannerIds = responceEvent.userScannerIds
-        setUserData(responceUser)
+        
       } catch (error) {
         console.log(error);
       }
@@ -84,8 +82,6 @@ const Users = () => {
     { title: 'Rol', dataIndex: 'role', key: 'role' }
   ], [onChange])
 
-  if (userData?.companyName === "") return
-
   return (
     <div style={{ margin: 20 }}>
       <HeaderView
@@ -98,7 +94,7 @@ const Users = () => {
         collection="Users"
         query={[
           where("disabled", "==", false), orderBy("createAt", "desc"), limit(10),
-          where("companyName", "==", event.companyName),
+          where("companyName", "==", userFirestore?.companyName),
           where("role", "==", "Lector")
         ]}
         searchValues={{

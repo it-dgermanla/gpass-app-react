@@ -31,57 +31,9 @@ const Events = () => {
     },
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: '#Boletos', dataIndex: 'total', key: 'total' },
+    { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
     { title: 'Fecha Inicio', dataIndex: 'initialDateFormated', key: 'initialDateFormated' },
     { title: 'Fecha Final', dataIndex: 'finalDateFormated', key: 'finalDateFormated' },
-    ["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!) ? {
-      title: "Ver boletos",
-      dataIndex: "tickets",
-      key: "tickets",
-      render: (_, event) => (
-        <Button
-          onClick={() => navigate("/eventos/boletos", { state: event })}
-          shape="circle"
-          icon={<MdConfirmationNumber />}
-        />
-      )
-    } : {}
-    ,
-    ["SuperAdministrador", "Administrador"].includes(user?.displayName!) ? {
-      title: "Asignar boletos embajadores",
-      dataIndex: "assignTickets",
-      key: "assignTickets",
-      render: (_, event) => (
-        <>
-          {
-            ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && <Button
-              type="primary"
-              onClick={() => navigate("/eventos/asignar-boletos", { state: event })}
-              shape="circle"
-              icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
-            />
-          }
-        </>
-      )
-    } : {}
-    ,
-
-    ["SuperAdministrador", "Administrador"].includes(user?.displayName!) ? {
-      title: "Asignar Lectores",
-      dataIndex: "lector",
-      key: "lector",
-      render: (_, event) => (
-        <>
-          {
-            ["SuperAdministrador", "Administrador"].includes(user?.displayName!) && <Button
-              onClick={() => navigate("/eventos/lectores", { state: event })}
-              shape="circle"
-              icon={<UserAddOutlined />}
-            />
-          }
-        </>
-      )
-    } : {}
-    ,
     {
       title: "Imagen",
       dataIndex: "image",
@@ -94,6 +46,51 @@ const Events = () => {
       )
     }
   ], [navigate, user?.displayName]);
+  if (["SuperAdministrador", "Administrador", "Embajador"].includes(user?.displayName!)) {
+    columns.push({
+      title: "Boletos",
+      dataIndex: "tickets",
+      key: "tickets",
+      render: (_, event) => (
+        <Button
+          onClick={() => navigate("/eventos/boletos", { state: event })}
+          shape="circle"
+          icon={<MdConfirmationNumber />}
+        />
+      )
+    })
+  }
+
+  if (["SuperAdministrador", "Administrador"].includes(user?.displayName!)) {
+    columns.push({
+      title: "Asignar boletos embajadores",
+      dataIndex: "assignTickets",
+      key: "assignTickets",
+      render: (_, event) => (
+        <Button
+          type="primary"
+          onClick={() => navigate("/eventos/asignar-boletos", { state: event })}
+          shape="circle"
+          icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
+        />
+      )
+    })
+  }
+
+  if (["SuperAdministrador", "Administrador"].includes(user?.displayName!)) {
+    columns.push({
+      title: "Asignar Lectores",
+      dataIndex: "lector",
+      key: "lector",
+      render: (_, event) => (
+        <Button
+          onClick={() => navigate("/eventos/lectores", { state: event })}
+          shape="circle"
+          icon={<UserAddOutlined />}
+        />
+      )
+    })
+  }
 
   const query = useMemo<QueryConstraint[]>(() => {
     const query = [where("disabled", "==", false), orderBy("createAt", "desc"), limit(10)];
@@ -107,7 +104,7 @@ const Events = () => {
     }
 
     if (user?.displayName === "Administrador") {
-      query.push(where("companyUid", "array-contains", userFirestore?.companyUid || ""));
+      query.push(where("companyUid", "==", userFirestore?.companyUid || ""));
     }
 
     return query;

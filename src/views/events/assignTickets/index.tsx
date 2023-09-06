@@ -23,6 +23,7 @@ const AssignTickets = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = location;
+  
   const query = useMemo<QueryConstraint[]>(() => {
     return [
       where("role", "==", "Embajador"),

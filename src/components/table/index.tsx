@@ -230,7 +230,7 @@ const Table = <T extends {}>({
 			})
 		}
 
-		if (removeTableActions) return columnsProp.map(c => ({ ...c, width: c.width || 150 }));
+		if (removeTableActions || ["Administrador", "Embajador", "Lector"].includes(user?.displayName!)) return columnsProp.map(c => ({ ...c, width: c.width || 150 }));
 
 		return [
 			...columnsProp.map(c => ({ ...c, width: c.width || 150 })),
@@ -242,7 +242,7 @@ const Table = <T extends {}>({
 				render: (_, record: T) => {
 					const r = record as T & { id: string };
 					return (
-						["SuperAdministrador"].includes(user?.displayName!) && <TableActionsButtons
+						<TableActionsButtons
 							record={record}
 							onDeleted={() => {
 								setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }))
