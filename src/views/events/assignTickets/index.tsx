@@ -7,7 +7,6 @@ import { ColumnsType } from "antd/es/table";
 import { QueryConstraint, limit, orderBy, where, writeBatch } from "firebase/firestore";
 import FormItem from "antd/es/form/FormItem";
 import { DeleteOutlined } from "@ant-design/icons";
-import { useAuth } from "../../../context/authContext";
 import { Rule } from "antd/es/form";
 import { getCollection, update } from "../../../services/firebase";
 import Table from "../../../components/table";
@@ -19,7 +18,6 @@ type EventAssign = Omit<Event, "ambassadorsRanges"> & {
 }
 
 const AssignTickets = () => {
-  const { userFirestore } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = location;

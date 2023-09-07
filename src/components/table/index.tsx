@@ -119,13 +119,18 @@ const Table = <T extends {}>({
 
 			const _search = search as Dayjs[];
 
-			_query.push(...[orderBy(searchKey, "desc"), where(searchKey, ">=", _search[0].toDate()), where(searchKey, "<=", _search[1].toDate())])
+			const startDate = _search[0].toDate()
+			const endDate = _search[1].toDate()
+			startDate.setHours(0, 0, 0, 0)
+			endDate.setHours(23, 59, 59, 59)
+			
+			_query.push(...[orderBy(searchKey, "desc"), where(searchKey, ">=", startDate), where(searchKey, "<=", endDate)])
 		}
 
 		if (lastDoc) {
 			_query.push(startAfter(lastDoc));
 		}
-
+        console.log(tableData, queryProp)
 		return _query;
 	}, [tableData, queryProp]);
 	const { loading, data, setData } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
@@ -263,21 +268,10 @@ const Table = <T extends {}>({
 		<div>
 			<SearchTable
 				onSearch={(search, searchKey) => {
-
 					setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }));
-
-					if (searchKey === "dateScanned") {
-						let _search: any = search;
-						_search[0] = dayjs(search[0]).hour(0).minute(0).second(0);
-						_search[1] = dayjs(search[1]).hour(23).minute(59).second(0);
-						setTimeout(() => {
-							setTableData(prev => ({ ...prev, _search, searchKey, collection }));
-						}, 200)
-					} else {
-						setTimeout(() => {
-							setTableData(prev => ({ ...prev, search, searchKey, collection }));
-						}, 200)
-					}
+					setTimeout(() => {
+						setTableData(prev => ({ ...prev, search, searchKey, collection }));
+					}, 200)
 				}}
 				placeholder={placeholderSearch}
 				searchValues={searchValues}

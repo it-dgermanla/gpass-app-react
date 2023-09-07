@@ -1,22 +1,25 @@
 import { ColumnsType } from 'antd/es/table';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import HeaderView from '../../../components/headerView';
 import { useLocation } from 'react-router-dom';
-import Table from '../../../components/table';
+import Table, { PropsTable } from '../../../components/table';
 import { limit, orderBy, where } from 'firebase/firestore';
-import { useAuth } from "../../../context/authContext";
 import { User, Event } from '../../../interfaces';
 import { initEvent } from '../../../constants';
-import { getGenericDocById, update } from '../../../services/firebase';
+import { update } from '../../../services/firebase';
 import { Switch } from 'antd';
 
 const Users = () => {
-  const { user, userFirestore} = useAuth();
   const location = useLocation();
   const { state } = location;
+  const [userScannerIds, setUserScannerIds] = useState<string[]>([])
+
   const event = useMemo(() => {
     if (state) {
-      return state as Event;
+      const _event = state as Event;
+      setUserScannerIds(_event.userScannerIds)
+
+      return _event;
     }
 
     window.location.href = "/eventos";
@@ -24,61 +27,50 @@ const Users = () => {
     return initEvent;
   }, [state]);
 
-  //este valor deberias tomarlo del evento y no debes usar variables que no sean estados para dibujar cosas en el jsx
-  let userScannerIds: any[] = []
-
-  useEffect(() => {
-    if (!user) return
-
-    const init = async () => {
-      try {
-        const responceEvent = await getGenericDocById<Event>('Events', event.id!)
-
-        if (responceEvent.userScannerIds) userScannerIds = responceEvent.userScannerIds
-        
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    init();
-  }, [user]);
-
   const onChange = useCallback(async (checked: boolean, _user: User) => {
+    let _userScannerIds = [...userScannerIds]
     try {
       if (checked) {
-        if (userScannerIds.indexOf(_user.id) === -1) {
-          userScannerIds.push(_user.id);
-        }
-
+        _userScannerIds.push(_user?.id!)
       } else {
-        userScannerIds.splice(userScannerIds.indexOf(_user.id), 1);
+        _userScannerIds = _userScannerIds.filter((u) => u !== _user?.id!);
       }
 
-      await update('Events', event.id!, { userScannerIds })
+      // await update('Events', event.id!, { userScannerIds: _userScannerIds })
+
+      setUserScannerIds(_userScannerIds)
     } catch (error) {
       console.log(error)
     }
   }, [event.id]);
 
-  const columns: ColumnsType<any> = useMemo(() => [
+  const columns: ColumnsType<User> = useMemo(() => [
     {
       title: "Lector",
       dataIndex: "lector",
       key: "lector",
-      render: (_, _user) => (
-        <>
-          {
-            userScannerIds.indexOf(_user.id) === -1 || userScannerIds.length === 0 ?
-              <Switch onChange={(checked) => onChange(checked, _user)} /> :
-              <Switch defaultChecked onChange={(checked) => onChange(checked, _user)} />
-          }
-        </>
-      )
+      render: (_, _user) => <Switch checked={userScannerIds.includes(_user?.id!)} onChange={(checked) => onChange(checked, _user)} />
     },
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
     { title: 'Correo', dataIndex: 'email', key: 'email' }
-  ], [onChange])
+  ], [onChange, userScannerIds])
+
+  const propsTable = useMemo<PropsTable<User>>(() => {
+ //cambiar query company uid
+    return {
+      columns,
+      placeholderSearch: "Buscar por nombre ó correo...",
+      pathEdit: "/usuarios/editar",
+      collection: "Users",
+      query: [
+        where("disabled", "==", false), orderBy("createAt", "desc"), limit(10),
+        where("companyName", "==", event?.companyName),
+        where("role", "==", "Lector")
+      ],
+      searchValues: { name: "Nombre", email: "Correo" },
+      removeTableActions: true
+    }
+  }, [event, columns])
 
   return (
     <div style={{ margin: 20 }}>
@@ -86,20 +78,7 @@ const Users = () => {
         title={`Lectores - ${event?.name}`}
       />
       <Table
-        columns={columns}
-        placeholderSearch="Buscar por nombre ó correo..."
-        pathEdit="/usuarios/editar"
-        collection="Users"
-        query={[
-          where("disabled", "==", false), orderBy("createAt", "desc"), limit(10),
-          where("companyName", "==", event?.companyName),
-          where("role", "==", "Lector")
-        ]}
-        searchValues={{
-          name: "Nombre",
-          email: "Correo"
-        }}
-        removeTableActions={true}
+        {...propsTable}
       />
     </div>
   )
