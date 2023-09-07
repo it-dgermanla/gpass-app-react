@@ -53,9 +53,10 @@ const Events = () => {
       key: "tickets",
       render: (_, event) => (
         <Button
+          type="primary"
           onClick={() => navigate("/eventos/boletos", { state: event })}
           shape="circle"
-          icon={<MdConfirmationNumber />}
+          icon={<MdConfirmationNumber style={{ marginBottom: -2 }} />}
         />
       )
     })
@@ -84,9 +85,10 @@ const Events = () => {
       key: "lector",
       render: (_, event) => (
         <Button
+          type="primary"
           onClick={() => navigate("/eventos/lectores", { state: event })}
           shape="circle"
-          icon={<UserAddOutlined />}
+          icon={<UserAddOutlined style={{ marginBottom: -2 }} />}
         />
       )
     })
