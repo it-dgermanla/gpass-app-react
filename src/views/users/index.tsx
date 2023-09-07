@@ -2,12 +2,14 @@ import { ColumnsType } from 'antd/es/table';
 import { useMemo, useState, useEffect } from 'react';
 import HeaderView from '../../components/headerView';
 import Table, { PropsTable } from '../../components/table';
-import { limit, orderBy, where } from 'firebase/firestore';
+import { QueryConstraint, limit, orderBy, where } from 'firebase/firestore';
 import { User } from "../../interfaces";
 import { Company } from './../../interfaces';
 import { getCollectionGeneric } from './../../services/firebase';
+import { useAuth } from "../../context/authContext";
 
 const Users = () => {
+  const { userFirestore } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,15 @@ const Users = () => {
     init();
   }, [])
 
-  const query = [orderBy("createAt", "desc"), where("disabled", "==", false), limit(20)];
+  const query = useMemo<QueryConstraint[]>(() => {
+    const query = [orderBy("createAt", "desc"), where("disabled", "==", false), limit(20)];
+
+    if (userFirestore?.role === "Administrador") {
+      query.push(where("companyUid", "==", userFirestore?.companyUid || ""));
+    }
+
+    return query;
+  }, [userFirestore]);
 
   const propsTable = useMemo<PropsTable<User>>(() => ({
     wait: loading,
