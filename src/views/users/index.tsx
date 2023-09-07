@@ -9,9 +9,20 @@ import { getCollectionGeneric } from './../../services/firebase';
 import { useAuth } from "../../context/authContext";
 
 const Users = () => {
-  const { userFirestore } = useAuth();
+  const { user, userFirestore } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
+
+  let searchVal: Record<string, string> = {
+    name: "Nombre",
+    email: "Correo",
+    role: "Rol"
+  }
+
+  if (user?.displayName === "SuperAdministrador") {
+    searchVal = {...searchVal, companyUid: "Empresa"};
+  }
+
 
   const columns: ColumnsType<User> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
@@ -53,16 +64,15 @@ const Users = () => {
     pathEdit: "/usuarios/editar",
     collection: "Users",
     query,
-    searchValues: {
-      name: "Nombre",
-      email: "Correo",
-      role: "Rol",
-      companyUid: "Empresa"
-    },
+    searchValues: searchVal,
     optiosSearchValues: [
       {
         propSearch: "role",
         options: [
+          {
+            key: "",
+            label: "Sin Rol"
+          },
           {
             key: "Administrador",
             label: "Administrador"
@@ -79,7 +89,10 @@ const Users = () => {
       },
       {
         propSearch: "companyUid",
-        options: companies.map(c => ({ key: c.id!, label: c.name }))
+        options: [
+          ...[{ key: "", label: "Sin Rol" }],
+          ...companies.map(c => ({ key: c.id!, label: c.name }))
+        ]
       }
     ]
   }), [columns, query, companies, loading])

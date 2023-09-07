@@ -106,6 +106,10 @@ const Tickets = () => {
         propSearch: "isScanned",
         options: [
           {
+            key: "",
+            label: "Sin filtro"
+          },
+          {
             key: "Si",
             label: "Si"
           },
