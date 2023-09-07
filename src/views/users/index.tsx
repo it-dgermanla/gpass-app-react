@@ -1,14 +1,15 @@
 import { ColumnsType } from 'antd/es/table';
 import { useMemo, useState, useEffect } from 'react';
 import HeaderView from '../../components/headerView';
-import Table from '../../components/table';
+import Table, { PropsTable } from '../../components/table';
 import { limit, orderBy, where } from 'firebase/firestore';
 import { User } from "../../interfaces";
-import { Option, Company } from './../../interfaces';
+import { Company } from './../../interfaces';
 import { getCollectionGeneric } from './../../services/firebase';
 
 const Users = () => {
-  const [companies, setCompanies] = useState<any>();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const columns: ColumnsType<User> = useMemo(() => [
     { title: 'Nombre', dataIndex: 'name', key: 'name' },
@@ -19,19 +20,59 @@ const Users = () => {
   ], [])
 
   useEffect(() => {
-    const init1 = async () => {
-      const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
-      const selectComapanies = response.map((company) => {
-        return {
-          key: company.id,
-          label: company.name
-        }
-      })
-      setCompanies(selectComapanies as any);
+    const init = async () => {
+      try {
+        const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
+        setCompanies(response);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    init1();
+    init();
   }, [])
+
+  const query = [orderBy("createAt", "desc"), where("disabled", "==", false), limit(20)];
+
+  const propsTable = useMemo<PropsTable<User>>(() => ({
+    wait: loading,
+    columns,
+    placeholderSearch: "Buscar por nombre ó correo...",
+    pathEdit: "/usuarios/editar",
+    collection: "Users",
+    query,
+    searchValues: {
+      name: "Nombre",
+      email: "Correo",
+      role: "Rol",
+      companyUid: "Empresa"
+    },
+    optiosSearchValues: [
+      {
+        propSearch: "role",
+        options: [
+          {
+            key: "Administrador",
+            label: "Administrador"
+          },
+          {
+            key: "Embajador",
+            label: "Embajador"
+          },
+          {
+            key: "Lector",
+            label: "Lector"
+          }
+        ]
+      },
+      {
+        propSearch: "companyUid",
+        options: companies.map(c => ({ key: c.id!, label: c.name }))
+      }
+    ]
+  }), [columns, query, companies, loading])
 
   return (
     <div style={{ margin: 20 }}>
@@ -40,42 +81,7 @@ const Users = () => {
         path="/usuarios/registrar"
       />
       <Table
-        columns={columns}
-        placeholderSearch="Buscar por nombre ó correo..."
-        pathEdit="/usuarios/editar"
-        collection="Users"
-        query={[where("disabled", "==", false), limit(20), orderBy("createAt", "desc")]}
-        searchValues={{
-          name: "Nombre",
-          email: "Correo",
-          role: "Rol",
-          companyUid: "Empresa"
-        }}
-        optiosSearchValues={
-          [
-            {
-              propSearch: "role",
-              options: [
-                {
-                  key: "Administrador",
-                  label: "Administrador"
-                },
-                {
-                  key: "Embajador",
-                  label: "Embajador"
-                },
-                {
-                  key: "Lector",
-                  label: "Lector"
-                }
-              ]
-            },
-            {
-              propSearch: "companyUid",
-              options: companies
-            } 
-          ]
-        }
+        {...propsTable}
       />
     </div>
   )

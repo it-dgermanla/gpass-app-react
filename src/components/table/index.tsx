@@ -123,14 +123,14 @@ const Table = <T extends {}>({
 			const endDate = _search[1].toDate()
 			startDate.setHours(0, 0, 0, 0)
 			endDate.setHours(23, 59, 59, 59)
-			
+
 			_query.push(...[orderBy(searchKey, "desc"), where(searchKey, ">=", startDate), where(searchKey, "<=", endDate)])
 		}
 
 		if (lastDoc) {
 			_query.push(startAfter(lastDoc));
 		}
-        console.log(tableData, queryProp)
+
 		return _query;
 	}, [tableData, queryProp]);
 	const { loading, data, setData } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });

@@ -1,34 +1,49 @@
 import { ColumnsType } from 'antd/es/table';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import HeaderView from '../../../components/headerView';
 import { useLocation } from 'react-router-dom';
 import Table, { PropsTable } from '../../../components/table';
 import { limit, orderBy, where } from 'firebase/firestore';
 import { User, Event } from '../../../interfaces';
 import { initEvent } from '../../../constants';
-import { update } from '../../../services/firebase';
-import { Switch } from 'antd';
+import { getDocByIdGeneric, update } from '../../../services/firebase';
+import { Switch, message } from 'antd';
 
 const Users = () => {
   const location = useLocation();
   const { state } = location;
-  const [userScannerIds, setUserScannerIds] = useState<string[]>([])
+  const [userScannerIds, setUserScannerIds] = useState<string[]>([]);
+  const [event, setEvent] = useState<Event>(initEvent);
+  const [loading, setLoading] = useState(true);
 
-  const event = useMemo(() => {
-    if (state) {
-      const _event = state as Event;
-      setUserScannerIds(_event.userScannerIds)
-
-      return _event;
+  useEffect(() => {
+    if (!state) {
+      window.location.href = "/eventos";
+      return;
     }
 
-    window.location.href = "/eventos";
+    const init = async () => {
+      try {
+        const _event = state as Event;
 
-    return initEvent;
-  }, [state]);
+        const eventRefresh = await getDocByIdGeneric<Event>("Events", _event.id!);
+
+        setEvent(eventRefresh);
+        setUserScannerIds(eventRefresh.userScannerIds);
+      } catch (error) {
+        console.log(error);
+        message.error("Error al cargar los datos del evento.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    init();
+  }, [state])
 
   const onChange = useCallback(async (checked: boolean, _user: User) => {
-    let _userScannerIds = [...userScannerIds]
+    let _userScannerIds = [...userScannerIds];
+
     try {
       if (checked) {
         _userScannerIds.push(_user?.id!)
@@ -36,13 +51,13 @@ const Users = () => {
         _userScannerIds = _userScannerIds.filter((u) => u !== _user?.id!);
       }
 
-      // await update('Events', event.id!, { userScannerIds: _userScannerIds })
+      await update('Events', event.id!, { userScannerIds: _userScannerIds })
 
       setUserScannerIds(_userScannerIds)
     } catch (error) {
       console.log(error)
     }
-  }, [event.id]);
+  }, [event.id, userScannerIds]);
 
   const columns: ColumnsType<User> = useMemo(() => [
     {
@@ -55,22 +70,26 @@ const Users = () => {
     { title: 'Correo', dataIndex: 'email', key: 'email' }
   ], [onChange, userScannerIds])
 
+  const query = useMemo(() => {
+    return [
+      where("disabled", "==", false), orderBy("createAt", "desc"), limit(20),
+      where("companyUid", "==", event?.companyUid),
+      where("role", "==", "Lector")
+    ]
+  }, [event])
+
   const propsTable = useMemo<PropsTable<User>>(() => {
- //cambiar query company uid
     return {
       columns,
       placeholderSearch: "Buscar por nombre ó correo...",
       pathEdit: "/usuarios/editar",
       collection: "Users",
-      query: [
-        where("disabled", "==", false), orderBy("createAt", "desc"), limit(10),
-        where("companyUid", "==", event?.companyUid),
-        where("role", "==", "Lector")
-      ],
+      query,
       searchValues: { name: "Nombre", email: "Correo" },
-      removeTableActions: true
+      removeTableActions: true,
+      wait: loading
     }
-  }, [event, columns])
+  }, [event, columns, query, loading])
 
   return (
     <div style={{ margin: 20 }}>
