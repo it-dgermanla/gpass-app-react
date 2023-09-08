@@ -38,7 +38,7 @@ const Qr = () => {
 
     return initEvent;
   }, [state]);
-  
+
 
   const handleScanResult: OnResultFunction = async (result) => {
     if (!result) return
@@ -78,7 +78,7 @@ const Qr = () => {
 
         return
       }
-     
+
       if (tickets[0].isScanned === "Si") {
         setIsModalData({
           message: `Este QR ya esta escaneado.`,
@@ -99,7 +99,7 @@ const Qr = () => {
       message.error('Error al procesar QR.', 4);
     } finally {
       setIsModalOpen(true)
-      setScanActive(true)
+
     }
   };
 
@@ -132,7 +132,7 @@ const Qr = () => {
             showIcon
           />
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <Button type="primary" onClick={() => setIsModalOpen(false)}>Listo</Button>
+            <Button type="primary" onClick={() => { setScanActive(true); setIsModalOpen(false); }}>Listo</Button>
           </div>
         </Space>
       </Modal>
