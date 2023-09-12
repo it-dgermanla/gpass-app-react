@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { Empty, Table as TableAnt } from 'antd';
+import { Empty, Table as TableAnt, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import SearchTable from '../searchTable';
 import TableActionsButtons from "./tableActionsButtons";
@@ -184,7 +184,13 @@ const Table = <T extends {}>({
 								icon={<DownloadOutlined style={{ color: t.isDownloaded ? '#ffffff' : "" }} />}
 								style={{ backgroundColor: t.isDownloaded ? '#34d960' : "" }}
 								onClick={async () => {
-									const canvasQr = document.getElementById(t.number.toString()) as HTMLCanvasElement;
+									const canvasQr = document.getElementById(t.number.toString()) as HTMLCanvasElement | null;
+
+									if (!canvasQr) {
+										message.error("Error al descargar el ticket, intentelo de nuevo", 4);
+										return;
+									}
+
 									const newWidth = 400;
 									const newHeight = 400;
 									const resizedCanvas = document.createElement("canvas");
@@ -208,8 +214,7 @@ const Table = <T extends {}>({
 												/>
 											}
 										</Page>
-									</Document>
-									).toBlob();
+									</Document>).toBlob();
 
 									const url = window.URL.createObjectURL(blob);
 									const a = document.createElement('a');
