@@ -98,7 +98,7 @@ const Users = () => {
         ]
       }
     ]
-  }), [columns, query, companies, loading])
+  }), [columns, query, companies, loading, searchVal])
 
   return (
     <div style={{ margin: 20 }}>

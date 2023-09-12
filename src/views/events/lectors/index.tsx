@@ -89,7 +89,7 @@ const Users = () => {
       removeTableActions: true,
       wait: loading
     }
-  }, [event, columns, query, loading])
+  }, [columns, query, loading])
 
   return (
     <div style={{ margin: 20 }}>
