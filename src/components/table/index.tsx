@@ -7,7 +7,7 @@ import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
 import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, orderBy, startAfter, startAt, where } from "firebase/firestore";
-import { PDFDownloadLink, Document, Page, Image, StyleSheet } from '@react-pdf/renderer';
+import { PDFDownloadLink, Document, Page, Image, StyleSheet, pdf } from '@react-pdf/renderer';
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Ticket } from "../../interfaces";
@@ -176,7 +176,7 @@ const Table = <T extends {}>({
 				dataIndex: "downlaodQr",
 				key: "downlaodQr",
 				render: (_, ticket) => {
-					const t = ticket as any as Ticket & { ticketUrl: string };
+					const t = ticket as any as Ticket;
 
 					return (
 						<>
@@ -184,8 +184,7 @@ const Table = <T extends {}>({
 								icon={<DownloadOutlined style={{ color: t.isDownloaded ? '#ffffff' : "" }} />}
 								style={{ backgroundColor: t.isDownloaded ? '#34d960' : "" }}
 								onClick={async () => {
-									const elementPDFDownloadLink = document.getElementsByClassName(`ticket-${t.number}`)[0] as HTMLAnchorElement;
-									const canvas = document.getElementById(t.number.toString()) as HTMLCanvasElement;
+									const canvasQr = document.getElementById(t.number.toString()) as HTMLCanvasElement;
 									const newWidth = 400;
 									const newHeight = 400;
 									const resizedCanvas = document.createElement("canvas");
@@ -195,39 +194,36 @@ const Table = <T extends {}>({
 
 									const ctx = resizedCanvas.getContext("2d");
 
-									ctx?.drawImage(canvas, 0, 0, newWidth, newHeight);
+									ctx?.drawImage(canvasQr, 0, 0, newWidth, newHeight);
 
 									const ticketUrl = resizedCanvas.toDataURL("image/octet-stream");
 
-									setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, ticketUrl }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
+									const blob = await pdf(<Document>
+										<Page size={{ width: 440, height: 800 }} style={stylesPDF.page}>
+											<Image src={imageEventUrl} style={stylesPDF.backgroundImage} />
+											{
+												<Image
+													src={ticketUrl}
+													style={stylesPDF.qrImage}
+												/>
+											}
+										</Page>
+									</Document>
+									).toBlob();
+
+									const url = window.URL.createObjectURL(blob);
+									const a = document.createElement('a');
+									a.href = url;
+									a.download = `Ticket-${t.number}`;
+									a.click();
+									a.remove();
+
+									setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, isDownloaded: true }) as any as Ticket : _ticket) as (T & { id: string; })[]);
 
 									if (!t.isDownloaded) {
 										await update("Tickets", t.id as string, { ...t, isDownloaded: true })
-										setData(prev => prev.map(_ticket => _ticket.id === t.id ? ({ ..._ticket, isDownloaded: true }) as any as Ticket & { ticketUrl: string } : _ticket) as (T & { id: string; })[]);
 									}
-
-									setTimeout(() => {
-										elementPDFDownloadLink.click();
-									}, 1000);
 								}}
-							/>
-							<PDFDownloadLink
-								style={{ display: "none" }}
-								className={`ticket-${t.number}`}
-								fileName={`Ticket-${t.number}`}
-								document={<Document>
-									<Page size={{ width: 440, height: 800 }} style={stylesPDF.page}>
-										<Image src={imageEventUrl} style={stylesPDF.backgroundImage} />
-										{
-											t.ticketUrl && t.ticketUrl !== "" &&
-											<Image
-												src={t.ticketUrl}
-												style={stylesPDF.qrImage}
-											/>
-										}
-									</Page>
-								</Document>
-								}
 							/>
 						</>
 					)
