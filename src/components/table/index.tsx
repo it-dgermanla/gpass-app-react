@@ -14,7 +14,7 @@ import { Ticket } from "../../interfaces";
 import { post } from './../../services/index';
 import useAbortController from "./../../hooks/useAbortController";
 import { useLocation } from 'react-router-dom';
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { ExpandableConfig } from "antd/lib/table/interface";
 import { useAuth } from "./../../context/authContext";
 

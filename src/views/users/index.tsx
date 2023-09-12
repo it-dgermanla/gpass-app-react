@@ -13,25 +13,6 @@ const Users = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
 
-  let searchVal: Record<string, string> = {
-    name: "Nombre",
-    email: "Correo",
-    role: "Rol"
-  }
-
-  if (user?.displayName === "SuperAdministrador") {
-    searchVal = {...searchVal, companyUid: "Empresa"};
-  }
-
-
-  const columns: ColumnsType<User> = useMemo(() => [
-    { title: 'Nombre', dataIndex: 'name', key: 'name' },
-    { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
-    { title: 'Correo', dataIndex: 'email', key: 'email' },
-    { title: 'Teléfono', dataIndex: 'phone', key: 'phone' },
-    { title: 'Rol', dataIndex: 'role', key: 'role' }
-  ], [])
-
   useEffect(() => {
     const init = async () => {
       try {
@@ -46,6 +27,28 @@ const Users = () => {
 
     init();
   }, [])
+
+  const searchVal = useMemo<Record<string, string>>(() => {
+    let searchVal: Record<string, string> = {
+      name: "Nombre",
+      email: "Correo",
+      role: "Rol"
+    };
+
+    if (user?.displayName === "SuperAdministrador") {
+      searchVal = { ...searchVal, companyUid: "Empresa" };
+    }
+
+    return searchVal;
+  }, [user])
+
+  const columns: ColumnsType<User> = useMemo(() => [
+    { title: 'Nombre', dataIndex: 'name', key: 'name' },
+    { title: 'Empresa', dataIndex: 'companyName', key: 'companyName' },
+    { title: 'Correo', dataIndex: 'email', key: 'email' },
+    { title: 'Teléfono', dataIndex: 'phone', key: 'phone' },
+    { title: 'Rol', dataIndex: 'role', key: 'role' }
+  ], [])
 
   const query = useMemo<QueryConstraint[]>(() => {
     const query = [orderBy("createAt", "desc"), where("disabled", "==", false), limit(20)];
@@ -90,7 +93,7 @@ const Users = () => {
       {
         propSearch: "companyUid",
         options: [
-          ...[{ key: "", label: "Sin Rol" }],
+          { key: "", label: "Sin Rol" },
           ...companies.map(c => ({ key: c.id!, label: c.name }))
         ]
       }

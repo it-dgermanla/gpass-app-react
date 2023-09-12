@@ -30,7 +30,7 @@ const CreateEvent = () => {
 
 
   useEffect(() => {
-    const init1 = async () => {
+    const init = async () => {
       const response = await getCollectionGeneric<Company>('Companies', [where("disabled", "==", false)])
       const selectComapanies = response.map((company) => {
         return {
@@ -41,7 +41,7 @@ const CreateEvent = () => {
       setCompanies(selectComapanies as Option[]);
     }
 
-    init1();
+    init();
   }, [])
 
   useEffect(() => {
@@ -53,12 +53,8 @@ const CreateEvent = () => {
 
     _event = setImagesToState(_event);
 
-    const init = async () => {
-      setEvent({ ..._event!, initialDate: dayjs(_event!.initialDate), finalDate: dayjs(_event!.finalDate) });
-      setInitTotalTickets(_event!.total!);
-    }
-
-    init();
+    setEvent({ ..._event!, initialDate: dayjs(_event!.initialDate), finalDate: dayjs(_event!.finalDate) });
+    setInitTotalTickets(_event!.total!);
   }, [state, form])
 
   const onFinish = async () => {
