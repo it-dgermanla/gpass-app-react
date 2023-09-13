@@ -92,11 +92,13 @@ const Tickets = () => {
   const propsTable = useMemo<PropsTable<TicketTable>>(() => ({
     wait: loading,
     columns: columns,
-    placeholderSearch: "Buscar por numero...",
+    placeholderSearch: "Buscar por nombre embajador / lector,numero...",
     collection: "Tickets",
     query,
     formatDate: "DD/MM/YYYY hh:mm a",
     searchValues: {
+      userAmbassadorName: "Nombre Embajador",
+      userScannerName: "Nombre lector",
       number: "Número",
       isScanned: "Escanedo",
       dateScanned: "Fecha escaneado",
