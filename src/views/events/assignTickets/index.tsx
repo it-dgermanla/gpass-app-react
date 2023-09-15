@@ -24,7 +24,6 @@ const AssignTickets = () => {
   const [form] = Form.useForm();
   const [event, setEvent] = useState<EventAssign>();
   const [saving, setSaving] = useState(false);
-  const [maxNumber, setMaxNumber] = useState(0);
   const [users, setUsers] = useState<User[]>([]);
   const [rangesToDelete, setRangesToDelete] = useState<Range[]>([]);
 
@@ -45,13 +44,6 @@ const AssignTickets = () => {
         };
       });
     });
-
-    setMaxNumber(_event?.ambassadorsRanges.reduce((max, item) => {
-      const ranges = item.ranges || [];
-      const endRanges: any = ranges.map(range => range.endRange).filter(endRange => typeof endRange === 'number');
-      const maxInItem = Math.max(...endRanges);
-      return maxInItem > max ? maxInItem : max;
-    }, -Infinity | 0))
 
     form.setFieldsValue(rangesValues);
     setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, init: true })) });
@@ -357,7 +349,7 @@ const AssignTickets = () => {
   return (
     <>
       <HeaderView
-        title={`Asignador boletos ${event?.name} - Cantidad boletos: ${event?.total} | Maximo Rango: ${maxNumber}`}
+        title={`Asignador boletos ${event?.name} - Cantidad boletos: ${event?.total}`}
         goBack
         path="/eventos"
       />
