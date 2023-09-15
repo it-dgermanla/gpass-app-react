@@ -25,7 +25,6 @@ const AssignTickets = () => {
   const [event, setEvent] = useState<EventAssign>();
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
-  const [maxNumber, setMaxNumber] = useState(0);
   const [rangesToDelete, setRangesToDelete] = useState<Range[]>([]);
 
   useEffect(() => {
@@ -45,12 +44,7 @@ const AssignTickets = () => {
         };
       });
     });
-    setMaxNumber(_event?.ambassadorsRanges.reduce((max, item) => {
-      const ranges = item.ranges || [];
-      const endRanges: any = ranges.map(range => range.endRange).filter(endRange => typeof endRange === 'number');
-      const maxInItem = Math.max(...endRanges);
-      return maxInItem > max ? maxInItem : max;
-    }, -Infinity | 0))
+
     form.setFieldsValue(rangesValues);
     setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, init: true })) });
   }, [state, form]);
@@ -230,37 +224,19 @@ const AssignTickets = () => {
     }
 
     const userAmbassadorIds: string[] = [];
-    let array: any = [];
 
-    // keysValues.forEach((key) => {
-    //   const userId = key.split('-')[2];
-    //   console.log("/////////sss///////////")
-    //   console.log(userId)
-    //   if (!userAmbassadorIds.includes(userId)) {
-    //     console.log("/////////entro///////////")
-    //     console.log(userId)
-    //     userAmbassadorIds.push(userId);
-    //   }
-    // });
+    keysValues.forEach((key) => {
+      const userId = key.split('-')[2];
+
+      if (!userAmbassadorIds.includes(userId)) {
+        userAmbassadorIds.push(userId);
+      }
+    });
 
     setSaving(true);
 
-    event?.ambassadorsRanges.map((rang) => {
-      ambassadorsRanges.map((rang2) => {
-        if (rang.userAmbassadorId == rang2.userAmbassadorId) {
-          array.push({ ...rang2, init: true })
-        } else {
-          array.push({ ...rang, init: true })
-        }
-        if(!userAmbassadorIds.includes(rang.userAmbassadorId)){
-          userAmbassadorIds.push(rang.userAmbassadorId)
-        }
-        
-      })
-    })
-
     try {
-      await update("Events", event?.id!, { userAmbassadorIds, ambassadorsRanges: array });
+      await update("Events", event?.id!, { userAmbassadorIds, ambassadorsRanges });
 
       message.success('Boletos asignados con exito.', 4);
 
@@ -373,7 +349,7 @@ const AssignTickets = () => {
   return (
     <>
       <HeaderView
-        title={`Asignador boletos ${event?.name} - Cantidad boletos: ${event?.total} | Maximo Rango: ${maxNumber}`}
+        title={`Asignador boletos ${event?.name} - Cantidad boletos: ${event?.total}`}
         goBack
         path="/eventos"
       />
