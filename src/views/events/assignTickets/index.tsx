@@ -233,7 +233,6 @@ const AssignTickets = () => {
     }
 
     const userAmbassadorIds: string[] = [];
-    let array: any = [];
 
     keysValues.forEach((key) => {
       const userId = key.split('-')[2];
@@ -245,20 +244,6 @@ const AssignTickets = () => {
 
     setSaving(true);
 
-    event?.ambassadorsRanges.map((rang) => {
-      ambassadorsRanges.map((rang2) => {
-        if (rang.userAmbassadorId == rang2.userAmbassadorId) {
-          array.push({ ...rang2, init: true })
-        } else {
-          array.push({ ...rang, init: true })
-        }
-        if (!userAmbassadorIds.includes(rang.userAmbassadorId)) {
-          userAmbassadorIds.push(rang.userAmbassadorId)
-        }
-
-      })
-    })
-    ambassadorsRanges = array
     try {
       await update("Events", event?.id!, { userAmbassadorIds, ambassadorsRanges });
 
