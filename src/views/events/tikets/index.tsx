@@ -128,6 +128,8 @@ const Tickets = () => {
     onLoadData: setTickets
   }), [event, columns, loading, query]);
 
+  console.log(tickets)
+
   return (
     <div style={{ margin: 20 }}>
       <HeaderView

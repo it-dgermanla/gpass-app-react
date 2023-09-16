@@ -26,6 +26,7 @@ const AssignTickets = () => {
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [rangesToDelete, setRangesToDelete] = useState<Range[]>([]);
+  const [maxNumber, setMaxNumber] = useState({});
 
   useEffect(() => {
     if (!state) {
@@ -44,6 +45,14 @@ const AssignTickets = () => {
         };
       });
     });
+
+    setMaxNumber(_event?.ambassadorsRanges.reduce((max, item) => {
+      const ranges = item.ranges || [];
+      const endRanges: any = ranges.map(range => range.endRange).filter(endRange => typeof endRange === 'number');
+      const maxInItem = Math.max(...endRanges);
+      return maxInItem > max ? maxInItem : max;
+    }, -Infinity | 0))
+
 
     form.setFieldsValue(rangesValues);
     setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, init: true })) });
@@ -224,6 +233,7 @@ const AssignTickets = () => {
     }
 
     const userAmbassadorIds: string[] = [];
+    let array: any = [];
 
     keysValues.forEach((key) => {
       const userId = key.split('-')[2];
@@ -235,6 +245,20 @@ const AssignTickets = () => {
 
     setSaving(true);
 
+    event?.ambassadorsRanges.map((rang) => {
+      ambassadorsRanges.map((rang2) => {
+        if (rang.userAmbassadorId == rang2.userAmbassadorId) {
+          array.push({ ...rang2, init: true })
+        } else {
+          array.push({ ...rang, init: true })
+        }
+        if (!userAmbassadorIds.includes(rang.userAmbassadorId)) {
+          userAmbassadorIds.push(rang.userAmbassadorId)
+        }
+
+      })
+    })
+    ambassadorsRanges = array
     try {
       await update("Events", event?.id!, { userAmbassadorIds, ambassadorsRanges });
 
@@ -349,7 +373,7 @@ const AssignTickets = () => {
   return (
     <>
       <HeaderView
-        title={`Asignador boletos ${event?.name} - Cantidad boletos: ${event?.total}`}
+        title={`Asignador boletos ${event?.name} - Cantidad boletos: ${event?.total} | Rango Mayor: ${maxNumber}`}
         goBack
         path="/eventos"
       />
