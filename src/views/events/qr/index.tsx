@@ -49,15 +49,15 @@ const Qr = () => {
       const tickets = await getCollectionGeneric<Ticket>('Tickets', [where('eventId', '==', eventId), where('number', '==', + numberTicket)])
       const finalDate = responseEvent.finalDate as any as Timestamp;
 
-      if (eventId !== event.id) {
-        setIsModalData({
-          message: `Este boleto no coincide con el evento - ${event?.name.toUpperCase()}`,
-          description: "favor de seleccionar un boleto correspondiente al evento.",
-          type: "error"
-        })
+      // if (eventId !== event.id) {
+      //   setIsModalData({
+      //     message: `Este boleto no coincide con el evento - ${event?.name.toUpperCase()}`,
+      //     description: "favor de seleccionar un boleto correspondiente al evento.",
+      //     type: "error"
+      //   })
 
-        return
-      }
+      //   return
+      // }
 
       if (responseEvent.disabled) {
         setIsModalData({
