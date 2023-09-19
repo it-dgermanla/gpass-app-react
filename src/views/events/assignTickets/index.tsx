@@ -78,7 +78,7 @@ const AssignTickets = () => {
         width: "40%",
         title: 'Inicio',
         key: 'startRange',
-        render: (_, __, index) => <FormItem
+        render: (_, { index }) => <FormItem
           name={`startRange-${index}-${userAssign.id}`}
           label="Inicio"
           rules={[
@@ -105,7 +105,7 @@ const AssignTickets = () => {
         width: "40%",
         title: 'Fin',
         key: 'endRange',
-        render: (_, __, index) => <FormItem
+        render: (_, { index }) => <FormItem
           name={`endRange-${index}-${userAssign.id}`}
           label="Fin"
           rules={[
@@ -130,7 +130,7 @@ const AssignTickets = () => {
         width: "20%",
         title: 'Borrar rango',
         key: 'deleteRange',
-        render: (_, { startRange, endRange }, index) => <Button
+        render: (_, { startRange, endRange, index }) => <Button
           icon={<DeleteOutlined />}
           style={{ backgroundColor: "#d34745", color: '#fff' }}
           shape="circle"
@@ -145,7 +145,7 @@ const AssignTickets = () => {
               ...e!,
               ambassadorsRanges: e!.ambassadorsRanges.map(
                 ar => ar.userAmbassadorId === userAssign.id
-                  ? ({ ...ar, ranges: ar.ranges.filter((_, i) => i !== index) })
+                  ? ({ ...ar, ranges: ar.ranges.filter((range) => range.index !== index) })
                   : ar
               )
             }))
@@ -382,7 +382,6 @@ const AssignTickets = () => {
           removeTableActions
           expandable={{
             expandedRowRender: (user) => expandedRowRender(user, event?.ambassadorsRanges.find(ar => ar.userAmbassadorId === user.id)?.ranges || []),
-            defaultExpandedRowKeys: [],
             onExpand: (expanded, record) => {
               if (expanded && !event?.userAmbassadorIds.some(id => id === record.id)) {
                 setEvent(e => ({
