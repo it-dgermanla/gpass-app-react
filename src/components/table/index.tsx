@@ -7,7 +7,7 @@ import { PropsUseCollection } from "../../hooks/useCollection";
 import useCollection from "../../hooks/useCollection"
 import { getDocById, update } from "../../services/firebase";
 import { DocumentData, DocumentSnapshot, QueryConstraint, endAt, orderBy, startAfter, startAt, where } from "firebase/firestore";
-import { PDFDownloadLink, Document, Page, Image, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Image, StyleSheet, pdf } from '@react-pdf/renderer';
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Ticket } from "../../interfaces";
@@ -43,6 +43,7 @@ export interface PropsTable<T> extends PropsUseCollection {
 	optiosSearchValues?: OptiosSearchValues[];
 	expandable?: ExpandableConfig<any>;
 	scrollY?: string;
+	localSearch?: boolean;
 }
 
 interface TableData {
@@ -90,12 +91,15 @@ const Table = <T extends {}>({
 	onLoadData,
 	optiosSearchValues,
 	expandable,
-	scrollY
+	scrollY,
+	localSearch
 }: PropsTable<T>) => {
 	const location = useLocation();
 	const path = location;
 	const abortController = useAbortController();
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
+	const [search, setSearch] = useState<string | Dayjs[]>("");
+	const [searchKey, setSearchKey] = useState("");
 	const query = useMemo<QueryConstraint[]>(() => {
 		const { search, searchKey, lastDoc } = tableData;
 		const _query = [...queryProp];
@@ -268,10 +272,16 @@ const Table = <T extends {}>({
 	return (
 		<div>
 			<SearchTable
-				onSearch={(search, searchKey) => {
+				onSearch={(_search, _searchKey) => {
+					if (localSearch) {
+						setSearch(_search);
+						setSearchKey(_searchKey);
+						return;
+					}
+
 					setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }));
 					setTimeout(() => {
-						setTableData(prev => ({ ...prev, search, searchKey, collection }));
+						setTableData(prev => ({ ...prev, search, searchKey: _searchKey, collection }));
 					}, 200)
 				}}
 				placeholder={placeholderSearch}
@@ -283,7 +293,7 @@ const Table = <T extends {}>({
 				sticky
 				scroll={{ x: 400, y: scrollY || "75vh", scrollToFirstRowOnChange: false }}
 				columns={columns}
-				dataSource={data}
+				dataSource={searchKey && search ? data.filter(f => (f[searchKey as keyof T] as string).toLowerCase().includes(search.toString().toLowerCase())) : data}
 				loading={loading}
 				locale={{ emptyText: <Empty image={PRESENTED_IMAGE_SIMPLE} description='Sin registros.' /> }}
 				rowKey="id"

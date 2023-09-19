@@ -4,7 +4,7 @@ import HeaderView from "../../../components/headerView";
 import { Event, User, Range, AmbassadorRanges } from "../../../interfaces";
 import { Button, Form, Input, Row, Table as TableAnt, TableColumnsType, message } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { QueryConstraint, limit, orderBy, where, writeBatch } from "firebase/firestore";
+import { QueryConstraint, orderBy, where, writeBatch } from "firebase/firestore";
 import FormItem from "antd/es/form/FormItem";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Rule } from "antd/es/form";
@@ -63,7 +63,6 @@ const AssignTickets = () => {
     return [
       where("role", "==", "Embajador"),
       where("companyUid", "==", companyUid),
-      limit(20),
       orderBy("name")
     ]
   }, [state]);
@@ -247,8 +246,6 @@ const AssignTickets = () => {
     try {
       await update("Events", event?.id!, { userAmbassadorIds, ambassadorsRanges });
 
-      message.success('Boletos asignados con exito.', 4);
-
       const newAmbassadorsRanges: AmbassadorRangesAssing[] = [];
 
       ambassadorsRanges.forEach(ambassadorRanges => {
@@ -346,6 +343,8 @@ const AssignTickets = () => {
         }
       }
 
+      message.success('Boletos asignados con exito.', 4);
+
       navigate("/eventos");
     } catch (error) {
       console.log(error);
@@ -375,6 +374,7 @@ const AssignTickets = () => {
           collection="Users"
           columns={columns}
           query={query}
+          localSearch
           searchValues={{
             name: "Nombre",
             email: "Email",
