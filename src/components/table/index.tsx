@@ -94,12 +94,17 @@ const Table = <T extends {}>({
 	scrollY,
 	localSearch
 }: PropsTable<T>) => {
+	const { user } = useAuth();
 	const location = useLocation();
 	const path = location;
 	const abortController = useAbortController();
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
+<<<<<<< Updated upstream
 	const [search, setSearch] = useState<string | Dayjs[]>("");
 	const [searchKey, setSearchKey] = useState("");
+=======
+
+>>>>>>> Stashed changes
 	const query = useMemo<QueryConstraint[]>(() => {
 		const { search, searchKey, lastDoc } = tableData;
 		const _query = [...queryProp];
@@ -111,7 +116,11 @@ const Table = <T extends {}>({
 				_query.splice(indexOrderBy, 1);
 			}
 
-			_query.push(...[orderBy(searchKey), startAt(search), endAt(search + '\uf8ff')]);
+			if (searchKey === "number") {
+				_query.push(...[orderBy(searchKey), where(searchKey, "==", +search)]);
+			} else {
+				_query.push(...[orderBy(searchKey), startAt(search), endAt(search + '\uf8ff')]);
+			}
 		}
 
 		if (search && Array.isArray(search)) {
@@ -138,7 +147,6 @@ const Table = <T extends {}>({
 		return _query;
 	}, [tableData, queryProp]);
 	const { loading, data, setData } = useCollection<T & { id: string }>({ wait, query, collection: tableData.collection, formatDate, mergeResponse });
-	const { user } = useAuth();
 
 	const deleteUser = useCallback((r: T & { id: string; }) => post(`/users/del`, r, abortController.current!), [abortController]);
 
@@ -281,7 +289,7 @@ const Table = <T extends {}>({
 
 					setTableData(prev => ({ ...prev, lastDoc: undefined, collection: "" }));
 					setTimeout(() => {
-						setTableData(prev => ({ ...prev, search, searchKey: _searchKey, collection }));
+						setTableData(prev => ({ ...prev, search: _search, searchKey: _searchKey, collection }));
 					}, 200)
 				}}
 				placeholder={placeholderSearch}
