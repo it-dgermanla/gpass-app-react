@@ -73,20 +73,12 @@ const Users = () => {
   const query = useMemo(() => {
     return [
       where("disabled", "==", false), orderBy("createAt", "desc"), limit(20),
-<<<<<<< Updated upstream
       where("companyUid", "==", event?.companyUid),
-=======
-      where("companyName", "==", event?.companyName),
->>>>>>> Stashed changes
       where("role", "==", "Lector")
     ]
   }, [event])
 
   const propsTable = useMemo<PropsTable<User>>(() => {
-<<<<<<< Updated upstream
-=======
-    //cambiar query company uid
->>>>>>> Stashed changes
     return {
       columns,
       placeholderSearch: "Buscar por nombre ó correo...",
@@ -97,11 +89,7 @@ const Users = () => {
       removeTableActions: true,
       wait: loading
     }
-<<<<<<< Updated upstream
   }, [columns, query, loading])
-=======
-  }, [event, columns, query, loading])
->>>>>>> Stashed changes
 
   return (
     <div style={{ margin: 20 }}>

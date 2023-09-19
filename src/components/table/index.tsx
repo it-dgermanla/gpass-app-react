@@ -99,12 +99,8 @@ const Table = <T extends {}>({
 	const path = location;
 	const abortController = useAbortController();
 	const [tableData, setTableData] = useState<TableData>({ search: "", searchKey: "", collection });
-<<<<<<< Updated upstream
 	const [search, setSearch] = useState<string | Dayjs[]>("");
 	const [searchKey, setSearchKey] = useState("");
-=======
-
->>>>>>> Stashed changes
 	const query = useMemo<QueryConstraint[]>(() => {
 		const { search, searchKey, lastDoc } = tableData;
 		const _query = [...queryProp];
