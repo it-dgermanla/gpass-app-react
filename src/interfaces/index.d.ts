@@ -33,6 +33,7 @@ export interface AmbassadorRanges {
 }
 
 export interface Range {
+  init: boolean;
   index: number;
   startRange?: number;
   endRange?: number;

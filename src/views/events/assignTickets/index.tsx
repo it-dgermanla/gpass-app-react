@@ -12,9 +12,8 @@ import { getCollection, update } from "../../../services/firebase";
 import Table from "../../../components/table";
 import { db } from "../../../firebaseConfig";
 
-type AmbassadorRangesAssing = AmbassadorRanges & { init?: boolean }
 type EventAssign = Omit<Event, "ambassadorsRanges"> & {
-  ambassadorsRanges: AmbassadorRangesAssing[];
+  ambassadorsRanges: AmbassadorRanges[];
 }
 
 const AssignTickets = () => {
@@ -53,9 +52,8 @@ const AssignTickets = () => {
       return maxInItem > max ? maxInItem : max;
     }, -Infinity | 0))
 
-
     form.setFieldsValue(rangesValues);
-    setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, init: true })) });
+    setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, ranges: ar.ranges.map(r => ({ ...r, init: true })) })) });
   }, [state, form]);
 
   const query = useMemo<QueryConstraint[]>(() => {
@@ -82,7 +80,6 @@ const AssignTickets = () => {
           name={`startRange-${index}-${userAssign.id}`}
           label="Inicio"
           rules={[
-            //falta la regla de no max de lo tickets del evento.
             {
               required: true, message: "Debe ingresar un inicio de rango.",
             },
@@ -98,7 +95,7 @@ const AssignTickets = () => {
             ruleMaxRangeForEvent
           ]}
         >
-          <Input disabled={event!.ambassadorsRanges.some(ar => ar.init && ar.userAmbassadorId === userAssign.id && ar.ranges.some(r => r.index === index))} />
+          <Input type="number" disabled={event!.ambassadorsRanges.some(ar => ar.userAmbassadorId === userAssign.id && ar.ranges.some(r => r.index === index && r.init))} />
         </FormItem >,
       },
       {
@@ -123,22 +120,20 @@ const AssignTickets = () => {
             ruleMaxRangeForEvent
           ]}
         >
-          <Input disabled={event!.ambassadorsRanges.some(ar => ar.init && ar.userAmbassadorId === userAssign.id && ar.ranges.some(r => r.index === index))} />
+          <Input type="number" disabled={event!.ambassadorsRanges.some(ar => ar.userAmbassadorId === userAssign.id && ar.ranges.some(r => r.index === index && r.init))} />
         </FormItem>
       },
       {
         width: "20%",
         title: 'Borrar rango',
         key: 'deleteRange',
-        render: (_, { startRange, endRange, index }) => <Button
+        render: (_, { startRange, endRange, index, init }) => <Button
           icon={<DeleteOutlined />}
           style={{ backgroundColor: "#d34745", color: '#fff' }}
           shape="circle"
           onClick={() => {
-            const inputDisabled = event!.ambassadorsRanges.some(ar => ar.init && ar.userAmbassadorId === userAssign.id && ar.ranges.some(r => r.index === index));
-
-            if (inputDisabled) {
-              setRangesToDelete(r => [...r, { index: 0, startRange, endRange }])
+            if (init) {
+              setRangesToDelete(r => [...r, { index, startRange, endRange, init }])
             }
 
             setEvent(e => ({
@@ -162,7 +157,7 @@ const AssignTickets = () => {
               ...e!,
               ambassadorsRanges: e!.ambassadorsRanges.map(
                 ar => ar.userAmbassadorId === userAssign.id
-                  ? ({ ...ar, ranges: [...ar.ranges, { endRange: undefined, startRange: undefined, index: ar.ranges.length + 1 }] })
+                  ? ({ ...ar, ranges: [...ar.ranges, { endRange: undefined, startRange: undefined, index: ar.ranges[ar.ranges.length - 1]?.index + 1, init: false }] })
                   : ar
               )
             }))
@@ -189,7 +184,7 @@ const AssignTickets = () => {
     const keysValuesStartRange = keysValues.filter(k => k.includes('startRange'));
     const keysValuesEndRange = keysValues.filter(k => k.includes('endRange'));
     const arrayToValidateRanges: Record<string, number>[] = [];
-    let ambassadorsRanges: AmbassadorRangesAssing[] = [];
+    let ambassadorsRanges: AmbassadorRanges[] = event?.ambassadorsRanges.map(ar => ({ ...ar, ranges: ar.ranges.filter(r => r.init) })) || [];
 
     keysValuesStartRange.forEach(key => {
       const [_, index, userId] = key.split('-');
@@ -209,12 +204,13 @@ const AssignTickets = () => {
             index: +index,
             startRange: +startRange,
             endRange: +endRange,
+            init: false
           }]
         });
-      } else {
+      } else if (ambassadorsRanges.some(ar => ar.userAmbassadorId === userId && !ar.ranges.some(r => r.index === +index))) {
         ambassadorsRanges = ambassadorsRanges.map(ar =>
           ar.userAmbassadorId === userId
-            ? { ...ar, ranges: [...ar.ranges, { index: +index, startRange: +startRange, endRange: +endRange }] }
+            ? { ...ar, ranges: [...ar.ranges, { index: +index, startRange: +startRange, endRange: +endRange, init: false }] }
             : ar
         ) as AmbassadorRanges[];
       }
@@ -245,61 +241,6 @@ const AssignTickets = () => {
 
     try {
       await update("Events", event?.id!, { userAmbassadorIds, ambassadorsRanges });
-
-      const newAmbassadorsRanges: AmbassadorRangesAssing[] = [];
-
-      ambassadorsRanges.forEach(ambassadorRanges => {
-        if (!ambassadorRanges.init) {
-          newAmbassadorsRanges.push(ambassadorRanges)
-        }
-      });
-
-      for (let i = 0; i < newAmbassadorsRanges.length; i++) {
-        const newAmbassadorRanges = newAmbassadorsRanges[i];
-
-        for (let j = 0; j < newAmbassadorRanges.ranges.length; j++) {
-          const range = newAmbassadorRanges.ranges[j];
-          const start = range.startRange!;
-          const end: number = range.endRange!;
-          const ranges: { start: number; end: number }[] = [];
-
-          let i = start;
-
-          while (i <= end) {
-            const _range = {
-              start: i,
-              end: Math.min(i + 500, end),
-            };
-
-            ranges.push(_range);
-
-            i = _range.end + 1;
-          }
-
-          for (let k = 0; k < ranges.length; k++) {
-            const _range = ranges[k];
-
-            const { docs } = await getCollection("Tickets", [orderBy("number"), where("number", ">=", _range.start), where("number", "<=", _range.end), where("eventId", "==", event?.id)]);
-
-            const batch = writeBatch(db);
-
-            for (let l = 0; l < docs.length; l++) {
-              const ref = docs[l].ref;
-              const userAmbassadorId = newAmbassadorRanges.userAmbassadorId;
-
-              batch.update(
-                ref,
-                {
-                  userAmbassadorId,
-                  userAmbassadorName: users.find(u => u.id === newAmbassadorRanges.userAmbassadorId)?.name || "",
-                }
-              );
-            }
-
-            await batch.commit();
-          }
-        }
-      }
 
       for (let j = 0; j < rangesToDelete.length; j++) {
         const range = rangesToDelete[j];
@@ -343,6 +284,72 @@ const AssignTickets = () => {
         }
       }
 
+      const newAmbassadorsRanges: AmbassadorRanges[] = [];
+
+      ambassadorsRanges.forEach(ambassadorRanges => {
+        if (ambassadorRanges.ranges.some(r => !r.init)) {
+          newAmbassadorsRanges.push(ambassadorRanges)
+        }
+      });
+
+      for (let i = 0; i < newAmbassadorsRanges.length; i++) {
+        const newAmbassadorRanges = newAmbassadorsRanges[i];
+
+        for (let j = 0; j < newAmbassadorRanges.ranges.length; j++) {
+          const range = newAmbassadorRanges.ranges[j];
+
+          if (range.init) continue;
+
+          const start = range.startRange!;
+          const end: number = range.endRange!;
+          const ranges: { start: number; end: number }[] = [];
+
+          let i = start;
+
+          while (i <= end) {
+            const _range = {
+              start: i,
+              end: Math.min(i + 500, end),
+            };
+
+            ranges.push(_range);
+
+            i = _range.end + 1;
+          }
+
+          for (let k = 0; k < ranges.length; k++) {
+            const _range = ranges[k];
+
+            const { docs } = await getCollection("Tickets", [orderBy("number"), where("number", ">=", _range.start), where("number", "<=", _range.end), where("eventId", "==", event?.id)]);
+
+            const batch = writeBatch(db);
+
+            for (let l = 0; l < docs.length; l++) {
+              const ref = docs[l].ref;
+              const userAmbassadorId = newAmbassadorRanges.userAmbassadorId;
+              const userAmbassadorName = users.find(u => u.id === newAmbassadorRanges.userAmbassadorId)?.name || ""
+
+              console.log(event)
+              console.log(docs[l].data())
+
+              debugger
+
+              batch.update(
+                ref,
+                {
+                  userAmbassadorId,
+                  userAmbassadorName,
+                }
+              );
+            }
+
+            await batch.commit();
+          }
+        }
+      }
+
+
+
       message.success('Boletos asignados con exito.', 4);
 
       navigate("/eventos");
@@ -366,7 +373,7 @@ const AssignTickets = () => {
         layout="vertical"
         onFinish={onFinish}
       >
-        <Button type="primary" htmlType="submit">Asignar embajadores</Button>
+        <Button loading={saving} type="primary" htmlType="submit">Asignar embajadores</Button>
         <br />
         <br />
         <Table
@@ -383,11 +390,12 @@ const AssignTickets = () => {
           expandable={{
             expandedRowRender: (user) => expandedRowRender(user, event?.ambassadorsRanges.find(ar => ar.userAmbassadorId === user.id)?.ranges || []),
             onExpand: (expanded, record) => {
-              if (expanded && !event?.userAmbassadorIds.some(id => id === record.id)) {
+              console.log(record)
+              if (expanded && !event?.ambassadorsRanges.some(ar => ar.userAmbassadorId === record.id)) {
                 setEvent(e => ({
                   ...e!,
                   userAmbassadorIds: [...e!.userAmbassadorIds, record.id!],
-                  ambassadorsRanges: [...e!.ambassadorsRanges, { userAmbassadorId: record.id!, ranges: [{ startRange: undefined, endRange: undefined, index: 1 }] }]
+                  ambassadorsRanges: [...e!.ambassadorsRanges, { userAmbassadorId: record.id!, ranges: [{ startRange: undefined, endRange: undefined, index: 1, init: false }] }]
                 }));
 
                 return;
