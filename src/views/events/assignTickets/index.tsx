@@ -8,7 +8,7 @@ import { QueryConstraint, orderBy, where, writeBatch } from "firebase/firestore"
 import FormItem from "antd/es/form/FormItem";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Rule } from "antd/es/form";
-import { getCollection, update } from "../../../services/firebase";
+import { getCollection, getGenericDocById, update } from "../../../services/firebase";
 import Table from "../../../components/table";
 import { db } from "../../../firebaseConfig";
 
@@ -32,28 +32,34 @@ const AssignTickets = () => {
       window.location.href = "/eventos";
     }
 
-    const _event = state as EventAssign;
-    let rangesValues: Record<string, string> = {};
+    const dateEvent = async () =>{
+      let _event: EventAssign = await getGenericDocById<Event>('Events', state.id!)
 
-    _event?.ambassadorsRanges.forEach((ambassadorRanges) => {
-      ambassadorRanges.ranges.forEach((range) => {
-        rangesValues = {
-          ...rangesValues,
-          [`startRange-${range.index}-${ambassadorRanges.userAmbassadorId}`]: range.startRange!.toString(),
-          [`endRange-${range.index}-${ambassadorRanges.userAmbassadorId}`]: range.endRange!.toString(),
-        };
+      let rangesValues: Record<string, string> = {};
+
+      _event?.ambassadorsRanges.forEach((ambassadorRanges) => {
+        ambassadorRanges.ranges.forEach((range) => {
+          rangesValues = {
+            ...rangesValues,
+            [`startRange-${range.index}-${ambassadorRanges.userAmbassadorId}`]: range.startRange!.toString(),
+            [`endRange-${range.index}-${ambassadorRanges.userAmbassadorId}`]: range.endRange!.toString(),
+          };
+        });
       });
-    });
+  
+      setMaxNumber(_event?.ambassadorsRanges.reduce((max, item) => {
+        const ranges = item.ranges || [];
+        const endRanges: any = ranges.map(range => range.endRange).filter(endRange => typeof endRange === 'number');
+        const maxInItem = Math.max(...endRanges);
+        return maxInItem > max ? maxInItem : max;
+      }, -Infinity | 0))
+  
+      form.setFieldsValue(rangesValues);
+      setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, ranges: ar.ranges.map(r => ({ ...r, init: true })) })) });
+    }
 
-    setMaxNumber(_event?.ambassadorsRanges.reduce((max, item) => {
-      const ranges = item.ranges || [];
-      const endRanges: any = ranges.map(range => range.endRange).filter(endRange => typeof endRange === 'number');
-      const maxInItem = Math.max(...endRanges);
-      return maxInItem > max ? maxInItem : max;
-    }, -Infinity | 0))
+    dateEvent()
 
-    form.setFieldsValue(rangesValues);
-    setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, ranges: ar.ranges.map(r => ({ ...r, init: true })) })) });
   }, [state, form]);
 
   const query = useMemo<QueryConstraint[]>(() => {
