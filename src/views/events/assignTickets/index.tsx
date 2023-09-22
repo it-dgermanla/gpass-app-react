@@ -32,8 +32,10 @@ const AssignTickets = () => {
       window.location.href = "/eventos";
     }
 
-    const dateEvent = async () =>{
+    const dateEvent = async () => {
       let _event: EventAssign = await getGenericDocById<Event>('Events', state.id!)
+
+      console.log(_event)
 
       let rangesValues: Record<string, string> = {};
 
@@ -46,14 +48,14 @@ const AssignTickets = () => {
           };
         });
       });
-  
+
       setMaxNumber(_event?.ambassadorsRanges.reduce((max, item) => {
         const ranges = item.ranges || [];
         const endRanges: any = ranges.map(range => range.endRange).filter(endRange => typeof endRange === 'number');
         const maxInItem = Math.max(...endRanges);
         return maxInItem > max ? maxInItem : max;
       }, -Infinity | 0))
-  
+
       form.setFieldsValue(rangesValues);
       setEvent({ ..._event, ambassadorsRanges: _event.ambassadorsRanges.map(ar => ({ ...ar, ranges: ar.ranges.map(r => ({ ...r, init: true })) })) });
     }
@@ -61,6 +63,8 @@ const AssignTickets = () => {
     dateEvent()
 
   }, [state, form]);
+
+  console.log(event)
 
   const query = useMemo<QueryConstraint[]>(() => {
     const { companyUid } = state as EventAssign;
@@ -163,7 +167,7 @@ const AssignTickets = () => {
               ...e!,
               ambassadorsRanges: e!.ambassadorsRanges.map(
                 ar => ar.userAmbassadorId === userAssign.id
-                  ? ({ ...ar, ranges: [...ar.ranges, { endRange: undefined, startRange: undefined, index: ar.ranges[ar.ranges.length - 1]?.index + 1, init: false }] })
+                  ? ({ ...ar, ranges: [...ar.ranges, { endRange: undefined, startRange: undefined, index: (ar.ranges[ar.ranges.length - 1]?.index || 0) + 1, init: false }] })
                   : ar
               )
             }))
@@ -396,7 +400,6 @@ const AssignTickets = () => {
           expandable={{
             expandedRowRender: (user) => expandedRowRender(user, event?.ambassadorsRanges.find(ar => ar.userAmbassadorId === user.id)?.ranges || []),
             onExpand: (expanded, record) => {
-              console.log(record)
               if (expanded && !event?.ambassadorsRanges.some(ar => ar.userAmbassadorId === record.id)) {
                 setEvent(e => ({
                   ...e!,
