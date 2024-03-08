@@ -81,7 +81,7 @@ const Qr = () => {
 
       if (tickets[0].isScanned === "Si") {
         setIsModalData({
-          message: `Este QR ya esta escaneado.`,
+          message: `Su boleto ya fue canjeado anteriormente`,
           description: "favor de intentar con otro boleto válido",
           type: "error"
         })
@@ -91,8 +91,8 @@ const Qr = () => {
 
       await update('Tickets', tickets[0].id!, { userScannerId: user?.uid, userScannerName: userFirestore?.name, isScanned: "Si", dateScanned: new Date() })
       setIsModalData({
-        message: `Listo ya puedes otorgar la Pizza del QR numero ${numberTicket} del evento.`,
-        description: "Gracias por su apoyo.",
+        message: `Muchas Gracias su boleto fue validado con éxito.`,
+        description: "",
         type: "success"
       })
     } catch (error) {
